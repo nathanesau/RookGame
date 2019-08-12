@@ -8,7 +8,3 @@
 
 1. Visual studio code.
 2. [CMake Tools extension](https://marketplace.visualstudio.com/items?itemName=vector-of-bool.cmake-tools).
-
-# Writing code
-
-1. See "SoftwareDesign.md".
