@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>MiddleDialog</class>
+    <widget class="QDialog" name="MiddleDialog">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>724</width>
+                <height>435</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Middle Dialog</string>
+        </property>
+        <widget class="ScaledQLabel" name="trumpCategoryLabel">
+            <property name="geometry">
+                <rect>
+                    <x>90</x>
+                    <y>160</y>
+                    <width>121</width>
+                    <height>31</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>12</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                </font>
+            </property>
+            <property name="text">
+                <string>Trump</string>
+            </property>
+        </widget>
+        <widget class="ScaledQPushButton" name="selectPartnerButton">
+            <property name="geometry">
+                <rect>
+                    <x>260</x>
+                    <y>270</y>
+                    <width>141</width>
+                    <height>28</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Select partner...</string>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                </font>
+            </property>
+        </widget>
+        <widget class="ScaledQLabel" name="partnerCategoryLabel">
+            <property name="geometry">
+                <rect>
+                    <x>90</x>
+                    <y>270</y>
+                    <width>131</width>
+                    <height>31</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>12</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                </font>
+            </property>
+            <property name="text">
+                <string>Partner</string>
+            </property>
+        </widget>
+        <widget class="ScaledQPushButton" name="selectTrumpButton">
+            <property name="geometry">
+                <rect>
+                    <x>260</x>
+                    <y>160</y>
+                    <width>141</width>
+                    <height>31</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Select trump...</string>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                </font>
+            </property>
+        </widget>
+        <widget class="ScaledQLabel" name="trumpLabel">
+            <property name="geometry">
+                <rect>
+                    <x>510</x>
+                    <y>150</y>
+                    <width>121</width>
+                    <height>51</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>No Trump Selected</string>
+            </property>
+            <property name="alignment">
+                <set>Qt::AlignCenter</set>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                </font>
+            </property>
+        </widget>
+        <widget class="ScaledQPushButton" name="okButton">
+            <property name="geometry">
+                <rect>
+                    <x>620</x>
+                    <y>390</y>
+                    <width>75</width>
+                    <height>23</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>OK</string>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                </font>
+            </property>
+        </widget>
+        <widget class="ScaledQPushButton" name="autoSelectTrumpButton">
+            <property name="geometry">
+                <rect>
+                    <x>260</x>
+                    <y>190</y>
+                    <width>141</width>
+                    <height>31</height>
+                </rect>
+            </property>
+                        <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>Auto select trump...</string>
+            </property>
+        </widget>
+        <widget class="ScaledQPushButton" name="autoSelectPartnerButton">
+            <property name="geometry">
+                <rect>
+                    <x>260</x>
+                    <y>300</y>
+                    <width>141</width>
+                    <height>28</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Auto select partner...</string>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                </font>
+            </property>
+        </widget>
+        <widget class="ScaledQLabel" name="nestCategoryLabel">
+            <property name="geometry">
+                <rect>
+                    <x>90</x>
+                    <y>40</y>
+                    <width>121</width>
+                    <height>31</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>12</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                </font>
+            </property>
+            <property name="text">
+                <string>Nest</string>
+            </property>
+        </widget>
+        <widget class="ScaledQPushButton" name="selectNestButton">
+            <property name="geometry">
+                <rect>
+                    <x>260</x>
+                    <y>40</y>
+                    <width>141</width>
+                    <height>31</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Select nest...</string>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                </font>
+            </property>
+        </widget>
+        <widget class="ScaledQPushButton" name="autoSelectNestButton">
+            <property name="geometry">
+                <rect>
+                    <x>260</x>
+                    <y>70</y>
+                    <width>141</width>
+                    <height>31</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Auto select nest...</string>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                </font>
+            </property>
+        </widget>
+    </widget>
+    <customwidgets>
+        <customwidget>
+            <class>ScaledQLabel</class>
+            <extends>QLabel</extends>
+            <header>scaledWidgets.h</header>
+        </customwidget>
+        <customwidget>
+            <class>ScaledQPushButton</class>
+            <extends>QPushButton</extends>
+            <header>scaledWidgets.h</header>
+        </customwidget>
+    </customwidgets>
+    <resources/>
+    <connections/>
+</ui>

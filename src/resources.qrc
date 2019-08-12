@@ -1,0 +1,74 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+
+        <!-- cards -->
+        <file alias="1black.gif">images/1black.gif</file>
+        <file alias="1green.gif">images/1green.gif</file>
+        <file alias="1red.gif">images/1red.gif</file>
+        <file alias="1yellow.gif">images/1yellow.gif</file>
+        <file alias="2black.gif">images/2black.gif</file>
+        <file alias="2green.gif">images/2green.gif</file>
+        <file alias="2red.gif">images/2red.gif</file>
+        <file alias="2yellow.gif">images/2yellow.gif</file>
+        <file alias="3black.gif">images/3black.gif</file>
+        <file alias="3green.gif">images/3green.gif</file>
+        <file alias="3red.gif">images/3red.gif</file>
+        <file alias="3yellow.gif">images/3yellow.gif</file>
+        <file alias="4black.gif">images/4black.gif</file>
+        <file alias="4green.gif">images/4green.gif</file>
+        <file alias="4red.gif">images/4red.gif</file>
+        <file alias="4yellow.gif">images/4yellow.gif</file>
+        <file alias="5black.gif">images/5black.gif</file>
+        <file alias="5green.gif">images/5green.gif</file>
+        <file alias="5red.gif">images/5red.gif</file>
+        <file alias="5yellow.gif">images/5yellow.gif</file>
+        <file alias="6black.gif">images/6black.gif</file>
+        <file alias="6green.gif">images/6green.gif</file>
+        <file alias="6red.gif">images/6red.gif</file>
+        <file alias="6yellow.gif">images/6yellow.gif</file>
+        <file alias="7black.gif">images/7black.gif</file>
+        <file alias="7green.gif">images/7green.gif</file>
+        <file alias="7red.gif">images/7red.gif</file>
+        <file alias="7yellow.gif">images/7yellow.gif</file>
+        <file alias="8black.gif">images/8black.gif</file>
+        <file alias="8green.gif">images/8green.gif</file>
+        <file alias="8red.gif">images/8red.gif</file>
+        <file alias="8yellow.gif">images/8yellow.gif</file>
+        <file alias="9black.gif">images/9black.gif</file>
+        <file alias="9green.gif">images/9green.gif</file>
+        <file alias="9red.gif">images/9red.gif</file>
+        <file alias="9yellow.gif">images/9yellow.gif</file>
+        <file alias="10black.gif">images/10black.gif</file>
+        <file alias="10green.gif">images/10green.gif</file>
+        <file alias="10red.gif">images/10red.gif</file>
+        <file alias="10yellow.gif">images/10yellow.gif</file>
+        <file alias="11black.gif">images/11black.gif</file>
+        <file alias="11green.gif">images/11green.gif</file>
+        <file alias="11red.gif">images/11red.gif</file>
+        <file alias="11yellow.gif">images/11yellow.gif</file>
+        <file alias="12black.gif">images/12black.gif</file>
+        <file alias="12green.gif">images/12green.gif</file>
+        <file alias="12red.gif">images/12red.gif</file>
+        <file alias="12yellow.gif">images/12yellow.gif</file>
+        <file alias="13black.gif">images/13black.gif</file>
+        <file alias="13green.gif">images/13green.gif</file>
+        <file alias="13red.gif">images/13red.gif</file>
+        <file alias="13yellow.gif">images/13yellow.gif</file>
+        <file alias="14black.gif">images/14black.gif</file>
+        <file alias="14green.gif">images/14green.gif</file>
+        <file alias="14red.gif">images/14red.gif</file>
+        <file alias="14yellow.gif">images/14yellow.gif</file>
+
+        <file alias="appearanceButton.png">images/appearanceButton.png</file>
+        <file alias="saveSlot.png">images/saveSlot.png</file>
+        <file alias="gameButton.png">images/gameButton.png</file>
+
+        <!-- others -->
+        <file alias="background.PNG">images/background.PNG</file>
+        <file alias="blank.gif">images/blank.gif</file>
+        <file alias="rook.gif">images/rook.gif</file>
+        <file alias="rookicon.gif">images/rookicon.gif</file>
+
+    </qresource>
+</RCC>
