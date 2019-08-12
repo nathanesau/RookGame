@@ -63,7 +63,9 @@ NestDialog::NestDialog(CardVector pOriginalNest, QMainWindow *pMainWindow, QWidg
     setWindowTitle("Nest Dialog");
     setWindowIcon(QIcon(":rookicon.gif"));
     setStyleSheet("background-color: white");
+    #ifdef WINDOW_ALWAYS_ON_TOP
     setWindowFlags(Qt::WindowStaysOnTopHint);
+    #endif
 }
 
 void NestDialog::rescale()

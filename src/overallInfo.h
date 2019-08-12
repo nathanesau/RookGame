@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include "common.h"
+
 using namespace std;
 
 // forward declarations

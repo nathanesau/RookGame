@@ -11,6 +11,8 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include "common.h"
+
 class GamePage : public QWidget
 {
     QGroupBox *nestGroup;

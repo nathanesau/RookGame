@@ -5,6 +5,7 @@
 #include <QCloseEvent>
 #include <QMainWindow>
 
+#include "common.h"
 #include "scaledWidgets.h"
 #include "ui_BidDialog.h" // uic -o ui_bidDialog.h bidDialog.ui
 

@@ -11,13 +11,21 @@ using namespace std;
 // global functions
 float getMaxScaleFactor()
 {
-    QRect maxSize = Utils::Ui::getScreenGeometry();
+    auto maxSize = Utils::Ui::getScreenGeometry();
+    auto defaultSize = MAIN_WINDOW_SIZE;
 
-    float scaleFactor = min(maxSize.width() / 1200.0F, maxSize.height() / 850.0F);
+    float scaleFactor = min(maxSize.width() / (float) defaultSize.width(),
+                            maxSize.height() / (float) defaultSize.height());
     scaleFactor = scaleFactor * MAX_PROPORTION_SCREEN;
-    scaleFactor = round(scaleFactor * 10) / 10.0F;
+    
+    // round to nearest increment
+    float maxScaleFactor = MIN_SCALE_FACTOR;
+    while(maxScaleFactor < scaleFactor)
+    {
+        maxScaleFactor += SCALE_FACTOR_INCR;
+    }
 
-    return scaleFactor;
+    return maxScaleFactor - SCALE_FACTOR_INCR;
 }
 
 string getSizeAsString(const QSize &size)
@@ -27,7 +35,22 @@ string getSizeAsString(const QSize &size)
 
 string getScaleFactorAsString(float scaleFactor)
 {
-    return to_string((int)scaleFactor) + "." + to_string(((int)(scaleFactor * 10)) % 10) + "x";
+    // two decimal places
+    return to_string((int)scaleFactor) + "." + to_string(((int)(scaleFactor * 100)) % 100) + "x";
+}
+
+int getNumScaleFactorChoices(float minScaleFactor, float maxScaleFactor, float incr)
+{
+    float scaleFactor = minScaleFactor;
+
+    int nChoices = 0;
+    while(scaleFactor <= maxScaleFactor)
+    {
+        scaleFactor += incr;
+        nChoices++;
+    }
+
+    return nChoices;
 }
 
 void AppearancePage::initializeResolutionGroup()
@@ -37,21 +60,34 @@ void AppearancePage::initializeResolutionGroup()
 
     resolutionComboBox = new QComboBox;
 
-    float minScaleFactor = MIN_SCALE_FACTOR;
-    float maxScaleFactor = getMaxScaleFactor();
-    int nChoices = (maxScaleFactor - minScaleFactor) / 0.1F;
+    const float MAX_SCALE_FACTOR = getMaxScaleFactor(); // cannot be determined at compile time
+
+    int nChoices = getNumScaleFactorChoices(MIN_SCALE_FACTOR, MAX_SCALE_FACTOR, SCALE_FACTOR_INCR);
 
     for (int i = 0; i < nChoices; i++)
     {
-        float scaleFactor = MIN_SCALE_FACTOR + i / 10.0F;
+        float scaleFactor = MIN_SCALE_FACTOR + i * SCALE_FACTOR_INCR;
         indexScaleFactorMap[i] = scaleFactor;
 
-        QSize resolution = QSize((int) 1200 * scaleFactor, (int) 850 * scaleFactor);
+        auto resolution = QSize(MAIN_WINDOW_SIZE.width() * scaleFactor,
+                                MAIN_WINDOW_SIZE.height() * scaleFactor);
+
         string choice = getSizeAsString(resolution) + " (" + getScaleFactorAsString(scaleFactor) + ")";
         resolutionComboBox->addItem(QString::fromStdString(choice));
     }
 
-    int currentIndex = round((Settings::Appearance::readScaleFactor() - MIN_SCALE_FACTOR) * 10.0F);
+    float currentScaleFactor = Settings::Appearance::readScaleFactor();
+    int currentIndex = 0;
+
+    for(auto &it : indexScaleFactorMap)
+    {
+        if(abs(it.second - currentScaleFactor) < 1e-06) // equal operator not reliable for float
+        {
+            currentIndex = it.first;
+            break;
+        }
+    }
+
     resolutionComboBox->setCurrentIndex(currentIndex);
 
     resolutionGroup = new QGroupBox;

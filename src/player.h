@@ -5,6 +5,7 @@
 #include <set>
 
 #include "card.h"
+#include "common.h"
 
 using namespace std;
 

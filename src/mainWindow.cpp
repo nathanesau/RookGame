@@ -112,9 +112,11 @@ MainWindow::MainWindow(QWidget *parent) : ScaledQMainWindow(parent)
 
     setCentralWidget(widget);
     setWindowTitle("Rook");
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setWindowIcon(QIcon(":rookicon.gif"));
     resize(MAIN_WINDOW_SIZE);
+    #ifdef WINDOW_ALWAYS_ON_TOP
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    #endif
 
     QPixmap bkgnd(":background.PNG");
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);
@@ -275,7 +277,7 @@ void MainWindow::onAboutAction()
 {
     MessageBox msgBox;
     msgBox.setText("<p>Rook game made by Nathan Esau<br /><br />"
-                   "<a href=\"https://www.github.com/nathanesauWIP/RookGame\">https://www.github.com/nathanesauWIP/RookGame</a></p>");
+                   "<a href=\"https://www.github.com/nathanesau/RookGame\">https://www.github.com/nathanesau/RookGame</a></p>");
     msgBox.setWindowTitle("About Rook");
     msgBox.turnOnHyperLinks();
     Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);

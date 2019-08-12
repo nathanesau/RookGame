@@ -9,6 +9,7 @@
 #include <string>
 
 #include "clickableCard.h"
+#include "common.h"
 #include "player.h"
 #include "scaledWidgets.h"
 

@@ -5,6 +5,7 @@
 #include <map>
 
 #include "card.h"
+#include "common.h"
 #include "handInfo.h"
 #include "overallInfo.h"
 #include "player.h"

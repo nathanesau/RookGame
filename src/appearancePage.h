@@ -14,12 +14,15 @@
 #include <QWidget>
 #include <vector>
 
+#include "common.h"
+
 using namespace std;
 
 const float MIN_SCALE_FACTOR = 0.6F;
+const float SCALE_FACTOR_INCR = 0.05F;
 
 // windowed app will not take up for of screen than this
-const float MAX_PROPORTION_SCREEN = 0.92F;
+const float MAX_PROPORTION_SCREEN = 0.975F;
 
 // forward declarations
 class MainWindow;

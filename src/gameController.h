@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "card.h"
+#include "common.h"
 #include "gameData.h"
 #include "handInfo.h"
 #include "overallInfo.h"

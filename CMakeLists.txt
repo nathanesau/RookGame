@@ -19,7 +19,7 @@ set(CMAKE_AUTORCC ON)
 
 # Set Qt Path
 if (WIN32)
-    set(QtPath "D:/Qt/5.12.3/msvc2017_64")
+    set(QtPath "C:/Qt/5.12.0/msvc2017_64")
     set(CMAKE_PREFIX_PATH ${QtPath})
 endif (WIN32)
 
@@ -39,6 +39,7 @@ set(rook_SRCS
         src/card.h
         src/clickableCard.cpp
         src/clickableCard.h
+        src/common.h
         src/cpuPlayer.cpp
         src/cpuPlayer.h
         src/deck.cpp

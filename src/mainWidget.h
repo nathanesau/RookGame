@@ -4,6 +4,7 @@
 #include <QProgressBar>
 
 #include "clickableCard.h"
+#include "common.h"
 #include "gameInfoWidget.h"
 #include "gameMenuWidget.h"
 #include "scaledWidgets.h"

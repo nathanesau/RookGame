@@ -2,6 +2,7 @@
 #define PARTNERDIALOG_H
 
 #include "clickableCard.h"
+#include "common.h"
 #include "scaledWidgets.h"
 
 // forward declarations

@@ -6,6 +6,8 @@
 #include <QTableWidget>
 #include <QVBoxLayout>
 
+#include "common.h"
+
 using namespace std;
 
 const QSize SCORES_DIALOG_SIZE = {320, 200};

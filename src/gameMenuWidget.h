@@ -1,6 +1,7 @@
 #ifndef GAMEMENUWIDGET_H
 #define GAMEMENUWIDGET_H
 
+#include "common.h"
 #include "scaledWidgets.h"
 
 // forward declarations

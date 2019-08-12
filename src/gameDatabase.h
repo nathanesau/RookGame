@@ -5,6 +5,7 @@
 #include <QProgressBar>
 #include <vector>
 
+#include "common.h"
 #include "gameController.h"
 #include "player.h"
 
