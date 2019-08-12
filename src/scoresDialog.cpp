@@ -1,5 +1,6 @@
 #include <QHeaderView>
 
+#include "gameController.h"
 #include "scoresDialog.h"
 
 ScoresDialog::ScoresDialog(QWidget *parent) : QDialog(parent)
@@ -31,7 +32,7 @@ void ScoresDialog::setupTableWidget(map<int, map<int, int>> &scoreHistory)
         for(auto &player : round.second)
         {
             tableWidget->setItem(row, 0, new QTableWidgetItem(QString::number(round.first))); // roundNo
-            tableWidget->setItem(row, 1, new QTableWidgetItem(QString::number(player.first))); // playerNo
+            tableWidget->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(gc.data.playerArr[player.first].getPlayerName())));
             tableWidget->setItem(row, 2, new QTableWidgetItem(QString::number(player.second))); // score
             row++;
         }
