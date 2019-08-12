@@ -1,0 +1,8 @@
+build
+.vscode
+.VSCodeCounter
+.vs
+slot1.db
+slot2.db
+slot3.db
+# tweak CMakeLists.txt as necessary (for instance, QtPath)
