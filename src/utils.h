@@ -5,6 +5,8 @@
 #include <QMainWindow>
 #include <QWidget>
 
+#include "common.h"
+
 using namespace std;
 
 // constants

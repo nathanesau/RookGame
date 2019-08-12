@@ -3,6 +3,7 @@
 
 #include<map>
 
+#include "common.h"
 #include "scaledWidgets.h"
 
 using namespace std;

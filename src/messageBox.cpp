@@ -26,7 +26,9 @@ MessageBox::MessageBox(QWidget *parent) : QDialogWithClickableCardArray(true, pa
     setWindowIcon(QIcon(":rookicon.gif"));
     setStyleSheet("background-color: white");
     setWindowOpacity(1.0);
+    #ifdef WINDOW_ALWAYS_ON_TOP
     setWindowFlags(Qt::WindowStaysOnTopHint);
+    #endif
 }
 
 void MessageBox::rescale()

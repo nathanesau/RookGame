@@ -7,6 +7,7 @@
 #include <QTableWidget>
 #include <string>
 
+#include "common.h"
 #include "mainWidget.h"
 #include "scaledWidgets.h"
 

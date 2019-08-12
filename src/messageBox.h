@@ -8,6 +8,7 @@
 #include <QString>
 
 #include "clickableCard.h"
+#include "common.h"
 #include "scaledWidgets.h"
 
 const QSize DEFAULT_MSG_BOX_SIZE = {400, 250};

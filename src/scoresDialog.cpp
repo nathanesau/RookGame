@@ -10,7 +10,9 @@ ScoresDialog::ScoresDialog(QWidget *parent) : QDialog(parent)
     
     setWindowIcon(QIcon(":rookicon.gif"));
     setWindowTitle("Past Round Scores");
+    #ifdef WINDOW_ALWAYS_ON_TOP
     setWindowFlags(Qt::WindowStaysOnTopHint);
+    #endif
     resize(SCORES_DIALOG_SIZE);
 }
 

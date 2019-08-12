@@ -38,7 +38,9 @@ TrumpDialog::TrumpDialog(int &pSuitSelected, QWidget *parent) : suitSelected(pSu
     resize(TRUMP_DIALOG_SIZE);
     setWindowTitle("Choose Trump Suit...");
     setWindowIcon(QIcon(":rookicon.gif"));
+    #ifdef WINDOW_ALWAYS_ON_TOP
     setWindowFlags(Qt::WindowStaysOnTopHint);
+    #endif
     setStyleSheet("background-color: white");
 }
 

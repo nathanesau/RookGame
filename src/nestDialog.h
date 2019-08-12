@@ -8,6 +8,7 @@
 
 #include "card.h"
 #include "clickableCard.h"
+#include "common.h"
 #include "scaledWidgets.h"
 
 using namespace std;

@@ -1,10 +1,11 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QString>
-
 #include <map>
+#include <QString>
 #include <string>
+
+#include "common.h"
 
 using namespace std;
 

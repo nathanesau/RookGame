@@ -57,7 +57,9 @@ SaveSlotDialog::SaveSlotDialog(int &pSlotSelected, QWidget *parent) : slotSelect
     setLayout(mainLayout);
 
     setWindowTitle("File Select Dialog");
+    #ifdef WINDOW_ALWAYS_ON_TOP
     setWindowFlags(Qt::WindowStaysOnTopHint);
+    #endif
     setWindowIcon(QIcon(":rookicon.gif"));
 }
 

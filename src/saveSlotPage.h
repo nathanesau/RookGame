@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include "common.h"
 #include "gameController.h"
 
 // forward declarations

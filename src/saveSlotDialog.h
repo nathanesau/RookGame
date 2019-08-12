@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 
+#include "common.h"
 #include "saveSlotPage.h"
 
 // DO NOT MODIFY

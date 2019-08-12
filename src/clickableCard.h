@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "card.h"
+#include "common.h"
 #include "scaledWidgets.h"
 
 using namespace std;

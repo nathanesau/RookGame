@@ -4,6 +4,7 @@
 #include <map>
 
 #include "card.h"
+#include "common.h"
 #include "player.h"
 
 using namespace std;

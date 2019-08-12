@@ -8,8 +8,9 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-#include "AppearancePage.h"
-#include "GamePage.h"
+#include "appearancePage.h"
+#include "common.h"
+#include "gamePage.h"
 
 class PreferencesDialog : public QDialog
 {
