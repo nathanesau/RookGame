@@ -10,6 +10,12 @@
 
 using namespace std;
 
+// forward declarations
+class GameController;
+
+// global declarations
+extern GameController gc;
+
 const QSize SCORES_DIALOG_SIZE = {320, 200};
 
 // extend QDialog not ScaledQDialog
