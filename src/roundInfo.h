@@ -1,6 +1,7 @@
 #ifndef ROUNDINFO_H
 #define ROUNDINFO_H
 
+#include <array>
 #include <map>
 #include <set>
 
@@ -26,7 +27,7 @@ public:
     int pointsMiddle;
     Card partnerCard;
     int partnerPlayerNum;
-    pair<Team, Team> teams;
+    array<Team, 2> teams;
     map<int, int> playerScores;
     map<int, int> teamScores;
 

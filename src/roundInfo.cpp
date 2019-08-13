@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <numeric>
 
 #include "handInfo.h"
 #include "roundInfo.h"
@@ -16,8 +17,12 @@ void RoundInfo::clear()
     pointsMiddle = 0;
     partnerCard = Card(SUIT_UNDEFINED, VALUE_UNDEFINED);
     partnerPlayerNum = PLAYER_UNDEFINED;
-    teams.first.clear();
-    teams.second.clear();
+    
+    // DO NOT REMOVE
+    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    {
+        teams[teamNum].clear();
+    }
 
     // DO NOT REMOVE (iterate through map later)
     for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
@@ -39,14 +44,14 @@ void RoundInfo::updateTeams()
         return;
     }
 
-    teams.first.insert(bidPlayer);
-    teams.first.insert(partnerPlayerNum);
+    teams[TEAM_1].insert(bidPlayer);
+    teams[TEAM_1].insert(partnerPlayerNum);
 
     for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        if (teams.first.find(playerNum) == teams.first.end())
+        if (teams[TEAM_1].find(playerNum) == teams[TEAM_1].end())
         {
-            teams.second.insert(playerNum);
+            teams[TEAM_2].insert(playerNum);
         }
     }
 }
@@ -93,18 +98,17 @@ map<int, int> RoundInfo::getRoundScores()
 
 int RoundInfo::getTeamNumber(int playerNum)
 {
-    if (std::find(teams.first.begin(), teams.first.end(), playerNum) != teams.first.end())
+    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
     {
-        return TEAM_1;
+        auto &team = teams[teamNum];
+        
+        if (std::find(team.begin(), team.end(), playerNum) != team.end())
+        {
+            return teamNum;
+        }
     }
-    else if (std::find(teams.second.begin(), teams.second.end(), playerNum) != teams.second.end())
-    {
-        return TEAM_2;
-    }
-    else
-    {
-        return TEAM_UNDEFINED;
-    }
+
+    return TEAM_UNDEFINED;
 }
 
 void RoundInfo::updatePlayerScores(HandInfo &handInfo)
@@ -116,16 +120,16 @@ void RoundInfo::updatePlayerScores(HandInfo &handInfo)
 
 void RoundInfo::updateTeamScores()
 {
-    if (teams.first.empty() || teams.second.empty()) // unknown teams
+    if (std::all_of(teams.begin(), teams.end(), [](Team &team) { return team.empty(); })) // unknown teams
     {
         return;
     }
 
-    teamScores[TEAM_1] = 0;
-    teamScores[TEAM_2] = 0;
-
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
     {
-        teamScores[getTeamNumber(playerNum)] += playerScores[playerNum];
+        auto playerNumArr = vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4};
+        teamScores[teamNum] = accumulate(playerNumArr.begin(), playerNumArr.end(), 0, [&](int a, int &b) {
+            return (getTeamNumber(b) == teamNum) ? a + playerScores[b] : a;
+        });
     }
 }

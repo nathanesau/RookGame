@@ -1,6 +1,7 @@
 #ifndef GAMEINFOWIDGET_H
 #define GAMEINFOWIDGET_H
 
+#include <array>
 #include <map>
 #include <QLabel>
 #include <QMainWindow>
@@ -14,6 +15,9 @@
 #include "scaledWidgets.h"
 
 using namespace std;
+
+// forward declarations
+struct GameData;
 
 struct ScoreCompare
 {
@@ -34,11 +38,8 @@ struct ScoreCompare
 
 const QSize GAME_INFO_WIDGET_SIZE = {1200, 130};
 
-struct GameInfoWidget : public QDialogWithClickableCardArray
+struct GameInfoWidgetData
 {
-    // data variables corresponding to what is shown in widget
-    // these may differ from what is in "GameData"
-    map<int, string> playerNames;
     int bidPlayerNum;
     int bidAmount;
     Card partnerCard;
@@ -46,10 +47,19 @@ struct GameInfoWidget : public QDialogWithClickableCardArray
     int trumpSuit;
     int pointsMiddle;
     bool pointsMiddleKnown;
-    pair<Team, Team> teams;
+    array<Team, 2> teams;
     map<int, int> playerScores;
     map<int, int> teamScores;
     map<int, int> overallPlayerScores;
+
+    GameInfoWidgetData();
+};
+
+struct GameInfoWidget : public QDialogWithClickableCardArray
+{
+    // data variables corresponding to what is shown in widget
+    // these may differ from what is in "GameData"
+    GameInfoWidgetData data;
 
 private:
     QMainWindow *mainWindow; // non-owning
@@ -91,29 +101,26 @@ public:
     GameInfoWidget(QMainWindow *pMainWindow, QWidget *parent = nullptr);
     virtual void rescale();
 
-    void resetRoundInfoToDefaults();
-    void resetOverallInfoToDefaults();
-    void resetInfoToDefaults();
-
     virtual void onCardClicked(ClickableCard *clickableCard);
     virtual void onCardHoverEnter(ClickableCard *clickableCard);
     virtual void onCardHoverLeave(ClickableCard *clickableCard);
 
-    void updatePlayerNames(map<int, string> pPlayerNames);
+    void updateWidget(GameData &pData);
+
+private:
     void updateBid(int pBidPlayerNum, int pBidAmount);
     void updatePartner(Card pPartnerCard, int pPartnerPlayerNum = PLAYER_UNDEFINED);
     void updateTrump(int pTrumpSuit);
     void updatePointsMiddle(int pPointsMiddle, bool pPointsMiddleKnown);
-    void updateTeam1(Team pTeam1);
-    void updateTeam2(Team pTeam2);
+    void updateTeams(array<Team, 2> &pTeams);
     void updatePlayerPoints(map<int, int> pPlayerScores);
-    void updateTeamPoints(map<int, int> pTeamScores);
+    void updateTeamPoints(map<int, int> pTeamScores, array<Team, 2> &pTeams);
     void updateOverallScores(map<int, int> pOverallPlayerScores);
 
-private:
-    string getTeamName(Team team);
-
-    void clearDataVariables();
+    QLabel *getTeamLabel(int teamNum);
+    QLabel *getPointsWonPlayerLabel(int playerNum);
+    QLabel *getPointsWonTeamLabel(int teamNum);
+    QLabel *getPlayerOverallScoreLabel(int playerNum);
 };
 
 #endif

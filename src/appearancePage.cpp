@@ -234,8 +234,6 @@ void AppearancePage::applyPlayerNames()
     playerNames[PLAYER_3] = player3NameEdit->text().toStdString();
     playerNames[PLAYER_4] = player4NameEdit->text().toStdString();
     Settings::Appearance::writePlayerNames(playerNames);
-
-    mainWindow->updatePlayerNames(playerNames);
 }
 
 void AppearancePage::applyHUD()

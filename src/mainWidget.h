@@ -61,6 +61,8 @@ public:
     void showHandResult();
     void showNestResult();
 
+    ClickableCardArray *getCardPlayedWidget(int playerNum);
+
     // appearance dialog
     void updateNameTags(bool showNameTags);
 };

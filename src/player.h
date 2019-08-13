@@ -9,9 +9,6 @@
 
 using namespace std;
 
-// typedef declarations
-typedef set<int> Team;
-
 // DO NOT MODIFY
 const int PLAYER_UNDEFINED = -1;
 const int PLAYER_1 = 0;
@@ -38,6 +35,15 @@ public:
  
     int getNextPlayerNum() const;
     string getPlayerName() const;
+};
+
+// do not delete objects through base class pointer
+struct Team : public set<int>
+{
+    using set<int>::set;
+
+public:
+    string getTeamName();
 };
 
 #endif

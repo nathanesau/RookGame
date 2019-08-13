@@ -422,18 +422,16 @@ void GameDatabase::populateTableOverallScores(map<int, int> &playerScores)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableTeams(const pair<Team, Team> &teams)
+void GameDatabase::populateTableTeams(const array<Team, 2> &teams)
 {
     vector<TeamsTableRow> tableRows;
 
-    for (auto &playerNum : teams.first)
+    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
     {
-        tableRows.push_back({TEAM_1, playerNum});
-    }
-
-    for (auto &playerNum : teams.second)
-    {
-        tableRows.push_back({TEAM_2, playerNum});
+        for(auto playerNum : teams[teamNum])
+        {
+            tableRows.push_back({teamNum, playerNum});
+        }
     }
 
     QSqlQuery query;
@@ -674,10 +672,12 @@ void GameDatabase::loadTableOverallScores(map<int, int> &playerScores)
     }
 }
 
-void GameDatabase::loadTableTeams(pair<Team, Team> &teams, array<Player, 4> &playerArr)
+void GameDatabase::loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playerArr)
 {
-    teams.first.clear();
-    teams.second.clear();
+    for(auto &team : teams)
+    {
+        team.clear();
+    }
 
     QSqlQuery query;
 
@@ -691,18 +691,15 @@ void GameDatabase::loadTableTeams(pair<Team, Team> &teams, array<Player, 4> &pla
         int teamNo = query.value(0).toInt();
         int player = query.value(1).toInt();
 
-        auto &team = (teamNo == 1) ? teams.first : teams.second;
-        team.insert(player);
+        teams[teamNo].insert(player);
     }
 
-    for (auto &playerNum : teams.first)
+    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
     {
-        playerArr[playerNum].teamNum = TEAM_1;
-    }
-
-    for (auto &playerNum : teams.second)
-    {
-        playerArr[playerNum].teamNum = TEAM_2;
+        for(auto playerNum : teams[teamNum])
+        {
+            playerArr[playerNum].teamNum = teamNum;
+        }
     }
 }
 

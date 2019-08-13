@@ -28,7 +28,7 @@ MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pM
 
     centerCards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER, SIZE_NORMAL, this);
     bottomCards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_BOTTOM, SIZE_NORMAL, this);
-    
+
     player1CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_BOTTOM, SIZE_NORMAL, this);
     player2CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_LEFT, SIZE_NORMAL, this);
     player3CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_TOP, SIZE_NORMAL, this);
@@ -105,15 +105,15 @@ void MainWidget::finishExistingHand(Card player1Card)
 
     showPartnerCardIfApplicable();
 
-    infoWidget->updatePlayerPoints(gc.data.roundInfo.playerScores);
-    infoWidget->updateTeamPoints(gc.data.roundInfo.teamScores);
+    // refresh playerScores, teamScores
+    infoWidget->updateWidget(gc.data);
 
     showHandResult();
 
-    player1CardPlayed->hideCards();
-    player2CardPlayed->hideCards();
-    player3CardPlayed->hideCards();
-    player4CardPlayed->hideCards();
+    for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    {
+        getCardPlayedWidget(playerNum)->hideCards();
+    }
 }
 
 void MainWidget::startNewHand(int startingPlayerNum)
@@ -175,8 +175,8 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
 
         centerCards->showCards(gc.data.nest);
 
-        infoWidget->updatePlayerPoints(gc.data.roundInfo.playerScores);
-        infoWidget->updateTeamPoints(gc.data.roundInfo.teamScores);
+        // refresh playerScores, teamScores
+        infoWidget->updateWidget(gc.data);
 
         // timeout before showing nest result
         repaint();
@@ -188,7 +188,8 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
 
         gc.data.overallInfo.updatePlayerScores(gc.data.roundInfo);
 
-        infoWidget->updateOverallScores(gc.data.overallInfo.playerScores);
+        // refresh overallScores
+        infoWidget->updateWidget(gc.data);
 
         RoundSummaryDialog summaryDlg;
         summaryDlg.updateScores(gc.data.roundInfo.getRoundScores());
@@ -203,7 +204,7 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
         gc.data.scoreHistory[gc.data.overallInfo.roundNum] = gc.data.roundInfo.getRoundScores();
         gc.data.clearRoundSpecificInfo();
 
-        infoWidget->resetRoundInfoToDefaults();
+        infoWidget->updateWidget(gc.data);
 
         // show game menu
         menuWidget->show();
@@ -226,21 +227,7 @@ void MainWidget::onCardHoverLeave(ClickableCard *clickableCard)
 
 void MainWidget::showCardPlayed(const Card &card, int playerNum)
 {
-    switch (playerNum)
-    {
-    case PLAYER_1:
-        player1CardPlayed->showCards({card});
-        break;
-    case PLAYER_2:
-        player2CardPlayed->showCards({card});
-        break;
-    case PLAYER_3:
-        player3CardPlayed->showCards({card});
-        break;
-    case PLAYER_4:
-        player4CardPlayed->showCards({card});
-        break;
-    }
+    getCardPlayedWidget(playerNum)->showCards({card});
 
     bool sleep = []() {
         return true; // sleep after any card is played
@@ -261,9 +248,8 @@ void MainWidget::showPartnerCardIfApplicable()
 
         if (currentCard == gc.data.roundInfo.partnerCard)
         {
-            infoWidget->updatePartner(currentCard, gc.data.roundInfo.partnerPlayerNum);
-            infoWidget->updateTeam1(gc.data.roundInfo.teams.first);
-            infoWidget->updateTeam2(gc.data.roundInfo.teams.second);
+            // refresh partner card, teams
+            infoWidget->updateWidget(gc.data);
 
             string msg = gc.data.playerArr[gc.data.roundInfo.partnerPlayerNum].getPlayerName() + " is the partner. Teams updated.";
 
@@ -306,6 +292,23 @@ void MainWidget::showNestResult()
     msgBox.setWindowTitle("Last hand");
     Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
     msgBox.exec();
+}
+
+ClickableCardArray *MainWidget::getCardPlayedWidget(int playerNum)
+{
+    switch (playerNum)
+    {
+    case PLAYER_1:
+        return player1CardPlayed;
+    case PLAYER_2:
+        return player2CardPlayed;
+    case PLAYER_3:
+        return player3CardPlayed;
+    case PLAYER_4:
+        return player4CardPlayed;
+    default:
+        return nullptr;
+    }
 }
 
 void MainWidget::updateNameTags(bool showNameTags)

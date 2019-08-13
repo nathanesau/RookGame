@@ -19,7 +19,7 @@ set(CMAKE_AUTORCC ON)
 
 # Set Qt Path
 if (WIN32)
-    set(QtPath "C:/Qt/5.12.0/msvc2017_64")
+    set(QtPath "D:/Qt/5.12.3/msvc2017_64")
     set(CMAKE_PREFIX_PATH ${QtPath})
 endif (WIN32)
 

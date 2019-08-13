@@ -156,7 +156,7 @@ class GameDatabase
     void populateTablePastRoundScores(map<int, map<int, int>> &pastRoundScores);
     void populateTableRoundScores(map<int, int> &roundScores);
     void populateTableOverallScores(map<int, int> &playerScores);
-    void populateTableTeams(const pair<Team, Team> &teams);
+    void populateTableTeams(const array<Team, 2> &teams);
     void populateTableTeamScores(map<int, int> &teamScores);
     void populateTableCurrentRoundInfo(int round, int bidPlayer, int bidAmount, const Card &partnerCard, int trump, int pointsMiddle);
     void populateTableHandInfo(const Card &winningCard, int winningPlayerNum, int startingPlayerNum, map<int, Card> &cardPlayed, int suit, int points);
@@ -168,7 +168,7 @@ class GameDatabase
     void loadTablePastRoundScores(map<int, map<int, int>> &pastRoundScores);
     void loadTableRoundScores(map<int, int> &playerScores);
     void loadTableOverallScores(map<int, int> &playerScores);
-    void loadTableTeams(pair<Team, Team> &teams, array<Player, 4> &playerArr); // we also modify playerArr here
+    void loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playerArr); // we also modify playerArr here
     void loadTableTeamScores(map<int, int> &teamScores);
     void loadTableCurrentRoundInfo(int &round, int &bidPlayer, int &bidAmount, Card &partnerCard, int &trump, int &pointsMiddle);
     void loadTableHandInfo(Card &winningCard, int &winningPlayerNum, int &startingPlayerNum, map<int, Card> &cardPlayed, int &suit, int &points);

@@ -35,3 +35,29 @@ string Player::getPlayerName() const
 {
     return Settings::Appearance::readPlayerNames()[playerNum];
 }
+
+string Team::getTeamName()
+{
+    if (empty())
+    {
+        return "???";
+    }
+
+    auto playerNames = Settings::Appearance::readPlayerNames();
+
+    string teamName = "";
+
+    for (auto it = begin(); it != end(); it++)
+    {
+        if (teamName.empty())
+        {
+            teamName = playerNames[*it];
+        }
+        else
+        {
+            teamName = teamName + " + " + playerNames[*it];
+        }
+    }
+
+    return teamName;
+}
