@@ -7,11 +7,8 @@
 
 using namespace std;
 
-#include "gameController.h"
+#include "gameData.h"
 #include "gameDatabase.h"
-
-// global declarations
-extern GameController gc;
 
 GameDatabase::GameDatabase()
 {

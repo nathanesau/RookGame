@@ -11,11 +11,11 @@
 
 // forward declarations
 class CpuPlayer;
-class GameController;
+struct GameData;
 
 // global declarations
 extern CpuPlayer cpu;
-extern GameController gc;
+extern GameData gamedata;
 
 const QSize BID_DIALOG_SIZE = {661, 302};
 
@@ -37,6 +37,8 @@ public:
 
 private:
     void showBidResultMsgBox();
+    void getCpuBids();
+    int getNumPassed();
 };
 
 #endif

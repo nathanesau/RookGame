@@ -44,8 +44,6 @@ set(rook_SRCS
         src/cpuPlayer.h
         src/deck.cpp
         src/deck.h
-        src/gameController.cpp
-        src/gameController.h
         src/gameData.cpp
         src/gameData.h
         src/gameDatabase.cpp

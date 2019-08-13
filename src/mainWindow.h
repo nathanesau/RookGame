@@ -16,11 +16,11 @@
 using namespace std;
 
 // forward declarations
-class GameController;
+struct GameData;
 class GameDatabase;
 
 // global declarations
-extern GameController gc;
+extern GameData gamedata;
 extern GameDatabase db;
 
 const QSize MAIN_WINDOW_SIZE = {1200, 850};
@@ -54,7 +54,7 @@ public:
     virtual void rescale();
 
     // preferences dialog - appearance page
-    void updateNameTags(bool showNameTags);
+    void refreshNameTags(bool showNameTags);
 
     void onNewGameAction();
     void onLoadGameAction();
@@ -65,10 +65,14 @@ public:
     void onCheckUpdatesAction();
     void onAboutAction();
 
+    // main function for game
     void startNewRound();
+
     void showNewRoundMessage();
+    void showGameStartingMessage();
 
 private:
+    void setRookSuitToTrump();
     QString getSlotDbName(int slotNumber) const;
 };
 

@@ -11,12 +11,12 @@
 
 // forward declarations
 class CpuPlayer;
-class GameController;
+struct GameData;
 class MainWindow;
 
 // global declarations
 extern CpuPlayer cpu;
-extern GameController gc;
+extern GameData gamedata;
 
 const QSize MAIN_WIDGET_SIZE = {1200, 850};
 
@@ -40,8 +40,8 @@ public:
     ScaledQLabel *player4NameLabel;
     ClickableCardArray *player4CardPlayed;
 
-    ClickableCardArray *centerCards;
-    ClickableCardArray *bottomCards;
+    ClickableCardArray *nestCards;
+    ClickableCardArray *player1Cards;
 
     MainWidget(MainWindow *pMainWindow, QWidget *parent = nullptr);
     virtual void rescale();
@@ -62,9 +62,11 @@ public:
     void showNestResult();
 
     ClickableCardArray *getCardPlayedWidget(int playerNum);
+    QLabel *getPlayerNameLabel(int playerNum);
 
-    // appearance dialog
-    void updateNameTags(bool showNameTags);
+private:
+    bool isRoundOver();
+    void playCard(Card cardPlayed, int playerNum);
 };
 
 #endif

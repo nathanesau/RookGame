@@ -105,7 +105,7 @@ public:
     virtual void onCardHoverEnter(ClickableCard *clickableCard);
     virtual void onCardHoverLeave(ClickableCard *clickableCard);
 
-    void updateWidget(GameData &pData);
+    void refreshWidget(GameData &pData);
 
 private:
     void updateBid(int pBidPlayerNum, int pBidAmount);

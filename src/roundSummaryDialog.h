@@ -9,10 +9,10 @@
 using namespace std;
 
 // forward declarations
-class GameController;
+struct GameData;
 
 // global declarations
-extern GameController gc;
+extern GameData gamedata;
 
 const QSize ROUND_SUMMARY_DIALOG_SIZE = {500, 250};
 

@@ -2,7 +2,7 @@
 #include <QObject>
 #include <string>
 
-#include "gameController.h"
+#include "gameData.h"
 #include "mainWindow.h"
 #include "messageBox.h"
 #include "middleDialog.h"
@@ -19,15 +19,15 @@ MiddleDialog::MiddleDialog(int &pTrumpSuitSelected, Card &pPartnerCardSelected,
                                                                                                  mainWidget(pMainWidget),
                                                                                                  mainWindow(pMainWindow),
                                                                                                  QDialogWithClickableCardArray(true, parent),
-                                                                                                 originalNest(gc.data.nest)
+                                                                                                 originalNest(gamedata.nest)
 {
     ui.setupUi(this);
 
-    topRightCards = new ClickableCardArray(DRAW_POSITION_MIDDLE_DLG_NEST, SIZE_TINY, this);
-    topRightCards->showCards(gc.data.nest);
+    nestCards = new ClickableCardArray(DRAW_POSITION_MIDDLE_DLG_NEST, SIZE_TINY, this);
+    nestCards->showCards(gamedata.nest);
 
-    bottomRightCards = new ClickableCardArray(DRAW_POSITION_MIDDLE_DLG_PARTNER, SIZE_TINY, this);
-    bottomRightCards->showCards({Card(SUIT_UNDEFINED, VALUE_UNDEFINED)});
+    partnerCards = new ClickableCardArray(DRAW_POSITION_MIDDLE_DLG_PARTNER, SIZE_TINY, this);
+    partnerCards->showCards({Card(SUIT_UNDEFINED, VALUE_UNDEFINED)});
 
     QObject::connect(ui.selectNestButton, &QPushButton::pressed,
                      this, &MiddleDialog::selectNestButtonPressed);
@@ -63,7 +63,7 @@ void MiddleDialog::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto clickableCardArray : vector<ClickableCardArray *>{topRightCards, bottomRightCards})
+    for (auto clickableCardArray : vector<ClickableCardArray *>{nestCards, partnerCards})
         clickableCardArray->rescale();
 
     for (auto label : vector<ScaledQLabel *>{ui.trumpCategoryLabel, ui.partnerCategoryLabel, ui.trumpLabel,
@@ -107,16 +107,16 @@ void MiddleDialog::selectNestButtonPressed()
         return;
     }
 
-    topRightCards->showCards(gc.data.nest);
-    mainWidget->bottomCards->showCards(gc.data.playerArr[PLAYER_1].cardArr);
+    nestCards->showCards(gamedata.nest);
+    mainWidget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
 }
 
 void MiddleDialog::autoSelectNestButtonPressed()
 {
     NestDialog::autoChooseNest();
 
-    topRightCards->showCards(gc.data.nest);
-    mainWidget->bottomCards->showCards(gc.data.playerArr[PLAYER_1].cardArr);
+    nestCards->showCards(gamedata.nest);
+    mainWidget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
 }
 
 void MiddleDialog::selectTrumpButtonPressed()
@@ -136,7 +136,7 @@ void MiddleDialog::selectTrumpButtonPressed()
 void MiddleDialog::autoSelectTrumpButtonPressed()
 {
     // choose suit which player has most of as trump
-    vector<SuitInfo> suitInfoArr = gc.data.playerArr[PLAYER_1].cardArr.getSuitInfoArray();
+    vector<SuitInfo> suitInfoArr = gamedata.playerArr[PLAYER_1].cardArr.getSuitInfoArray();
 
     trumpSuitSelected = suitInfoArr[0].suit != SUIT_SPECIAL ? suitInfoArr[0].suit
                                                             : suitInfoArr[1].suit;
@@ -154,7 +154,7 @@ void MiddleDialog::selectPartnerButtonPressed()
         return;
     }
 
-    bottomRightCards->showCards({partnerCardSelected});
+    partnerCards->showCards({partnerCardSelected});
 }
 
 void MiddleDialog::autoSelectPartnerButtonPressed()
@@ -162,10 +162,10 @@ void MiddleDialog::autoSelectPartnerButtonPressed()
     // choose highest card NOT in players hand
     //      of suit which player has most of
 
-    CardVector &cardArr = gc.data.playerArr[PLAYER_1].cardArr;
+    CardVector &cardArr = gamedata.playerArr[PLAYER_1].cardArr;
 
-    vector<const CardVector *> cardArrays = {&gc.data.playerArr[PLAYER_2].cardArr, &gc.data.playerArr[PLAYER_3].cardArr,
-                                             &gc.data.playerArr[PLAYER_4].cardArr, &gc.data.nest};
+    vector<const CardVector *> cardArrays = {&gamedata.playerArr[PLAYER_2].cardArr, &gamedata.playerArr[PLAYER_3].cardArr,
+                                             &gamedata.playerArr[PLAYER_4].cardArr, &gamedata.nest};
     CardVector aggregateCardArr;
     aggregateCardArr.append(cardArrays);
     aggregateCardArr.sort();
@@ -190,7 +190,7 @@ void MiddleDialog::autoSelectPartnerButtonPressed()
     if (bestCard != Card(bestSuit, VALUE_1)) // found a good card
     {
         partnerCardSelected = bestCard;
-        bottomRightCards->showCards({partnerCardSelected});
+        partnerCards->showCards({partnerCardSelected});
     }
 }
 

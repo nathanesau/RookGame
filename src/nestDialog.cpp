@@ -1,4 +1,4 @@
-#include "gameController.h"
+#include "gameData.h"
 #include "messageBox.h"
 #include "nestDialog.h"
 #include "settings.h"
@@ -25,17 +25,17 @@ NestDialog::NestDialog(CardVector pOriginalNest, QMainWindow *pMainWindow, QWidg
         pushButton->setFont(QFont("Times", 10));
     };
 
-    centerCardsLabel = new ScaledQLabel;
-    setupLabel(centerCardsLabel, "Middle cards (click to take)", {300, 10});
+    nestCardsLabel = new ScaledQLabel;
+    setupLabel(nestCardsLabel, "Middle cards (click to take)", {300, 10});
 
-    centerCards = new ClickableCardArray(DRAW_POSITION_NEST_DLG_TOP, SIZE_SMALL, this);
-    centerCards->showCards(gc.data.nest, &originalNestStyles);
+    nestCards = new ClickableCardArray(DRAW_POSITION_NEST_DLG_TOP, SIZE_SMALL, this);
+    nestCards->showCards(gamedata.nest, &originalNestStyles);
 
-    bottomCardsPreviewLabel = new ScaledQLabel;
-    setupLabel(bottomCardsPreviewLabel, "New hand (click to discard)", {300, 235});
+    player1CardsPreviewLabel = new ScaledQLabel;
+    setupLabel(player1CardsPreviewLabel, "New hand (click to discard)", {300, 235});
 
-    bottomCardsPreview = new ClickableCardArray(DRAW_POSITION_NEST_DLG_BOTTOM, SIZE_SMALL, this);
-    bottomCardsPreview->showCards(gc.data.playerArr[PLAYER_1].cardArr, &originalNestStyles);
+    player1CardsPreview = new ClickableCardArray(DRAW_POSITION_NEST_DLG_BOTTOM, SIZE_SMALL, this);
+    player1CardsPreview->showCards(gamedata.playerArr[PLAYER_1].cardArr, &originalNestStyles);
 
     autoChooseNestButton = new ScaledQPushButton;
     setupPushButton(autoChooseNestButton, "Auto choose nest...", {125, 25}, {220, 450});
@@ -76,10 +76,10 @@ void NestDialog::rescale()
     for (auto button : vector<ScaledQPushButton *>{autoChooseNestButton, resetNestButton, doneNestButton})
         button->rescale();
 
-    for (auto label : vector<ScaledQLabel *>{centerCardsLabel, bottomCardsPreviewLabel})
+    for (auto label : vector<ScaledQLabel *>{nestCardsLabel, player1CardsPreviewLabel})
         label->rescale();
 
-    for (auto clickableCardArray : vector<ClickableCardArray *>{centerCards, bottomCardsPreview})
+    for (auto clickableCardArray : vector<ClickableCardArray *>{nestCards, player1CardsPreview})
         clickableCardArray->rescale();
 
     for (auto checkBox : vector<ScaledQCheckBox *>{highlightCardsCheckBox})
@@ -103,8 +103,8 @@ void NestDialog::onCardClicked(ClickableCard *clickableCard)
 {
     Card card = clickableCard->data;
 
-    auto &nest = gc.data.nest;
-    auto &hand = gc.data.playerArr[PLAYER_1].cardArr;
+    auto &nest = gamedata.nest;
+    auto &hand = gamedata.playerArr[PLAYER_1].cardArr;
 
     auto nestIt = std::find(nest.begin(), nest.end(), card);
     auto handIt = std::find(hand.begin(), hand.end(), card);
@@ -123,8 +123,8 @@ void NestDialog::onCardClicked(ClickableCard *clickableCard)
         nest.sort();
     }
 
-    centerCards->showCards(gc.data.nest, &originalNestStyles);
-    bottomCardsPreview->showCards(gc.data.playerArr[PLAYER_1].cardArr, &originalNestStyles);
+    nestCards->showCards(gamedata.nest, &originalNestStyles);
+    player1CardsPreview->showCards(gamedata.playerArr[PLAYER_1].cardArr, &originalNestStyles);
 }
 
 void NestDialog::onCardHoverEnter(ClickableCard *clickableCard)
@@ -139,8 +139,8 @@ void NestDialog::onCardHoverLeave(ClickableCard *clickableCard)
 
 void NestDialog::autoChooseNest()
 {
-    CardVector &nest = gc.data.nest;
-    CardVector &cardArr = gc.data.playerArr[PLAYER_1].cardArr;
+    CardVector &nest = gamedata.nest;
+    CardVector &cardArr = gamedata.playerArr[PLAYER_1].cardArr;
 
     CardVector newNest;
     CardVector newCardArr;
@@ -177,26 +177,26 @@ void NestDialog::autoChooseNestButtonPressed()
 {
     NestDialog::autoChooseNest();
 
-    centerCards->showCards(gc.data.nest, &originalNestStyles);
-    bottomCardsPreview->showCards(gc.data.playerArr[PLAYER_1].cardArr, &originalNestStyles);
+    nestCards->showCards(gamedata.nest, &originalNestStyles);
+    player1CardsPreview->showCards(gamedata.playerArr[PLAYER_1].cardArr, &originalNestStyles);
 }
 
 void NestDialog::resetNestButtonPressed()
 {
-    gc.data.playerArr[PLAYER_1].cardArr.append({&gc.data.nest});
-    gc.data.playerArr[PLAYER_1].cardArr.remove(originalNest);
-    gc.data.playerArr[PLAYER_1].cardArr.sort();
+    gamedata.playerArr[PLAYER_1].cardArr.append({&gamedata.nest});
+    gamedata.playerArr[PLAYER_1].cardArr.remove(originalNest);
+    gamedata.playerArr[PLAYER_1].cardArr.sort();
 
-    gc.data.nest = originalNest;
-    gc.data.nest.sort();
+    gamedata.nest = originalNest;
+    gamedata.nest.sort();
 
-    centerCards->showCards(gc.data.nest, &originalNestStyles);
-    bottomCardsPreview->showCards(gc.data.playerArr[PLAYER_1].cardArr, &originalNestStyles);
+    nestCards->showCards(gamedata.nest, &originalNestStyles);
+    player1CardsPreview->showCards(gamedata.playerArr[PLAYER_1].cardArr, &originalNestStyles);
 }
 
 void NestDialog::doneNestButtonPressed()
 {
-    if (gc.data.nest.size() != 5)
+    if (gamedata.nest.size() != 5)
     {
         MessageBox msgBox;
         msgBox.setText("Nest must have exactly 5 cards");
@@ -206,7 +206,7 @@ void NestDialog::doneNestButtonPressed()
     }
     else // 5 cards left in nest
     {
-        auto &newHand = gc.data.playerArr[PLAYER_1].cardArr;
+        auto &newHand = gamedata.playerArr[PLAYER_1].cardArr;
         int numMiddleCardsAllowed = Settings::Game::readNumCardsMiddleAllowed();
         int numMiddleCardsSelected = accumulate(newHand.begin(), newHand.end(), 0, [this](int a, const Card &b) {
             return originalNest.hasCard(b) ? a + 1 : a;
@@ -241,6 +241,6 @@ void NestDialog::highlightCardsCheckBoxPressed()
         setOriginalNestStyles("background-color: white; border: 2px solid");
     }
 
-    centerCards->showCards(gc.data.nest, &originalNestStyles);
-    bottomCardsPreview->showCards(gc.data.playerArr[PLAYER_1].cardArr, &originalNestStyles);
+    nestCards->showCards(gamedata.nest, &originalNestStyles);
+    player1CardsPreview->showCards(gamedata.playerArr[PLAYER_1].cardArr, &originalNestStyles);
 }

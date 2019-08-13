@@ -13,10 +13,10 @@
 #include "ui_MiddleDialog.h" // uic -o ui_middleDialog.h middleDialog.ui
 
 // forward declarations
-class GameController;
+struct GameData;
 
 // global declarations
-extern GameController gc;
+extern GameData gamedata;
 
 const QSize MIDDLE_DIALOG_SIZE = {724, 435};
 
@@ -33,8 +33,8 @@ private:
 
     Ui::MiddleDialog ui;
     
-    ClickableCardArray *topRightCards;
-    ClickableCardArray *bottomRightCards;
+    ClickableCardArray *nestCards;
+    ClickableCardArray *partnerCards;
 
 public:
     MiddleDialog(int &pTrumpSuitSelected, Card &pPartnerCardSelected, MainWidget *pMainWidget, QMainWindow *pMainWindow, QWidget *parent = nullptr);

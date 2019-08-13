@@ -12,11 +12,11 @@
 using namespace std;
 
 // forward declarations
-class GameController;
+struct GameData;
 class HandInfo;
 
 // global declarations
-extern GameController gc;
+extern GameData gamedata;
 
 class RoundInfo
 {

@@ -1,5 +1,5 @@
 #include "cpuPlayer.h"
-#include "gameController.h"
+#include "gameData.h"
 #include "utils.h"
 
 #include <map>
@@ -12,7 +12,7 @@ CpuPlayer::CpuPlayer()
 
 int CpuPlayer::getBid(int playerNum)
 {
-    CardVector &cardArr = gc.data.playerArr[playerNum].cardArr;
+    CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
     cardArr.sort();
 
     double totalValue = 0.0;
@@ -37,18 +37,18 @@ int CpuPlayer::getBid(int playerNum)
     auto It = bidMap.upper_bound(P);
     auto maxBid = It != bidMap.end() ? It->second : 95;
 
-    int bid = maxBid > gc.data.roundInfo.bidAmount ? gc.data.roundInfo.bidAmount + 5 : gc.data.playerArr[playerNum].bid;
+    int bid = maxBid > gamedata.roundInfo.bidAmount ? gamedata.roundInfo.bidAmount + 5 : gamedata.playerArr[playerNum].bid;
 
     return bid;
 }
 
 Card CpuPlayer::getCardToPlay(int playerNum) // to be improved
 {
-    CardVector &cardArr = gc.data.playerArr[playerNum].cardArr;
+    CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
 
-    CardVector playableCards = cardArr.getPlayableCards(gc.data.handInfo);
+    CardVector playableCards = cardArr.getPlayableCards(gamedata.handInfo);
 
-    playableCards.sort(gc.data.roundInfo.trump);
+    playableCards.sort(gamedata.roundInfo.trump);
    
     auto It = --playableCards.end();
     return *It;
@@ -56,11 +56,11 @@ Card CpuPlayer::getCardToPlay(int playerNum) // to be improved
 
 CardVector CpuPlayer::getChosenNest(int playerNum)
 {
-    CardVector &cardArr = gc.data.playerArr[playerNum].cardArr;
+    CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
     
     CardVector newNest;
     CardVector newCardArr;
-    newCardArr.append({&cardArr, &gc.data.nest});
+    newCardArr.append({&cardArr, &gamedata.nest});
 
     auto suitInfoArr = cardArr.getSuitInfoArray();
 
@@ -90,7 +90,7 @@ CardVector CpuPlayer::getChosenNest(int playerNum)
 
 int CpuPlayer::getChosenTrump(int playerNum)
 {
-    CardVector &cardArr = gc.data.playerArr[playerNum].cardArr;
+    CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
 
     vector<SuitInfo> suitInfoArr = cardArr.getSuitInfoArray();
 
@@ -99,14 +99,14 @@ int CpuPlayer::getChosenTrump(int playerNum)
 
 Card CpuPlayer::getChosenPartner(int playerNum)
 {
-    CardVector &cardArr = gc.data.playerArr[playerNum].cardArr;
-    vector<const CardVector *> cardArrays = {&gc.data.nest};
+    CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
+    vector<const CardVector *> cardArrays = {&gamedata.nest};
 
     for(auto thisPlayerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         if(thisPlayerNum != playerNum)
         {
-            cardArrays.push_back(&gc.data.playerArr[thisPlayerNum].cardArr);   
+            cardArrays.push_back(&gamedata.playerArr[thisPlayerNum].cardArr);   
         }
     }
     

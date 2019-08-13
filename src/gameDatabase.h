@@ -6,14 +6,15 @@
 #include <vector>
 
 #include "common.h"
-#include "gameController.h"
 #include "player.h"
 
 using namespace std;
 
-// current database bugs:
-//
-// 1. HandInfo is not getting written to Db correctly.
+// forward declarations
+struct GameData;
+
+// global declarations
+extern GameData gamedata;
 
 struct PlayerCardsTableRow
 {

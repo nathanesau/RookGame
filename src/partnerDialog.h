@@ -6,11 +6,11 @@
 #include "scaledWidgets.h"
 
 // forward declarations
-class GameController;
+struct GameData;
 class PartnerDialog;
 
 // global declarations
-extern GameController gc;
+extern GameData gamedata;
 
 class PartnerDialogLabel : public ScaledQLabel
 {
@@ -45,7 +45,7 @@ private:
 
     ScaledQPushButton *cancelButton;
 
-    ClickableCardArray *centerCards;
+    ClickableCardArray *partnerOptionsCards;
 
 public:
     PartnerDialog(Card &pCardSelected, QWidget *parent = nullptr);

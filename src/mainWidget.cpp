@@ -3,7 +3,7 @@
 #include <string>
 
 #include "cpuPlayer.h"
-#include "gameController.h"
+#include "gameData.h"
 #include "mainWidget.h"
 #include "mainWindow.h"
 #include "messageBox.h"
@@ -26,8 +26,8 @@ MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pM
         label->setAlignment(Qt::AlignCenter);
     };
 
-    centerCards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER, SIZE_NORMAL, this);
-    bottomCards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_BOTTOM, SIZE_NORMAL, this);
+    nestCards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER, SIZE_NORMAL, this);
+    player1Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_BOTTOM, SIZE_NORMAL, this);
 
     player1CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_BOTTOM, SIZE_NORMAL, this);
     player2CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_LEFT, SIZE_NORMAL, this);
@@ -48,8 +48,6 @@ MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pM
     player4NameLabel = new ScaledQLabel;
     setupLabel(player4NameLabel, QString::fromStdString(playerNames[PLAYER_4]), {1100, 425}, {75, 25});
 
-    updateNameTags(Settings::Appearance::readShowNameTags());
-
     infoWidget = new GameInfoWidget(pMainWindow);
     infoWidget->setParent(this);
     infoWidget->move(QPoint(0, 0));
@@ -69,7 +67,7 @@ void MainWidget::rescale()
 
     for (auto clickableCardArray : vector<ClickableCardArray *>{player1CardPlayed, player2CardPlayed,
                                                                 player3CardPlayed, player4CardPlayed,
-                                                                centerCards, bottomCards})
+                                                                nestCards, player1Cards})
         clickableCardArray->rescale();
 
     for (auto label : vector<ScaledQLabel *>{player1NameLabel, player2NameLabel,
@@ -85,28 +83,28 @@ void MainWidget::rescale()
 
 void MainWidget::finishExistingHand(Card player1Card)
 {
-    gc.playCard(player1Card, PLAYER_1);
+    playCard(player1Card, PLAYER_1);
 
-    bottomCards->showCards(gc.data.playerArr[PLAYER_1].cardArr);
+    player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
 
     showCardPlayed(player1Card, PLAYER_1);
 
     for (auto playerNum : vector<int>{PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        if (gc.data.handInfo.cardPlayed[playerNum] == Card(SUIT_UNDEFINED, VALUE_UNDEFINED)) // cpu hasn't played yet
+        if (gamedata.handInfo.cardPlayed[playerNum] == Card(SUIT_UNDEFINED, VALUE_UNDEFINED)) // cpu hasn't played yet
         {
-            gc.playCard(cpu.getCardToPlay(playerNum), playerNum);
+            playCard(cpu.getCardToPlay(playerNum), playerNum);
 
-            showCardPlayed(gc.data.handInfo.cardPlayed[playerNum], playerNum);
+            showCardPlayed(gamedata.handInfo.cardPlayed[playerNum], playerNum);
         }
     }
 
-    gc.data.roundInfo.updateScores(gc.data.handInfo);
+    gamedata.roundInfo.updateScores(gamedata.handInfo);
 
     showPartnerCardIfApplicable();
 
     // refresh playerScores, teamScores
-    infoWidget->updateWidget(gc.data);
+    infoWidget->refreshWidget(gamedata);
 
     showHandResult();
 
@@ -125,17 +123,17 @@ void MainWidget::startNewHand(int startingPlayerNum)
         QThread::msleep(500);
     }
 
-    gc.data.handInfo.clear();
+    gamedata.handInfo.clear();
 
     int playerNum = startingPlayerNum;
 
     while (playerNum != PLAYER_1)
     {
-        gc.playCard(cpu.getCardToPlay(playerNum), playerNum);
+        playCard(cpu.getCardToPlay(playerNum), playerNum);
 
-        showCardPlayed(gc.data.handInfo.cardPlayed[playerNum], playerNum);
+        showCardPlayed(gamedata.handInfo.cardPlayed[playerNum], playerNum);
 
-        playerNum = gc.data.playerArr[playerNum].getNextPlayerNum();
+        playerNum = gamedata.playerArr[playerNum].getNextPlayerNum();
     }
 
     // wait for card click to finish hand
@@ -143,7 +141,7 @@ void MainWidget::startNewHand(int startingPlayerNum)
 
 bool MainWidget::validateCard(ClickableCard *clickableCard)
 {
-    CardVector playableCards = gc.data.playerArr[PLAYER_1].cardArr.getPlayableCards(gc.data.handInfo);
+    CardVector playableCards = gamedata.playerArr[PLAYER_1].cardArr.getPlayableCards(gamedata.handInfo);
 
     if (!playableCards.hasCard(clickableCard->data)) // invalid card
     {
@@ -169,14 +167,14 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
 
     finishExistingHand(clickableCard->data);
 
-    if (gc.isRoundOver())
+    if (isRoundOver())
     {
-        gc.data.roundInfo.addPointsMiddleToScores(gc.data.handInfo);
+        gamedata.roundInfo.addPointsMiddleToScores(gamedata.handInfo);
 
-        centerCards->showCards(gc.data.nest);
+        nestCards->showCards(gamedata.nest);
 
         // refresh playerScores, teamScores
-        infoWidget->updateWidget(gc.data);
+        infoWidget->refreshWidget(gamedata);
 
         // timeout before showing nest result
         repaint();
@@ -184,15 +182,15 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
 
         showNestResult();
 
-        centerCards->hideCards();
+        nestCards->hideCards();
 
-        gc.data.overallInfo.updatePlayerScores(gc.data.roundInfo);
+        gamedata.overallInfo.updatePlayerScores(gamedata.roundInfo);
 
         // refresh overallScores
-        infoWidget->updateWidget(gc.data);
+        infoWidget->refreshWidget(gamedata);
 
         RoundSummaryDialog summaryDlg;
-        summaryDlg.updateScores(gc.data.roundInfo.getRoundScores());
+        summaryDlg.updateScores(gamedata.roundInfo.getRoundScores());
         Utils::Ui::moveParentlessDialog(&summaryDlg, mainWindow, DIALOG_POSITION_CENTER);
 
         if (!summaryDlg.exec())
@@ -201,17 +199,17 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
             return;
         }
 
-        gc.data.scoreHistory[gc.data.overallInfo.roundNum] = gc.data.roundInfo.getRoundScores();
-        gc.data.clearRoundSpecificInfo();
+        gamedata.scoreHistory[gamedata.overallInfo.roundNum] = gamedata.roundInfo.getRoundScores();
+        gamedata.clearRoundSpecificInfo();
 
-        infoWidget->updateWidget(gc.data);
+        infoWidget->refreshWidget(gamedata);
 
         // show game menu
         menuWidget->show();
     }
     else
     {
-        startNewHand(gc.data.handInfo.getWinningPlayerNum(gc.data.roundInfo));
+        startNewHand(gamedata.handInfo.getWinningPlayerNum(gamedata.roundInfo));
     }
 }
 
@@ -242,19 +240,19 @@ void MainWidget::showCardPlayed(const Card &card, int playerNum)
 
 void MainWidget::showPartnerCardIfApplicable()
 {
-    for (auto it = gc.data.handInfo.cardPlayed.begin(); it != gc.data.handInfo.cardPlayed.end(); it++)
+    for (auto it = gamedata.handInfo.cardPlayed.begin(); it != gamedata.handInfo.cardPlayed.end(); it++)
     {
         auto currentCard = (*it).second;
 
-        if (currentCard == gc.data.roundInfo.partnerCard)
+        if (currentCard == gamedata.roundInfo.partnerCard)
         {
             // refresh partner card, teams
-            infoWidget->updateWidget(gc.data);
+            infoWidget->refreshWidget(gamedata);
 
-            string msg = gc.data.playerArr[gc.data.roundInfo.partnerPlayerNum].getPlayerName() + " is the partner. Teams updated.";
+            string msg = gamedata.playerArr[gamedata.roundInfo.partnerPlayerNum].getPlayerName() + " is the partner. Teams updated.";
 
             MessageBox msgBox;
-            msgBox.showCards({gc.data.roundInfo.partnerCard});
+            msgBox.showCards({gamedata.roundInfo.partnerCard});
             msgBox.setText(QString::fromStdString(msg));
             msgBox.setWindowTitle("Partner card");
             msgBox.resize({325, 250});
@@ -269,12 +267,12 @@ void MainWidget::showPartnerCardIfApplicable()
 void MainWidget::showHandResult()
 {
     auto msg = []() -> string {
-        return gc.data.playerArr[gc.data.handInfo.getWinningPlayerNum(gc.data.roundInfo)].getPlayerName() +
-               " won the hand for " + to_string(gc.data.handInfo.points) + " points with the";
+        return gamedata.playerArr[gamedata.handInfo.getWinningPlayerNum(gamedata.roundInfo)].getPlayerName() +
+               " won the hand for " + to_string(gamedata.handInfo.points) + " points with the";
     }();
 
     MessageBox msgBox;
-    msgBox.showCards({gc.data.handInfo.getWinningCard(gc.data.roundInfo)});
+    msgBox.showCards({gamedata.handInfo.getWinningCard(gamedata.roundInfo)});
     msgBox.setText(QString::fromStdString(msg));
     msgBox.setWindowTitle("Hand result");
     msgBox.move({340, 250});
@@ -284,8 +282,8 @@ void MainWidget::showHandResult()
 
 void MainWidget::showNestResult()
 {
-    string msg = gc.data.playerArr[gc.data.handInfo.getWinningPlayerNum(gc.data.roundInfo)].getPlayerName() +
-                 " won the nest. Nest had " + to_string(gc.data.roundInfo.pointsMiddle) + " points.";
+    string msg = gamedata.playerArr[gamedata.handInfo.getWinningPlayerNum(gamedata.roundInfo)].getPlayerName() +
+                 " won the nest. Nest had " + to_string(gamedata.roundInfo.pointsMiddle) + " points.";
 
     MessageBox msgBox;
     msgBox.setText(QString::fromStdString(msg));
@@ -311,20 +309,44 @@ ClickableCardArray *MainWidget::getCardPlayedWidget(int playerNum)
     }
 }
 
-void MainWidget::updateNameTags(bool showNameTags)
+QLabel *MainWidget::getPlayerNameLabel(int playerNum)
 {
-    if (showNameTags)
+    switch(playerNum)
     {
-        player1NameLabel->show();
-        player2NameLabel->show();
-        player3NameLabel->show();
-        player4NameLabel->show();
+    case PLAYER_1:
+        return player1NameLabel;
+    case PLAYER_2:
+        return player2NameLabel;
+    case PLAYER_3:
+        return player3NameLabel;
+    case PLAYER_4:
+        return player4NameLabel;
+    default:
+        return nullptr;
     }
-    else
+}
+
+bool MainWidget::isRoundOver()
+{
+    return std::all_of(gamedata.playerArr.begin(), gamedata.playerArr.end(), [](auto &p) { return p.cardArr.empty(); });
+}
+
+void MainWidget::playCard(Card cardPlayed, int playerNum)
+{
+    if (gamedata.handInfo.startingPlayerNum == PLAYER_UNDEFINED) // first card played
     {
-        player1NameLabel->hide();
-        player2NameLabel->hide();
-        player3NameLabel->hide();
-        player4NameLabel->hide();
+        gamedata.handInfo.startingPlayerNum = playerNum;
+        gamedata.handInfo.suit = cardPlayed.suit;
     }
+
+    gamedata.handInfo.cardPlayed[playerNum] = cardPlayed;
+    gamedata.handInfo.points += cardPlayed.getPointValue();
+
+    if (cardPlayed == gamedata.roundInfo.partnerCard) // update partner and teams
+    {
+        gamedata.roundInfo.partnerPlayerNum = playerNum;
+        gamedata.roundInfo.updateTeams();
+    }
+
+    gamedata.playerArr[playerNum].cardArr.remove({cardPlayed});
 }

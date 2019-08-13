@@ -11,7 +11,7 @@ GameInfoWidgetData::GameInfoWidgetData()
 {
     bidPlayerNum = PLAYER_UNDEFINED;
     bidAmount = 0;
-    partnerPlayerNum = 0;
+    partnerPlayerNum = PLAYER_UNDEFINED;
     trumpSuit = 0;
     pointsMiddle = 0;
     pointsMiddleKnown = false;
@@ -166,7 +166,7 @@ void GameInfoWidget::onCardHoverLeave(ClickableCard *clickableCard)
     // do nothing
 }
 
-void GameInfoWidget::updateWidget(GameData &pData)
+void GameInfoWidget::refreshWidget(GameData &pData)
 {
     updateBid(pData.roundInfo.bidPlayer, pData.roundInfo.bidAmount);
     updatePartner(pData.roundInfo.partnerCard, pData.roundInfo.partnerPlayerNum);

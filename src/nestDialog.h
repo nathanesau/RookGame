@@ -14,17 +14,17 @@
 using namespace std;
 
 // forward declarations
-class GameController;
+struct GameData;
 
 // global declarations
-extern GameController gc;
+extern GameData gamedata;
 
 const QSize NEST_DIALOG_SIZE = {911, 506};
 
 // for selecting cards from nest
 class NestDialog : public QDialogWithClickableCardArray
 {
-    // output of dialog is gc.data (modify directly)
+    // output of dialog is gamedata (modify directly)
 
     CardVector originalNest;
     CardStyleMap originalNestStyles;
@@ -36,11 +36,11 @@ private:
     ScaledQPushButton *resetNestButton;
     ScaledQPushButton *doneNestButton;
 
-    ScaledQLabel *centerCardsLabel;
-    ClickableCardArray *centerCards;
+    ScaledQLabel *nestCardsLabel;
+    ClickableCardArray *nestCards;
 
-    ScaledQLabel *bottomCardsPreviewLabel;
-    ClickableCardArray *bottomCardsPreview;
+    ScaledQLabel *player1CardsPreviewLabel;
+    ClickableCardArray *player1CardsPreview;
 
     ScaledQCheckBox *highlightCardsCheckBox;
 

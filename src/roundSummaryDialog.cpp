@@ -2,7 +2,7 @@
 #include <QPoint>
 #include <QString>
 
-#include "gameController.h"
+#include "gameData.h"
 #include "roundSummaryDialog.h"
 #include "player.h"
 
@@ -26,25 +26,25 @@ RoundSummaryDialog::RoundSummaryDialog(QWidget *parent) : ScaledQDialog(true, pa
     summaryLabel->move({25, 25});
 
     player1ScoreLabel = new ScaledQLabel;
-    setupLabel(player1ScoreLabel, QString::fromStdString(gc.data.playerArr[PLAYER_1].getPlayerName() + ": "), {100, 25}, {25, 75});
+    setupLabel(player1ScoreLabel, QString::fromStdString(gamedata.playerArr[PLAYER_1].getPlayerName() + ": "), {100, 25}, {25, 75});
 
     player1Score = new ScaledQLabel;
     setupLabel(player1Score, "", {100, 25}, {125, 75});
 
     player2ScoreLabel = new ScaledQLabel;
-    setupLabel(player2ScoreLabel, QString::fromStdString(gc.data.playerArr[PLAYER_2].getPlayerName() + ": "), {100, 25}, {25, 100});
+    setupLabel(player2ScoreLabel, QString::fromStdString(gamedata.playerArr[PLAYER_2].getPlayerName() + ": "), {100, 25}, {25, 100});
 
     player2Score = new ScaledQLabel;
     setupLabel(player2Score, "", {100, 25}, {125, 100});
 
     player3ScoreLabel = new ScaledQLabel;
-    setupLabel(player3ScoreLabel, QString::fromStdString(gc.data.playerArr[PLAYER_3].getPlayerName() + ": "), {100, 25}, {25, 125});
+    setupLabel(player3ScoreLabel, QString::fromStdString(gamedata.playerArr[PLAYER_3].getPlayerName() + ": "), {100, 25}, {25, 125});
 
     player3Score = new ScaledQLabel;
     setupLabel(player3Score, "", {100, 25}, {125, 125});
 
     player4ScoreLabel = new ScaledQLabel;
-    setupLabel(player4ScoreLabel, QString::fromStdString(gc.data.playerArr[PLAYER_4].getPlayerName() + ": "), {100, 25}, {25, 150});
+    setupLabel(player4ScoreLabel, QString::fromStdString(gamedata.playerArr[PLAYER_4].getPlayerName() + ": "), {100, 25}, {25, 150});
 
     player4Score = new ScaledQLabel;
     setupLabel(player4Score, "", {100, 25}, {125, 150});

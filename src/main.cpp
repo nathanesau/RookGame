@@ -2,7 +2,7 @@
 #include <QCoreApplication>
 
 #include "common.h"
-#include "gameController.h"
+#include "gameData.h"
 #include "gameDatabase.h"
 #include "cpuPlayer.h"
 #include "mainWindow.h"
@@ -10,7 +10,7 @@
 
 // globals
 CpuPlayer cpu;
-GameController gc;
+GameData gamedata;
 GameDatabase db;
 QPixmapCache pixmapcache;
 

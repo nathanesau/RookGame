@@ -12,7 +12,7 @@
 #include <QWidget>
 
 #include "common.h"
-#include "gameController.h"
+#include "gameData.h"
 
 // forward declarations
 class GameDatabase;

@@ -36,7 +36,9 @@ string getSizeAsString(const QSize &size)
 string getScaleFactorAsString(float scaleFactor)
 {
     // two decimal places
-    return to_string((int)scaleFactor) + "." + to_string(((int)(scaleFactor * 100)) % 100) + "x";
+    int decimalPart = (int)(scaleFactor * 100) % 100;
+    string decimalStr = (decimalPart < 10) ? (".0" + to_string(decimalPart)) : ("." + to_string(decimalPart));
+    return to_string((int)scaleFactor) + decimalStr + "x";
 }
 
 int getNumScaleFactorChoices(float minScaleFactor, float maxScaleFactor, float incr)
@@ -243,7 +245,7 @@ void AppearancePage::applyHUD()
 
     Settings::Appearance::writeShowNameTags(showNameTags);
     Settings::Appearance::writeShowPartnerToolTip(showPartnerToolTip);
-    mainWindow->updateNameTags(showNameTags);
+    mainWindow->refreshNameTags(showNameTags);
 }
 
 void AppearancePage::applyScreenDimensions()

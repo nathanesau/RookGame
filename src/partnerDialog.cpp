@@ -1,4 +1,4 @@
-#include "gameController.h"
+#include "gameData.h"
 #include "partnerDialog.h"
 #include "utils.h"
 
@@ -28,7 +28,7 @@ PartnerDialog::PartnerDialog(Card &pCardSelected, QWidget *parent) : cardSelecte
         label->resize(50, 25);
     };
 
-    centerCards = new ClickableCardArray(DRAW_POSITION_PARTNER_DLG, SIZE_TINY, this);
+    partnerOptionsCards = new ClickableCardArray(DRAW_POSITION_PARTNER_DLG, SIZE_TINY, this);
 
     redLabel = new PartnerDialogLabel;
     setupPartnerLabel(redLabel, "Red", "background-color: red; border: 2px solid", QPoint(25, 25));
@@ -73,7 +73,7 @@ void PartnerDialog::rescale()
     for (auto button : vector<ScaledQPushButton *>{cancelButton})
         button->rescale();
 
-    for (auto clickableCardArray : vector<ClickableCardArray *>{centerCards})
+    for (auto clickableCardArray : vector<ClickableCardArray *>{partnerOptionsCards})
         clickableCardArray->rescale();
 }
 
@@ -88,23 +88,23 @@ void PartnerDialog::onPartnerLabelClicked(PartnerDialogLabel *label)
 
     if (text == "Black")
     {
-        centerCards->showCards(blackCards);
+        partnerOptionsCards->showCards(blackCards);
     }
     else if (text == "Green")
     {
-        centerCards->showCards(greenCards);
+        partnerOptionsCards->showCards(greenCards);
     }
     else if (text == "Red")
     {
-        centerCards->showCards(redCards);
+        partnerOptionsCards->showCards(redCards);
     }
     else if (text == "Yellow")
     {
-        centerCards->showCards(yellowCards);
+        partnerOptionsCards->showCards(yellowCards);
     }
     else if (text == "Wild")
     {
-        centerCards->showCards(wildCards);
+        partnerOptionsCards->showCards(wildCards);
     }
 }
 
@@ -155,8 +155,8 @@ void PartnerDialog::setupCardArrays()
     };
 
     // don't allow user to pick themself as partner
-    vector<const CardVector *> cardArrays = {&gc.data.playerArr[PLAYER_2].cardArr, &gc.data.playerArr[PLAYER_3].cardArr,
-                                             &gc.data.playerArr[PLAYER_4].cardArr};
+    vector<const CardVector *> cardArrays = {&gamedata.playerArr[PLAYER_2].cardArr, &gamedata.playerArr[PLAYER_3].cardArr,
+                                             &gamedata.playerArr[PLAYER_4].cardArr};
     CardVector aggregateCardArr;
     aggregateCardArr.append(cardArrays);
     aggregateCardArr.sort();

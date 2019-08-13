@@ -11,9 +11,10 @@
 #include "bidDialog.h"
 #include "card.h"
 #include "clickableCard.h"
+#include "deck.h"
+#include "gameData.h"
 #include "gameDatabase.h"
 #include "gameInfoWidget.h"
-#include "gameController.h"
 #include "mainWindow.h"
 #include "messageBox.h"
 #include "middleDialog.h"
@@ -96,7 +97,8 @@ MainWindow::MainWindow(QWidget *parent) : ScaledQMainWindow(parent)
 
     widget = new MainWidget(this);
     widget->setParent(this);
-    widget->infoWidget->updateWidget(gc.data);
+    widget->infoWidget->refreshWidget(gamedata);
+    refreshNameTags(Settings::Appearance::readShowNameTags());
 
     progressBar = new ScaledQProgressBar;
     progressBar->setParent(this);
@@ -135,14 +137,21 @@ void MainWindow::rescale() // update resolution
     Utils::Ui::moveWindowToCenter(this, -36);
 }
 
-void MainWindow::updateNameTags(bool showNameTags)
+void MainWindow::refreshNameTags(bool showNameTags)
 {
-    widget->updateNameTags(showNameTags);
+    auto playerNames = Settings::Appearance::readPlayerNames();
+
+    for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    {
+        auto label = widget->getPlayerNameLabel(playerNum);
+        label->setText(QString::fromStdString(playerNames[playerNum]));
+        label->setVisible(showNameTags);
+    }
 }
 
 void MainWindow::onNewGameAction()
 {
-    widget->infoWidget->updateWidget(gc.data);
+    widget->infoWidget->refreshWidget(gamedata);
 
     MessageBox msgBox;
     msgBox.setText("Previous scores cleared. Starting new game...");
@@ -166,35 +175,27 @@ void MainWindow::onLoadGameAction()
     }
 
     QString dbName = getSlotDbName(slotSelected);
-    db.LoadFromDb(dbName, gc.data);
+    db.LoadFromDb(dbName, gamedata);
+
+    widget->nestCards->hide();
+
+    widget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
 
     for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        widget->getCardPlayedWidget(playerNum)->hide();
-    }
+        CardVector cardsPlayed;
 
-    widget->centerCards->hide();
-
-    widget->bottomCards->showCards(gc.data.playerArr[PLAYER_1].cardArr);
-
-    for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
-    {
-        if(gc.data.handInfo.cardPlayed[playerNum].suit != SUIT_UNDEFINED)
+        if (gamedata.handInfo.cardPlayed[playerNum].suit != SUIT_UNDEFINED)
         {
-            widget->getCardPlayedWidget(playerNum)->showCards({gc.data.handInfo.cardPlayed[playerNum]});
+            cardsPlayed.push_back({gamedata.handInfo.cardPlayed[playerNum]});
         }
+
+        widget->getCardPlayedWidget(playerNum)->showCards(cardsPlayed);
     }
 
-    widget->infoWidget->updateWidget(gc.data);
+    widget->infoWidget->refreshWidget(gamedata);
 
-    if (!gc.data.playerArr[PLAYER_1].cardArr.empty()) // round has started
-    {
-        widget->menuWidget->hide();
-    }
-    else
-    {
-        widget->menuWidget->show();
-    }
+    widget->menuWidget->setVisible(gamedata.playerArr[PLAYER_1].cardArr.empty());
 
     MessageBox msgBox;
     msgBox.setText("Loaded Game");
@@ -220,7 +221,7 @@ void MainWindow::onSaveGameAction()
     progressBar->setValue(0);
 
     QString dbName = getSlotDbName(slotSelected);
-    db.SaveToDb(dbName, gc.data, progressBar);
+    db.SaveToDb(dbName, gamedata, progressBar);
 
     progressBar->hide();
 
@@ -238,7 +239,7 @@ void MainWindow::onPreferencesAction()
     auto result = preferencesDlg.exec();
 
     // appearance dialog may have changed player names
-    widget->infoWidget->updateWidget(gc.data);
+    widget->infoWidget->refreshWidget(gamedata);
 }
 
 void MainWindow::onQuitAction()
@@ -249,7 +250,7 @@ void MainWindow::onQuitAction()
 void MainWindow::onViewScoresAction()
 {
     ScoresDialog scoresDlg;
-    scoresDlg.setupTableWidget(gc.data.scoreHistory);
+    scoresDlg.setupTableWidget(gamedata.scoreHistory);
     Utils::Ui::moveParentlessDialog(&scoresDlg, this, DIALOG_POSITION_CENTER);
     auto result = scoresDlg.exec();
 }
@@ -265,35 +266,41 @@ void MainWindow::onAboutAction()
     msgBox.exec();
 }
 
+// very sequential function - order matters
 void MainWindow::startNewRound()
 {
     widget->menuWidget->hide();
-    widget->infoWidget->updateWidget(gc.data);
+    widget->infoWidget->refreshWidget(gamedata);
 
     for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         widget->getCardPlayedWidget(playerNum)->hideCards();
     }
 
-    widget->bottomCards->hideCards();
-    widget->centerCards->hideCards();
+    widget->player1Cards->hideCards();
+    widget->nestCards->hideCards();
 
     showNewRoundMessage();
 
-    gc.startNewRound();
+    gamedata.clearRoundSpecificInfo();
+    gamedata.overallInfo.roundNum += 1;
 
-    widget->bottomCards->showCards(gc.data.playerArr[PLAYER_1].cardArr);
+    Deck deck;
+    deck.initialize();
+    deck.deal(gamedata.playerArr, gamedata.nest);
+
+    widget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
 
     BidDialog bidDlg(this);
     Utils::Ui::moveParentlessDialog(&bidDlg, this, DIALOG_POSITION_CENTER);
     auto player1WonBid = bidDlg.exec();
 
-    // update bid
-    widget->infoWidget->updateWidget(gc.data);
+    // refresh bid
+    widget->infoWidget->refreshWidget(gamedata);
 
     if (player1WonBid)
     {
-        MiddleDialog middleDlg(gc.data.roundInfo.trump, gc.data.roundInfo.partnerCard, widget, this);
+        MiddleDialog middleDlg(gamedata.roundInfo.trump, gamedata.roundInfo.partnerCard, widget, this);
         Utils::Ui::moveParentlessDialog(&middleDlg, this, DIALOG_POSITION_MIDDLE_DLG);
 
         if (!middleDlg.exec())
@@ -303,28 +310,24 @@ void MainWindow::startNewRound()
         }
     }
 
-    gc.setRookSuitToTrump();
+    setRookSuitToTrump();
 
-    if (gc.data.playerArr[PLAYER_1].cardArr.hasCard({gc.data.roundInfo.trump, VALUE_ROOK}))
+    if (gamedata.playerArr[PLAYER_1].cardArr.hasCard({gamedata.roundInfo.trump, VALUE_ROOK}))
     {
         // re-sort and redraw bottom cards
-        gc.data.playerArr[PLAYER_1].cardArr.sort(gc.data.roundInfo.trump);
-        widget->bottomCards->showCards(gc.data.playerArr[PLAYER_1].cardArr);
+        gamedata.playerArr[PLAYER_1].cardArr.sort(gamedata.roundInfo.trump);
+        widget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
     }
 
-    gc.data.roundInfo.pointsMiddle = gc.data.nest.getNumPoints();
+    gamedata.roundInfo.pointsMiddle = gamedata.nest.getNumPoints();
 
-    // update trump, partner, points middle
-    widget->infoWidget->updateWidget(gc.data);
+    // refresh trump, partner, points middle
+    widget->infoWidget->refreshWidget(gamedata);
 
-    MessageBox msgBox;
-    msgBox.setText("Trump, partner, points in middle updated.\n\nGame starting.");
-    msgBox.setWindowTitle("Start Game");
-    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
-    msgBox.exec();
+    showGameStartingMessage();
 
     // play first few cards if necessary
-    widget->startNewHand(gc.data.roundInfo.bidPlayer);
+    widget->startNewHand(gamedata.roundInfo.bidPlayer);
 }
 
 void MainWindow::showNewRoundMessage()
@@ -334,6 +337,30 @@ void MainWindow::showNewRoundMessage()
     msgBox.setWindowTitle("New round");
     Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
     msgBox.exec();
+}
+
+void MainWindow::showGameStartingMessage()
+{
+    MessageBox msgBox;
+    msgBox.setText("Trump, partner, points in middle updated.\n\nGame starting.");
+    msgBox.setWindowTitle("Start Game");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::setRookSuitToTrump()
+{
+    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    {
+        for (auto &card : gamedata.playerArr[playerNum].cardArr)
+        {
+            if (card.suit == SUIT_SPECIAL)
+            {
+                card.suit = gamedata.roundInfo.trump;
+                return;
+            }
+        }
+    }    
 }
 
 QString MainWindow::getSlotDbName(int slotNumber) const
