@@ -178,6 +178,10 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
         infoWidget->updatePlayerPoints(gc.data.roundInfo.playerScores);
         infoWidget->updateTeamPoints(gc.data.roundInfo.teamScores);
 
+        // timeout before showing nest result
+        repaint();
+        QThread::msleep(1000);
+
         showNestResult();
 
         centerCards->hideCards();
