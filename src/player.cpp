@@ -49,14 +49,7 @@ string Team::getTeamName()
 
     for (auto it = begin(); it != end(); it++)
     {
-        if (teamName.empty())
-        {
-            teamName = playerNames[*it];
-        }
-        else
-        {
-            teamName = teamName + " + " + playerNames[*it];
-        }
+        teamName += (it == begin()) ? playerNames[*it] : (" + " + playerNames[*it]);
     }
 
     return teamName;
