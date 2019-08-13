@@ -72,25 +72,17 @@ void RoundInfo::addPointsMiddleToScores(HandInfo &handInfo)
 
 map<int, int> RoundInfo::getRoundScores()
 {
-    auto getRoundScore = [this](int playerNum) {
-        int team = getTeamNumber(playerNum);
-
-        if (team != TEAM_UNDEFINED)
-            return teamScores[team];
-        else
-            return 0;
-    };
-
-    // todo
-    // 1. determine which team was bidding team
-    // 2. determine if bidding team made their bid (if not, negative score)
-    // 3. show negative score in red text
+    int bidTeam = getTeamNumber(bidPlayer);
+    bool bidTeamMadeBid = teamScores[bidTeam] >= bidAmount;
 
     map<int, int> roundScores;
 
     for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        roundScores[playerNum] = getRoundScore(playerNum);
+        int teamNum = getTeamNumber(playerNum);
+        int teamScore = teamScores[teamNum];
+        bool negativeScore = (teamNum == bidTeam && !bidTeamMadeBid);
+        roundScores[teamNum] = (negativeScore) ? -teamScore : teamScore;
     }
 
     return roundScores;

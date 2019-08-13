@@ -142,31 +142,63 @@ void NestDialog::autoChooseNest()
     CardVector &nest = gamedata.nest;
     CardVector &cardArr = gamedata.playerArr[PLAYER_1].cardArr;
 
-    CardVector newNest;
-    CardVector newCardArr;
-    newCardArr.append({&cardArr, &nest});
+    auto combinedCardArr = CardVector();
+    combinedCardArr.append({&nest, &cardArr});
+    auto suitInfoArr = combinedCardArr.getSuitInfoArray();
 
-    auto suitInfoArr = newCardArr.getSuitInfoArray();
-
-    int cardsToRemove = 5;
-
-    while (cardsToRemove > 0) // discard worst cards to nest
+    // from best cards (at front) to worst cards (at back)
+    CardVector cardQualityQueue;
+    
+    while (combinedCardArr.size() > 0)
     {
         auto It = --suitInfoArr.end();
 
-        if (It->count > 0)
-        {
-            int n = min(It->count, cardsToRemove);
-            auto cardsRemoved = newCardArr.removeThisSuit(It->suit, n);
-            cardsToRemove -= n;
+        int suit = It->suit;
+        int countThisSuit = It->count;
 
-            for (auto &card : cardsRemoved)
-            {
-                newNest.push_back(card);
-            }
-        }
+        auto cardsThisSuit = combinedCardArr.removeThisSuit(suit, countThisSuit);
+        cardQualityQueue.append({&cardsThisSuit});
 
         suitInfoArr.erase(It);
+    }
+
+    reverse(cardQualityQueue.begin(), cardQualityQueue.end());
+
+    CardVector newNest;
+    CardVector newCardArr;
+
+    int numNestCardsAllowed = Settings::Game::readNumCardsMiddleAllowed();
+    int numNestCardsTaken = 0;
+    int numCardsProcessed = 0;
+
+    for (auto &card : cardQualityQueue)
+    {
+        bool isNestCard = nest.hasCard(card);
+
+        if (newCardArr.size() == 13)
+        {
+            // do not take card (back to nest)
+            newNest.push_back(card);
+        }
+        else
+        {
+            if (isNestCard)
+            {
+                if (numNestCardsTaken < numNestCardsAllowed) // take card
+                {
+                    newCardArr.push_back(card);
+                    numNestCardsTaken++;
+                }
+                else // do not take card (back to nest)
+                {
+                    newNest.push_back(card);
+                }
+            }
+            else // take card
+            {
+                newCardArr.push_back(card);
+            }
+        }
     }
 
     cardArr = newCardArr;

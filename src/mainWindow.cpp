@@ -327,6 +327,8 @@ void MainWindow::startNewRound()
     showGameStartingMessage();
 
     // play first few cards if necessary
+    // for rest of round, play will resume when user clicks a card
+    // see MainWidget::onCardClicked
     widget->startNewHand(gamedata.roundInfo.bidPlayer);
 }
 

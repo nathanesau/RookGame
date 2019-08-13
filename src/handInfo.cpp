@@ -42,12 +42,18 @@ Card HandInfo::getWinningCard(const RoundInfo &roundInfo)
 
 void HandInfo::updateWinningCombination(const RoundInfo &roundInfo)
 {
-    winningPlayerNum = PLAYER_1;
-    winningCard = cardPlayed[PLAYER_1];
+    winningPlayerNum = startingPlayerNum;
+    winningCard = cardPlayed[startingPlayerNum];
 
-    for (auto playerNum : vector<int>{PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         Card currentCard = cardPlayed[playerNum];
+
+        if (playerNum == winningPlayerNum)
+            continue;
+
+        if (currentCard == Card(SUIT_UNDEFINED, VALUE_UNDEFINED))
+            continue;
 
         if (currentCard.suit == winningCard.suit)
         {

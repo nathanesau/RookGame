@@ -178,7 +178,7 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
 
         // timeout before showing nest result
         repaint();
-        QThread::msleep(1000);
+        QThread::msleep(2000);
 
         showNestResult();
 
