@@ -324,9 +324,10 @@ void MainWidget::refreshNameTags(bool showNameTags)
     }
 }
 
-void MainWidget::showCardPlayed(const Card &card, int playerNum)
+void MainWidget::showCardPlayed(const Card &card /*NOT_USED*/, int playerNum /*NOT_USED*/)
 {
-    getCardPlayedWidget(playerNum)->showCards({card});
+    // refresh current players card played
+    refreshCardWidgets(gamedata);
 
     bool sleep = []() {
         return true; // sleep after any card is played

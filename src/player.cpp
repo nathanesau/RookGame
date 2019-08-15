@@ -1,3 +1,4 @@
+#include "gameData.h"
 #include "player.h"
 #include "settings.h"
 
@@ -34,6 +35,19 @@ int Player::getNextPlayerNum() const
 string Player::getPlayerName() const
 {
     return Settings::Appearance::readPlayerNames()[playerNum];
+}
+
+int Player::getTeamNum() const
+{
+    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    {
+        if(gamedata.roundInfo.teams[teamNum].find(playerNum) != gamedata.roundInfo.teams[teamNum].end())
+        {
+            return teamNum;
+        }
+    }
+
+    return TEAM_UNDEFINED;
 }
 
 string Team::getTeamName()

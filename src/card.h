@@ -135,6 +135,10 @@ public:
     int getNumPoints();
     CardVector getPlayableCards(const HandInfo &handInfo);
     vector<SuitInfo> getSuitInfoArray();
+
+    // helpful functions for cpu logic
+    Card getCardWithHighestPointValue();
+    Card getCardWithLowestPointValue(); // and lowest value (i.e. throw-away card)
 };
 
 #endif

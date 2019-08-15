@@ -24,6 +24,10 @@ public:
     CardVector getChosenNest(int playerNum);
     int getChosenTrump(int playerNum);
     Card getChosenPartner(int playerNum);
+
+private:
+    // helper functions (cpu logic can get quite complicated)
+    // consider cpu cache if the code is too time consuming
 };
 
 #endif

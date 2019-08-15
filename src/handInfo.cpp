@@ -22,20 +22,14 @@ void HandInfo::clear()
 
 int HandInfo::getWinningPlayerNum(const RoundInfo &roundInfo)
 {
-    if (winningPlayerNum == PLAYER_UNDEFINED)
-    {
-        updateWinningCombination(roundInfo);
-    }
+    updateWinningCombination(roundInfo);
 
     return winningPlayerNum;
 }
 
 Card HandInfo::getWinningCard(const RoundInfo &roundInfo)
 {
-    if (winningCard == Card(SUIT_UNDEFINED, VALUE_UNDEFINED))
-    {
-        updateWinningCombination(roundInfo);
-    }
+    updateWinningCombination(roundInfo);
 
     return winningCard;
 }

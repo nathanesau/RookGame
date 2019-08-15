@@ -42,16 +42,74 @@ int CpuPlayer::getBid(int playerNum)
     return bid;
 }
 
+// for bidding team, this would be their partner
+// for opposite team, this would be the other player not on bidding team
+int getPartnerNum(int playerNum)
+{
+    bool playerNumHasPartnerCard = gamedata.playerArr[playerNum].cardArr.hasCard(gamedata.roundInfo.partnerCard);
+
+    if (playerNumHasPartnerCard) // the bidding player their partner
+    {
+        return gamedata.roundInfo.bidPlayer;
+    }
+    else // check if the teams are common knowledge yet
+    {
+        int playerNumTeamNum = gamedata.playerArr[playerNum].getTeamNum();
+
+        if (playerNumTeamNum != TEAM_UNDEFINED)
+        {
+            auto &team = gamedata.roundInfo.teams[playerNumTeamNum];
+
+            for (auto teamPlayerNum : team)
+            {
+                if (playerNum != teamPlayerNum) // found teammate
+                {
+                    return teamPlayerNum;
+                }
+            }
+        }
+    }
+
+    return PLAYER_UNDEFINED;
+}
+
 Card CpuPlayer::getCardToPlay(int playerNum) // to be improved
 {
     CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
 
     CardVector playableCards = cardArr.getPlayableCards(gamedata.handInfo);
-
     playableCards.sort(gamedata.roundInfo.trump);
-   
-    auto It = --playableCards.end();
-    return *It;
+
+    // determine which card to play
+    int winningPlayerNum = gamedata.handInfo.getWinningPlayerNum(gamedata.roundInfo);
+    int partnerNum = getPartnerNum(playerNum);
+
+    if (winningPlayerNum == partnerNum) // "feed" points
+    {
+        return playableCards.getCardWithHighestPointValue();
+    }
+    else
+    {
+        // check if their are points in the current hand
+        if (gamedata.handInfo.points > 0)
+        {
+            auto highestCard = *--playableCards.end();
+            auto winningCard = gamedata.handInfo.getWinningCard(gamedata.roundInfo);
+            
+            CardCompare cardCompare(gamedata.roundInfo.trump);
+            
+            if (cardCompare(winningCard, highestCard)) // try to win hand (since it has points and is winnable)
+            {
+                return highestCard;
+            }
+        }
+        else // leave the hand, but don't throw points
+        {
+            return playableCards.getCardWithLowestPointValue();
+        }
+    }
+
+    return playableCards.getCardWithLowestPointValue(); // save best cards for last
 }
 
 CardVector CpuPlayer::getChosenNest(int playerNum)

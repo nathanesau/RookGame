@@ -276,3 +276,34 @@ vector<SuitInfo> CardVector::getSuitInfoArray()
 
     return suitInfoArr;
 }
+
+Card CardVector::getCardWithHighestPointValue()
+{
+    Card highestPointCard = front();
+
+    for(auto it = this->begin() + 1; it != this->end(); it++)
+    {
+        if(it->getPointValue() > highestPointCard.getPointValue())
+        {
+            highestPointCard = *it;
+        }
+    }
+
+    return highestPointCard;
+}
+
+Card CardVector::getCardWithLowestPointValue()
+{
+    // relies on cards being sorted from lowest to highest
+    Card lowestPointCard = front();
+
+    for (auto it = this->begin() + 1; it != this->end(); it++)
+    {
+        if(it->getPointValue () < lowestPointCard.getPointValue())
+        {
+            lowestPointCard = *it;
+        }
+    }
+
+    return lowestPointCard;
+}
