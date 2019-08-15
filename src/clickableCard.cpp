@@ -3,6 +3,10 @@
 
 #include "clickableCard.h"
 #include "mainWindow.h"
+#include "messageBox.h"
+#include "middleDialog.h"
+#include "nestDialog.h"
+#include "partnerDialog.h"
 #include "settings.h"
 
 ClickableCard::ClickableCard(QDialogWithClickableCardArray *parent) : ScaledQLabel(parent)
@@ -39,15 +43,15 @@ void ClickableCard::setData(const Card &pData, int drawPosition, QSize size, str
 
         if (!pixmap)
         {
-            string fname = ":" + pixmapKey.data.getValueAsString() + pixmapKey.data.getSuitAsString() + ".gif";   
+            string fname = ":" + pixmapKey.data.getValueAsString() + pixmapKey.data.getSuitAsString() + ".gif";
             pixmap = make_unique<QPixmap>(QString::fromStdString(fname));
-            
+
             *pixmap = pixmap->scaled(QSize(pixmapKey.width, pixmapKey.height), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            
+
             QTransform transform;
             transform.rotate(pixmapKey.rotation);
             *pixmap = pixmap->transformed(transform);
-            
+
             QLabel::setPixmap(*pixmap);
         }
         else
@@ -90,6 +94,14 @@ int ClickableCard::getRotation(int drawPosition)
         return 180;
     case DRAW_POSITION_MAIN_WIDGET_CENTER_RIGHT:
         return 270;
+    #ifdef CPU_DEBUG
+    case DRAW_POSITION_MAIN_WIDGET_LEFT:
+        return 90;
+    case DRAW_POSITION_MAIN_WIDGET_TOP:
+        return 180;
+    case DRAW_POSITION_MAIN_WIDGET_RIGHT:
+        return 270;
+    #endif
     default:
         return 0;
     }
@@ -179,6 +191,11 @@ void ClickableCardArray::rescale()
     showCards(cardArr);
 }
 
+void ClickableCardArray::changeDrawPosition(int newDrawPosition)
+{
+    drawPosition = newDrawPosition;
+}
+
 void ClickableCardArray::showCards(const CardVector &cardArr, CardStyleMap *cardStyles)
 {
     int n = (int)cardArr.size();
@@ -216,61 +233,101 @@ void ClickableCardArray::hideCards()
 
 QPoint ClickableCardArray::getCardPosition(int i, int n)
 {
-    // for dynamic positioning
-    auto WIN_DIMENSIONS = getWindowDimensions();
-    auto VERTICAL_SHIFT = getVerticalShift();
-    auto HORIZONTAL_SHIFT = getHorizontalShift();
-    auto CARDGAP = getCardGap();
-
-    auto WIN_WIDTH = WIN_DIMENSIONS.first;
-    auto WIN_HEIGHT = WIN_DIMENSIONS.second;
-    auto TOTAL_WIDTH = size.width() /*card width*/ + (n - 1) * CARDGAP;
-
-    switch (drawPosition)
+    if (performDynamicPositioning())
     {
-    case DRAW_POSITION_MAIN_WIDGET_BOTTOM:
-    case DRAW_POSITION_MAIN_WIDGET_CENTER:
-    case DRAW_POSITION_MIDDLE_DLG_NEST:
-    case DRAW_POSITION_NEST_DLG_TOP:
-    case DRAW_POSITION_NEST_DLG_BOTTOM:
-    case DRAW_POSITION_PARTNER_DLG:
-        return {(WIN_WIDTH - TOTAL_WIDTH) / 2 + i * CARDGAP + HORIZONTAL_SHIFT,
-                (WIN_HEIGHT) / 2 + VERTICAL_SHIFT};
-    case DRAW_POSITION_MAIN_WIDGET_CENTER_BOTTOM:
-        return {525, 375};
-    case DRAW_POSITION_MAIN_WIDGET_CENTER_LEFT:
-        return {325, 300};
-    case DRAW_POSITION_MAIN_WIDGET_CENTER_TOP:
-        return {525, 180};
-    case DRAW_POSITION_MAIN_WIDGET_CENTER_RIGHT:
-        return {655, 300};
-    case DRAW_POSITION_MIDDLE_DLG_PARTNER:
-        return {510, 260};
-    case DRAW_POSITION_GAME_INFO_WIDGET:
-        return {145, 35};
-    case DRAW_POSITION_MESSAGE_BOX:
-        return {75, 50};
-    default: // not implemented
-        return {0, 0};
+        auto WIN_DIMENSIONS = getWindowDimensions();
+        auto VERTICAL_SHIFT = getVerticalShift();
+        auto HORIZONTAL_SHIFT = getHorizontalShift();
+        auto CARDGAP = getCardGap();
+
+        auto WIN_WIDTH = WIN_DIMENSIONS.width();
+        auto WIN_HEIGHT = WIN_DIMENSIONS.height();
+        auto TOTAL_WIDTH = size.width() /*card width*/ + (n - 1) * CARDGAP;
+
+        #ifdef CPU_DEBUG
+        if (drawPosition == DRAW_POSITION_MAIN_WIDGET_LEFT)
+            return {(WIN_WIDTH) / 2 + HORIZONTAL_SHIFT, (WIN_HEIGHT) / 2 + VERTICAL_SHIFT + i * CARDGAP};
+        if (drawPosition == DRAW_POSITION_MAIN_WIDGET_TOP)
+            return {(WIN_WIDTH - TOTAL_WIDTH) / 2 + i * CARDGAP + HORIZONTAL_SHIFT, (WIN_HEIGHT) / 2 + VERTICAL_SHIFT};
+        if (drawPosition == DRAW_POSITION_MAIN_WIDGET_RIGHT)
+            return {(WIN_WIDTH) / 2 + HORIZONTAL_SHIFT, (WIN_HEIGHT) / 2 + VERTICAL_SHIFT + i * CARDGAP};
+        #endif
+
+        return {(WIN_WIDTH - TOTAL_WIDTH) / 2 + i * CARDGAP + HORIZONTAL_SHIFT, (WIN_HEIGHT) / 2 + VERTICAL_SHIFT};
+    }
+    else // static positioning
+    {
+        switch (drawPosition)
+        {
+        case DRAW_POSITION_MAIN_WIDGET_CENTER_BOTTOM:
+            return {525, 375};
+        case DRAW_POSITION_MAIN_WIDGET_CENTER_LEFT:
+            return {325, 300};
+        case DRAW_POSITION_MAIN_WIDGET_CENTER_TOP:
+            return {525, 180};
+        case DRAW_POSITION_MAIN_WIDGET_CENTER_RIGHT:
+            return {655, 300};
+        case DRAW_POSITION_MIDDLE_DLG_PARTNER:
+            return {510, 260};
+        case DRAW_POSITION_GAME_INFO_WIDGET:
+            return {145, 35};
+        case DRAW_POSITION_MESSAGE_BOX:
+            return {75, 50};
+        default: // not implemented
+            return {0, 0};
+        }
     }
 }
 
-pair<int, int> ClickableCardArray::getWindowDimensions()
+bool ClickableCardArray::performDynamicPositioning()
 {
     switch (drawPosition)
     {
     case DRAW_POSITION_MAIN_WIDGET_BOTTOM:
     case DRAW_POSITION_MAIN_WIDGET_CENTER:
-        return make_pair(1200, 850);
     case DRAW_POSITION_MIDDLE_DLG_NEST:
-        return make_pair(724, 435);
     case DRAW_POSITION_NEST_DLG_TOP:
     case DRAW_POSITION_NEST_DLG_BOTTOM:
-        return make_pair(600, 300);
     case DRAW_POSITION_PARTNER_DLG:
-        return make_pair(850, 300);
+    case DRAW_POSITION_MESSAGE_BOX_NEST:
+        return true;
+    #ifdef CPU_DEBUG
+    case DRAW_POSITION_MAIN_WIDGET_LEFT:
+    case DRAW_POSITION_MAIN_WIDGET_TOP:
+    case DRAW_POSITION_MAIN_WIDGET_RIGHT:
+        return true;
+    #endif
     default:
-        return make_pair(0, 0); // dynamic positioning not implemented
+        return false; // dynamic positioning not implemented
+    }
+}
+
+QSize ClickableCardArray::getWindowDimensions()
+{
+    switch (drawPosition)
+    {
+    case DRAW_POSITION_MAIN_WIDGET_BOTTOM:
+    case DRAW_POSITION_MAIN_WIDGET_CENTER:
+        return MAIN_WINDOW_SIZE;
+    case DRAW_POSITION_MIDDLE_DLG_NEST:
+        return MIDDLE_DIALOG_SIZE;
+    case DRAW_POSITION_NEST_DLG_TOP:
+    case DRAW_POSITION_NEST_DLG_BOTTOM:
+        return NEST_DIALOG_SIZE;
+    case DRAW_POSITION_PARTNER_DLG:
+        return PARTNER_DIALOG_SIZE;
+    case DRAW_POSITION_MESSAGE_BOX_NEST:
+        return MESSAGE_BOX_SIZE;
+    #ifdef CPU_DEBUG
+    case DRAW_POSITION_MAIN_WIDGET_LEFT:
+        return MAIN_WINDOW_SIZE;
+    case DRAW_POSITION_MAIN_WIDGET_TOP:
+        return MAIN_WINDOW_SIZE;
+    case DRAW_POSITION_MAIN_WIDGET_RIGHT:
+        return MAIN_WINDOW_SIZE;
+    #endif
+    default:
+        return QSize(0, 0); // dynamic positioning not implemented
     }
 }
 
@@ -285,11 +342,21 @@ int ClickableCardArray::getVerticalShift()
     case DRAW_POSITION_MIDDLE_DLG_NEST:
         return -200;
     case DRAW_POSITION_NEST_DLG_TOP:
-        return -100;
+        return -200;
     case DRAW_POSITION_NEST_DLG_BOTTOM:
-        return 125;
+        return 25;
     case DRAW_POSITION_PARTNER_DLG:
         return -40;
+    case DRAW_POSITION_MESSAGE_BOX_NEST:
+        return -70;
+    #ifdef CPU_DEBUG
+    case DRAW_POSITION_MAIN_WIDGET_LEFT:
+        return -250;
+    case DRAW_POSITION_MAIN_WIDGET_TOP:
+        return -425;
+    case DRAW_POSITION_MAIN_WIDGET_RIGHT:
+        return -250;
+    #endif
     default:
         return 0; // dynamic positioning not implemented
     }
@@ -306,9 +373,19 @@ int ClickableCardArray::getHorizontalShift()
         return 230;
     case DRAW_POSITION_NEST_DLG_TOP:
     case DRAW_POSITION_NEST_DLG_BOTTOM:
-        return 170;
+        return 35;
     case DRAW_POSITION_PARTNER_DLG:
         return 0;
+    case DRAW_POSITION_MESSAGE_BOX_NEST:
+        return 15;
+    #ifdef CPU_DEBUG
+    case DRAW_POSITION_MAIN_WIDGET_LEFT:
+        return -550;
+    case DRAW_POSITION_MAIN_WIDGET_TOP:
+        return 30;
+    case DRAW_POSITION_MAIN_WIDGET_RIGHT:
+        return 400;
+    #endif
     default:
         return 0; // dynamic positioning not implemented
     }
@@ -326,6 +403,14 @@ int ClickableCardArray::getCardGap()
         return 40;
     case DRAW_POSITION_PARTNER_DLG:
         return 55;
+    case DRAW_POSITION_MESSAGE_BOX_NEST:
+        return 40;
+    #ifdef CPU_DEBUG
+    case DRAW_POSITION_MAIN_WIDGET_LEFT:
+    case DRAW_POSITION_MAIN_WIDGET_TOP:
+    case DRAW_POSITION_MAIN_WIDGET_RIGHT:
+        return 40;
+    #endif
     default:
         return 0; // only one card shown for this draw position
     }

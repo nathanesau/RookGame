@@ -13,6 +13,10 @@
 
 using namespace std;
 
+MainWidgetData::MainWidgetData()
+{
+}
+
 MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
                                                                    QDialogWithClickableCardArray(false, parent)
 {
@@ -26,8 +30,12 @@ MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pM
         label->setAlignment(Qt::AlignCenter);
     };
 
-    nestCards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER, SIZE_NORMAL, this);
     player1Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_BOTTOM, SIZE_NORMAL, this);
+    #ifdef CPU_DEBUG
+    player2Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_LEFT, SIZE_SMALL, this);
+    player3Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_TOP, SIZE_SMALL, this);
+    player4Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_RIGHT, SIZE_SMALL, this);
+    #endif
 
     player1CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_BOTTOM, SIZE_NORMAL, this);
     player2CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_LEFT, SIZE_NORMAL, this);
@@ -66,8 +74,11 @@ void MainWidget::rescale()
     setGeometry(geometry());
 
     for (auto clickableCardArray : vector<ClickableCardArray *>{player1CardPlayed, player2CardPlayed,
-                                                                player3CardPlayed, player4CardPlayed,
-                                                                nestCards, player1Cards})
+                                                                player3CardPlayed, player4CardPlayed, player1Cards
+                                                                #ifdef CPU_DEBUG
+                                                                ,player2Cards, player3Cards, player4Cards
+                                                                #endif
+                                                                })
         clickableCardArray->rescale();
 
     for (auto label : vector<ScaledQLabel *>{player1NameLabel, player2NameLabel,
@@ -95,6 +106,12 @@ void MainWidget::finishExistingHand(Card player1Card)
         {
             playCard(cpu.getCardToPlay(playerNum), playerNum);
 
+            #ifdef CPU_DEBUG
+            player2Cards->showCards(gamedata.playerArr[PLAYER_2].cardArr);
+            player3Cards->showCards(gamedata.playerArr[PLAYER_3].cardArr);
+            player4Cards->showCards(gamedata.playerArr[PLAYER_4].cardArr);
+            #endif
+
             showCardPlayed(gamedata.handInfo.cardPlayed[playerNum], playerNum);
         }
     }
@@ -108,7 +125,7 @@ void MainWidget::finishExistingHand(Card player1Card)
 
     showHandResult();
 
-    for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         getCardPlayedWidget(playerNum)->hideCards();
     }
@@ -160,6 +177,13 @@ bool MainWidget::validateCard(ClickableCard *clickableCard)
 
 void MainWidget::onCardClicked(ClickableCard *clickableCard)
 {
+    #ifdef CPU_DEBUG
+    if (!gamedata.playerArr[PLAYER_1].cardArr.hasCard(clickableCard->data))
+    {
+        return;
+    }
+    #endif
+
     if (!validateCard(clickableCard))
     {
         return;
@@ -171,18 +195,10 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
     {
         gamedata.roundInfo.addPointsMiddleToScores(gamedata.handInfo);
 
-        nestCards->showCards(gamedata.nest);
-
         // refresh playerScores, teamScores
         infoWidget->refreshWidget(gamedata);
 
-        // timeout before showing nest result
-        repaint();
-        QThread::msleep(2000);
-
         showNestResult();
-
-        nestCards->hideCards();
 
         gamedata.overallInfo.updatePlayerScores(gamedata.roundInfo);
 
@@ -223,6 +239,91 @@ void MainWidget::onCardHoverLeave(ClickableCard *clickableCard)
     // do nothing
 }
 
+void MainWidget::refreshCardWidgets(GameData &pData)
+{
+    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    {
+        if (data.cardPlayed[playerNum] != pData.handInfo.cardPlayed[playerNum])
+        {
+            data.cardPlayed[playerNum] = pData.handInfo.cardPlayed[playerNum];
+
+            CardVector cardsToDisplay;
+
+            if (data.cardPlayed[playerNum] != Card(SUIT_UNDEFINED, VALUE_UNDEFINED))
+            {
+                cardsToDisplay.push_back({data.cardPlayed[playerNum]});
+            }
+
+            getCardPlayedWidget(playerNum)->showCards(cardsToDisplay);
+        }
+    }
+
+    auto areCardVectorsEqual = [](CardVector &cardArr1, CardVector &cardArr2) {
+        if (cardArr1.size() != cardArr2.size())
+        {
+            return false;
+        }
+
+        for(int i = 0; i < cardArr1.size(); i++)
+        {
+            if(cardArr1[i] != cardArr2[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    if (!areCardVectorsEqual(data.player1Cards, pData.playerArr[PLAYER_1].cardArr))
+    {
+        data.player1Cards = pData.playerArr[PLAYER_1].cardArr;
+        player1Cards->showCards(data.player1Cards);
+    }
+
+    #ifdef CPU_DEBUG
+    if (!areCardVectorsEqual(data.player2Cards, pData.playerArr[PLAYER_2].cardArr))
+    {
+        data.player2Cards = pData.playerArr[PLAYER_2].cardArr;
+        player2Cards->showCards(data.player2Cards);
+    }
+
+    if (!areCardVectorsEqual(data.player3Cards, pData.playerArr[PLAYER_3].cardArr))
+    {
+        data.player3Cards = pData.playerArr[PLAYER_3].cardArr;
+        player3Cards->showCards(data.player3Cards);
+    }
+
+    if (!areCardVectorsEqual(data.player4Cards, pData.playerArr[PLAYER_4].cardArr))
+    {
+        data.player4Cards = pData.playerArr[PLAYER_4].cardArr;
+        player4Cards->showCards(data.player4Cards);
+    }
+    #endif
+}
+
+void MainWidget::refreshInfoWidget(GameData &pData)
+{
+    infoWidget->refreshWidget(pData);
+}
+
+void MainWidget::setMenuWidgetVisible(bool visible)
+{
+    menuWidget->setVisible(visible);
+}
+
+void MainWidget::refreshNameTags(bool showNameTags)
+{
+    auto playerNames = Settings::Appearance::readPlayerNames();
+
+    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    {
+        auto label = getPlayerNameLabel(playerNum);
+        label->setText(QString::fromStdString(playerNames[playerNum]));
+        label->setVisible(showNameTags);
+    }
+}
+
 void MainWidget::showCardPlayed(const Card &card, int playerNum)
 {
     getCardPlayedWidget(playerNum)->showCards({card});
@@ -255,7 +356,6 @@ void MainWidget::showPartnerCardIfApplicable()
             msgBox.showCards({gamedata.roundInfo.partnerCard});
             msgBox.setText(QString::fromStdString(msg));
             msgBox.setWindowTitle("Partner card");
-            msgBox.resize({325, 250});
             Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
             msgBox.exec();
 
@@ -286,6 +386,8 @@ void MainWidget::showNestResult()
                  " won the nest. Nest had " + to_string(gamedata.roundInfo.pointsMiddle) + " points.";
 
     MessageBox msgBox;
+    msgBox.changeCardArrayDrawPosition(DRAW_POSITION_MESSAGE_BOX_NEST);
+    msgBox.showCards(gamedata.nest);
     msgBox.setText(QString::fromStdString(msg));
     msgBox.setWindowTitle("Last hand");
     Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
@@ -311,7 +413,7 @@ ClickableCardArray *MainWidget::getCardPlayedWidget(int playerNum)
 
 QLabel *MainWidget::getPlayerNameLabel(int playerNum)
 {
-    switch(playerNum)
+    switch (playerNum)
     {
     case PLAYER_1:
         return player1NameLabel;

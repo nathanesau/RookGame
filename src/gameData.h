@@ -26,6 +26,7 @@ struct GameData
 
     void clear();
     void clearRoundSpecificInfo();
+    void clearOverallInfo();
 };
 
 #endif

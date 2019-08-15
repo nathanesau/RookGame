@@ -19,6 +19,14 @@
 
 using namespace std;
 
+// when adding a new draw position, review the following functions:
+//      ClickableCard::getRotation
+//      ClickableCardArray::performDynamicPositioning
+//      ClickableCardArray::getWindowDimensions
+//      ClickableCardArray::getVerticalShift
+//      ClickableCardArray::getHorizontalShift
+//      ClickableCardArray::getCardGap
+
 const int DRAW_POSITION_UNDEFINED = -1;
 const int DRAW_POSITION_MAIN_WIDGET_BOTTOM = 0;
 const int DRAW_POSITION_MAIN_WIDGET_CENTER = 1;
@@ -33,6 +41,13 @@ const int DRAW_POSITION_NEST_DLG_BOTTOM = 9;
 const int DRAW_POSITION_PARTNER_DLG = 10;
 const int DRAW_POSITION_GAME_INFO_WIDGET = 11;
 const int DRAW_POSITION_MESSAGE_BOX = 12;
+const int DRAW_POSITION_MESSAGE_BOX_NEST = 13;
+
+#ifdef CPU_DEBUG
+const int DRAW_POSITION_MAIN_WIDGET_LEFT = 100;
+const int DRAW_POSITION_MAIN_WIDGET_TOP = 101;
+const int DRAW_POSITION_MAIN_WIDGET_RIGHT = 102;
+#endif
 
 const QSize SIZE_UNDEFINED = {0, 0};
 const QSize SIZE_NORMAL = {180, 180};
@@ -115,8 +130,9 @@ class ClickableCardArray : public QWidget
 
 public:
     ClickableCardArray(int pDrawPosition, QSize pSize = SIZE_NORMAL, QDialogWithClickableCardArray *parent = nullptr);
-
     void rescale();
+
+    void changeDrawPosition(int newDrawPosition);
 
     void showCards(const CardVector &cardArr, CardStyleMap *cardStyleMap = nullptr);
     void hideCards();
@@ -124,8 +140,10 @@ public:
 private:
     QPoint getCardPosition(int i, int n);
 
+    bool performDynamicPositioning();
+
     // for dynamic positioning
-    pair<int, int> getWindowDimensions();
+    QSize getWindowDimensions();
     int getVerticalShift();
     int getHorizontalShift();
     int getCardGap();

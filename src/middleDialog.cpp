@@ -107,8 +107,8 @@ void MiddleDialog::selectNestButtonPressed()
         return;
     }
 
-    nestCards->showCards(gamedata.nest);
-    mainWidget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
+    // refresh nest, player 1 cards
+    mainWidget->refreshCardWidgets(gamedata);
 }
 
 void MiddleDialog::autoSelectNestButtonPressed()
@@ -116,7 +116,9 @@ void MiddleDialog::autoSelectNestButtonPressed()
     NestDialog::autoChooseNest();
 
     nestCards->showCards(gamedata.nest);
-    mainWidget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
+
+    // refresh nest, player 1 cards
+    mainWidget->refreshCardWidgets(gamedata);
 }
 
 void MiddleDialog::selectTrumpButtonPressed()

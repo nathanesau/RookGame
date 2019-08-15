@@ -7,9 +7,7 @@ GameData::GameData() : playerArr{Player(PLAYER_1), Player(PLAYER_2), Player(PLAY
 void GameData::clear()
 {
     clearRoundSpecificInfo();
-
-    scoreHistory.clear();
-    overallInfo.clear();
+    clearOverallInfo();
 }
 
 void GameData::clearRoundSpecificInfo()
@@ -18,4 +16,10 @@ void GameData::clearRoundSpecificInfo()
     handInfo.clear();
     nest.clear();
     for_each(playerArr.begin(), playerArr.end(), [](Player &player) { player.clear(); });
+}
+
+void GameData::clearOverallInfo()
+{
+    scoreHistory.clear();
+    overallInfo.clear();
 }

@@ -43,10 +43,14 @@ void MainWindow::setupActions()
     loadGameAction->setStatusTip("Load an existing game");
     QObject::connect(loadGameAction, &QAction::triggered, this, &MainWindow::onLoadGameAction);
 
-    quitAction = new QAction(QMenu::tr("&Quit Game"), this);
-    quitAction->setShortcuts(QKeySequence::Quit);
-    quitAction->setStatusTip("Quit the game");
-    QObject::connect(quitAction, &QAction::triggered, this, &MainWindow::onQuitAction);
+    exitMainMenuAction = new QAction(QMenu::tr("Exit to Main Menu"), this);
+    exitMainMenuAction->setStatusTip("Exit to the game menu");
+    QObject::connect(exitMainMenuAction, &QAction::triggered, this, &MainWindow::onExitMainMenuAction);
+
+    closeAction = new QAction(QMenu::tr("&Close Game"), this);
+    closeAction->setShortcuts(QKeySequence::Quit);
+    closeAction->setStatusTip("Close the application");
+    QObject::connect(closeAction, &QAction::triggered, this, &MainWindow::onCloseAction);
 
     preferencesAction = new QAction(QMenu::tr("&Preferences"), this);
     preferencesAction->setShortcuts(QKeySequence::Preferences);
@@ -70,7 +74,8 @@ void MainWindow::setupMenus()
     fileMenu->addAction(newGameAction);
     fileMenu->addAction(saveGameAction);
     fileMenu->addAction(loadGameAction);
-    fileMenu->addAction(quitAction);
+    fileMenu->addAction(exitMainMenuAction);
+    fileMenu->addAction(closeAction);
     fileMenu->setStyleSheet("QMenu::item:selected { background-color: rgb(135, 206, 250); color: rgb(0, 0, 0);}"
                             "QMenu::item { background-color: white; }");
 
@@ -97,7 +102,8 @@ MainWindow::MainWindow(QWidget *parent) : ScaledQMainWindow(parent)
 
     widget = new MainWidget(this);
     widget->setParent(this);
-    widget->infoWidget->refreshWidget(gamedata);
+    widget->refreshInfoWidget(gamedata);
+
     refreshNameTags(Settings::Appearance::readShowNameTags());
 
     progressBar = new ScaledQProgressBar;
@@ -139,26 +145,13 @@ void MainWindow::rescale() // update resolution
 
 void MainWindow::refreshNameTags(bool showNameTags)
 {
-    auto playerNames = Settings::Appearance::readPlayerNames();
-
-    for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
-    {
-        auto label = widget->getPlayerNameLabel(playerNum);
-        label->setText(QString::fromStdString(playerNames[playerNum]));
-        label->setVisible(showNameTags);
-    }
+    widget->refreshNameTags(showNameTags);
 }
 
 void MainWindow::onNewGameAction()
 {
-    widget->infoWidget->refreshWidget(gamedata);
-
-    MessageBox msgBox;
-    msgBox.setText("Previous scores cleared. Starting new game...");
-    msgBox.setWindowTitle("New game");
-    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
-    msgBox.exec();
-
+    gamedata.clearOverallInfo();
+    showNewGameMessage();
     startNewRound();
 }
 
@@ -177,31 +170,11 @@ void MainWindow::onLoadGameAction()
     QString dbName = getSlotDbName(slotSelected);
     db.LoadFromDb(dbName, gamedata);
 
-    widget->nestCards->hide();
+    widget->refreshCardWidgets(gamedata);
+    widget->refreshInfoWidget(gamedata);
+    widget->setMenuWidgetVisible(!hasRoundStarted());
 
-    widget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
-
-    for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
-    {
-        CardVector cardsPlayed;
-
-        if (gamedata.handInfo.cardPlayed[playerNum].suit != SUIT_UNDEFINED)
-        {
-            cardsPlayed.push_back({gamedata.handInfo.cardPlayed[playerNum]});
-        }
-
-        widget->getCardPlayedWidget(playerNum)->showCards(cardsPlayed);
-    }
-
-    widget->infoWidget->refreshWidget(gamedata);
-
-    widget->menuWidget->setVisible(gamedata.playerArr[PLAYER_1].cardArr.empty());
-
-    MessageBox msgBox;
-    msgBox.setText("Loaded Game");
-    msgBox.setWindowTitle("Load Game");
-    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
-    msgBox.exec();
+    showLoadGameMessage();
 }
 
 void MainWindow::onSaveGameAction()
@@ -225,11 +198,18 @@ void MainWindow::onSaveGameAction()
 
     progressBar->hide();
 
-    MessageBox msgBox;
-    msgBox.setText("Saved Game");
-    msgBox.setWindowTitle("Save Game");
-    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
-    msgBox.exec();
+    showSaveGameMessage();
+}
+
+void MainWindow::onExitMainMenuAction()
+{
+    showExitMainMenuMessage();
+
+    gamedata.clear();
+
+    widget->refreshCardWidgets(gamedata);
+    widget->refreshInfoWidget(gamedata);
+    widget->setMenuWidgetVisible(true);
 }
 
 void MainWindow::onPreferencesAction()
@@ -238,11 +218,11 @@ void MainWindow::onPreferencesAction()
     Utils::Ui::moveWindowToCenter(&preferencesDlg);
     auto result = preferencesDlg.exec();
 
-    // appearance dialog may have changed player names
-    widget->infoWidget->refreshWidget(gamedata);
+    // appearance dialog may have changed player names in info widget
+    widget->refreshInfoWidget(gamedata);
 }
 
-void MainWindow::onQuitAction()
+void MainWindow::onCloseAction()
 {
     this->close();
 }
@@ -257,46 +237,34 @@ void MainWindow::onViewScoresAction()
 
 void MainWindow::onAboutAction()
 {
-    MessageBox msgBox;
-    msgBox.setText("<p>Rook game made by Nathan Esau<br /><br />"
-                   "<a href=\"https://www.github.com/nathanesau/RookGame\">https://www.github.com/nathanesau/RookGame</a></p>");
-    msgBox.setWindowTitle("About Rook");
-    msgBox.turnOnHyperLinks();
-    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
-    msgBox.exec();
+    showAboutMessage();
 }
 
 // very sequential function - order matters
 void MainWindow::startNewRound()
 {
-    widget->menuWidget->hide();
-    widget->infoWidget->refreshWidget(gamedata);
-
-    for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
-    {
-        widget->getCardPlayedWidget(playerNum)->hideCards();
-    }
-
-    widget->player1Cards->hideCards();
-    widget->nestCards->hideCards();
-
-    showNewRoundMessage();
-
     gamedata.clearRoundSpecificInfo();
     gamedata.overallInfo.roundNum += 1;
+
+    widget->refreshCardWidgets(gamedata);
+    widget->refreshInfoWidget(gamedata);
+    widget->setMenuWidgetVisible(false);
+
+    showNewRoundMessage();
 
     Deck deck;
     deck.initialize();
     deck.deal(gamedata.playerArr, gamedata.nest);
 
-    widget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
+    // refresh player 1 cards
+    widget->refreshCardWidgets(gamedata);
 
     BidDialog bidDlg(this);
     Utils::Ui::moveParentlessDialog(&bidDlg, this, DIALOG_POSITION_CENTER);
     auto player1WonBid = bidDlg.exec();
 
     // refresh bid
-    widget->infoWidget->refreshWidget(gamedata);
+    widget->refreshInfoWidget(gamedata);
 
     if (player1WonBid)
     {
@@ -314,15 +282,15 @@ void MainWindow::startNewRound()
 
     if (gamedata.playerArr[PLAYER_1].cardArr.hasCard({gamedata.roundInfo.trump, VALUE_ROOK}))
     {
-        // re-sort and redraw bottom cards
+        // re-sort and redraw player 1 cards
         gamedata.playerArr[PLAYER_1].cardArr.sort(gamedata.roundInfo.trump);
-        widget->player1Cards->showCards(gamedata.playerArr[PLAYER_1].cardArr);
+        widget->refreshCardWidgets(gamedata);
     }
 
     gamedata.roundInfo.pointsMiddle = gamedata.nest.getNumPoints();
 
     // refresh trump, partner, points middle
-    widget->infoWidget->refreshWidget(gamedata);
+    widget->refreshInfoWidget(gamedata);
 
     showGameStartingMessage();
 
@@ -330,6 +298,42 @@ void MainWindow::startNewRound()
     // for rest of round, play will resume when user clicks a card
     // see MainWidget::onCardClicked
     widget->startNewHand(gamedata.roundInfo.bidPlayer);
+}
+
+void MainWindow::showNewGameMessage()
+{
+    MessageBox msgBox;
+    msgBox.setText("Clearing previous scoires and starting new game...");
+    msgBox.setWindowTitle("New game");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showSaveGameMessage()
+{
+    MessageBox msgBox;
+    msgBox.setText("Saved Game");
+    msgBox.setWindowTitle("Save Game");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showLoadGameMessage()
+{
+    MessageBox msgBox;
+    msgBox.setText("Loaded Game");
+    msgBox.setWindowTitle("Load Game");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showExitMainMenuMessage()
+{
+    MessageBox msgBox;
+    msgBox.setWindowTitle("Exit to Main Menu");
+    msgBox.setText("Any unsaved progress will be lost.\n\nExiting to main menu...");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
 }
 
 void MainWindow::showNewRoundMessage()
@@ -348,6 +352,23 @@ void MainWindow::showGameStartingMessage()
     msgBox.setWindowTitle("Start Game");
     Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
     msgBox.exec();
+}
+
+void MainWindow::showAboutMessage()
+{
+    MessageBox msgBox;
+    msgBox.setText("<p>Rook game made by Nathan Esau<br /><br />"
+                   "<a href=\"https://www.github.com/nathanesau/RookGame\">https://www.github.com/nathanesau/RookGame</a></p>");
+    msgBox.setWindowTitle("About Rook");
+    msgBox.turnOnHyperLinks();
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+bool MainWindow::hasRoundStarted()
+{
+    // if player 1 cards haven't been dealt yet, that round hasn't started yet
+    return !gamedata.playerArr[PLAYER_1].cardArr.empty();
 }
 
 void MainWindow::setRookSuitToTrump()

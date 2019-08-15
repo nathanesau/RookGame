@@ -35,7 +35,8 @@ class MainWindow : public ScaledQMainWindow
     QAction* newGameAction;
     QAction* saveGameAction;
     QAction* loadGameAction;
-    QAction* quitAction;
+    QAction *exitMainMenuAction;
+    QAction* closeAction;
 
     QMenu *editMenu;
     QAction *preferencesAction;
@@ -60,7 +61,8 @@ public:
     void onLoadGameAction();
     void onSaveGameAction();
     void onPreferencesAction();
-    void onQuitAction();
+    void onExitMainMenuAction();
+    void onCloseAction();
     void onViewScoresAction();
     void onCheckUpdatesAction();
     void onAboutAction();
@@ -68,10 +70,18 @@ public:
     // main function for game
     void startNewRound();
 
+    // messages
+    void showNewGameMessage();
+    void showSaveGameMessage();
+    void showLoadGameMessage();
+    void showExitMainMenuMessage();
     void showNewRoundMessage();
     void showGameStartingMessage();
+    void showAboutMessage();
 
 private:
+    bool hasRoundStarted();
+
     void setRookSuitToTrump();
     QString getSlotDbName(int slotNumber) const;
 };

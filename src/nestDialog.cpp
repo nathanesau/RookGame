@@ -201,6 +201,10 @@ void NestDialog::autoChooseNest()
         }
     }
 
+    // sort cards before showing them
+    newCardArr.sort();
+    nest.sort();
+
     cardArr = newCardArr;
     nest = newNest;
 }

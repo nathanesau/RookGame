@@ -19,10 +19,12 @@ MessageBox::MessageBox(QWidget *parent) : QDialogWithClickableCardArray(true, pa
 
     QObject::connect(okButton, &QPushButton::pressed, this, &MessageBox::okButtonPressed);
 
+    // by default, all message boxes use draw position DRAW_POSITION_MESSAGE_BOX
+    // this can be overriden using method "setCardsDrawPosition"
     messageBoxCards = new ClickableCardArray(DRAW_POSITION_MESSAGE_BOX, SIZE_SMALL, this);
     messageBoxCards->hide();
 
-    resize(DEFAULT_MSG_BOX_SIZE);
+    resize(MESSAGE_BOX_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
     setStyleSheet("background-color: white");
     setWindowOpacity(1.0);
@@ -49,6 +51,11 @@ void MessageBox::rescale()
 void MessageBox::reject()
 {
     // do nothing
+}
+
+void MessageBox::changeCardArrayDrawPosition(int newDrawPosition)
+{
+    messageBoxCards->changeDrawPosition(newDrawPosition);
 }
 
 void MessageBox::setText(const QString &text)

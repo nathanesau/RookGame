@@ -11,7 +11,7 @@
 #include "common.h"
 #include "scaledWidgets.h"
 
-const QSize DEFAULT_MSG_BOX_SIZE = {400, 250};
+const QSize MESSAGE_BOX_SIZE = {400, 250};
 
 class MessageBox : public QDialogWithClickableCardArray
 {
@@ -23,6 +23,8 @@ public:
     MessageBox(QWidget *parent = nullptr);
     virtual void rescale();
     virtual void reject();
+
+    void changeCardArrayDrawPosition(int newDrawPosition);
 
     void setText(const QString &text);
     void showCards(const CardVector &cardArr);

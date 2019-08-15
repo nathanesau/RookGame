@@ -63,4 +63,9 @@ void Deck::deal(array<Player, 4> &playerArr, CardVector &nest)
 
     nest.sort();
     playerArr[PLAYER_1].cardArr.sort();
+    #ifdef CPU_DEBUG
+    playerArr[PLAYER_2].cardArr.sort();
+    playerArr[PLAYER_3].cardArr.sort();
+    playerArr[PLAYER_4].cardArr.sort();
+    #endif
 }
