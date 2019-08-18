@@ -113,9 +113,9 @@ private:
     void updateTrump(int pTrumpSuit);
     void updatePointsMiddle(int pPointsMiddle, bool pPointsMiddleKnown);
     void updateTeams(array<Team, 2> &pTeams);
-    void updatePlayerPoints(map<int, int> pPlayerScores);
-    void updateTeamPoints(map<int, int> pTeamScores, array<Team, 2> &pTeams);
-    void updateOverallScores(map<int, int> pOverallPlayerScores);
+    void updatePlayerPoints(const map<int, int> &pPlayerScores);
+    void updateTeamPoints(const map<int, int> &pTeamScores, const array<Team, 2> &pTeams);
+    void updateOverallScores(const map<int, int> &pOverallPlayerScores);
 
     QLabel *getTeamLabel(int teamNum);
     QLabel *getPointsWonPlayerLabel(int playerNum);

@@ -269,7 +269,7 @@ void GameInfoWidget::updateTeams(array<Team, 2> &pTeams)
     }
 }
 
-void GameInfoWidget::updateOverallScores(map<int, int> pOverallPlayerScores)
+void GameInfoWidget::updateOverallScores(const map<int, int> &pOverallPlayerScores)
 {
     if (data.overallPlayerScores != pOverallPlayerScores)
     {
@@ -285,7 +285,7 @@ void GameInfoWidget::updateOverallScores(map<int, int> pOverallPlayerScores)
     }
 }
 
-void GameInfoWidget::updatePlayerPoints(map<int, int> pPlayerScores)
+void GameInfoWidget::updatePlayerPoints(const map<int, int> &pPlayerScores)
 {
     if (data.playerScores != pPlayerScores)
     {
@@ -312,7 +312,7 @@ void GameInfoWidget::updatePlayerPoints(map<int, int> pPlayerScores)
     }
 }
 
-void GameInfoWidget::updateTeamPoints(map<int, int> pTeamScores, array<Team, 2> &pTeams)
+void GameInfoWidget::updateTeamPoints(const map<int, int> &pTeamScores, const array<Team, 2> &pTeams)
 {
     if (data.teamScores != pTeamScores) // team names are updated in "updateTeam1", "updateTeam2"
     {

@@ -2,6 +2,7 @@
 #define GAMEPAGE_H
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QGroupBox>
 #include <QLabel>
 #include <QListWidget>
@@ -15,6 +16,11 @@
 
 class GamePage : public QWidget
 {
+    QGroupBox *bidGroup;
+    QHBoxLayout *bidLayout;
+    QLabel *cpuBidAggressionLabel;
+    QComboBox *cpuBidAggressionBox;
+
     QGroupBox *nestGroup;
     QHBoxLayout *nestLayout;
     QLabel *numMiddleCardsAllowedLabel;
@@ -24,12 +30,17 @@ class GamePage : public QWidget
 
     QVBoxLayout *mainLayout;
 
+    void initializeBidGroup();
+    void initializeNestGroup();
+
 public:
     GamePage(QWidget *parent = nullptr);
 
 private:
+
     void onApply();
 
+    void applyBid();
     void applyNest();
 };
 

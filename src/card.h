@@ -47,8 +47,13 @@ struct Card
     bool operator!=(const Card &p);
     bool operator<(const Card &p);
 
-    int getPointValue();
-    int getSentimentalValue();
+    bool isUndefined() const
+    {
+        return suit == SUIT_UNDEFINED && value == VALUE_UNDEFINED;
+    }
+
+    int getPointValue() const;
+    int getSentimentalValue() const;
 
     string getSuitAsString() const; // for filenames
     string getValueAsString() const; // for filenames
@@ -130,15 +135,15 @@ public:
     CardVector removeThisSuit(int suit, int n);
     void append(const vector<const CardVector *> &cardArrays);
 
-    bool hasSuit(int suit);
-    bool hasCard(const Card &card);
-    int getNumPoints();
-    CardVector getPlayableCards(const HandInfo &handInfo);
-    vector<SuitInfo> getSuitInfoArray();
+    bool hasSuit(int suit) const;
+    bool hasCard(const Card &card) const;
+    int getNumPoints() const;
+    CardVector getPlayableCards(const HandInfo &handInfo) const;
+    vector<SuitInfo> getSuitInfoArray() const;
 
     // helpful functions for cpu logic
-    Card getCardWithHighestPointValue();
-    Card getCardWithLowestPointValue(); // and lowest value (i.e. throw-away card)
+    Card getCardWithHighestPointValue() const;
+    Card getCardWithLowestPointValue() const; 
 };
 
 #endif

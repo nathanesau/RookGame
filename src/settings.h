@@ -24,7 +24,7 @@ int readScreenWidth();
 int readScreenHeight();
 
 void writeScaleFactor(float scaleFactor);
-void writePlayerNames(map<int, string> &playerNames);
+void writePlayerNames(const map<int, string> &playerNames);
 void writeShowNameTags(bool showNameTags);
 void writeShowPartnerToolTip(bool showPartnerToolTip);
 void writeScreenWidth(int screenWidth);
@@ -33,8 +33,10 @@ void writeScreenHeight(int screenHeight);
 
 namespace Game
 {
+int readCpuBidAggressionLevel();
 int readNumCardsMiddleAllowed();
 
+void writeCpuBidAggressionLevel(int cpuBidAggressionLevel);
 void writeNumCardsMiddleAllowed(int numCardsAllowed);
 } // namespace Game
 } // namespace Settings

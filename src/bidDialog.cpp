@@ -95,7 +95,7 @@ void BidDialog::onBidButtonPressed()
 void BidDialog::onPassButtonPressed()
 {
     gamedata.playerArr[PLAYER_1].passed = true;
-    gamedata.roundInfo.bidAmount = 40; // bid cannot be less than 40
+    gamedata.roundInfo.bidAmount = max(gamedata.roundInfo.bidAmount, 40); // bid cannot be less than 40
 
     while (getNumPassed() != 3)
     {

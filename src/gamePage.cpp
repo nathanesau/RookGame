@@ -1,7 +1,25 @@
 #include "GamePage.h"
 #include "settings.h"
 
-GamePage::GamePage(QWidget *parent) : QWidget(parent)
+void GamePage::initializeBidGroup()
+{
+    cpuBidAggressionLabel = new QLabel;
+    cpuBidAggressionLabel->setText("Choose CPU bid aggression level: ");
+
+    cpuBidAggressionBox = new QComboBox;
+    cpuBidAggressionBox->addItems({"Low", "Medium", "High"});
+    cpuBidAggressionBox->setCurrentIndex(Settings::Game::readCpuBidAggressionLevel());
+
+    bidGroup = new QGroupBox;
+    bidGroup->setTitle("Bid");
+
+    bidLayout = new QHBoxLayout;
+    bidLayout->addWidget(cpuBidAggressionLabel);
+    bidLayout->addWidget(cpuBidAggressionBox);
+    bidGroup->setLayout(bidLayout);
+}
+
+void GamePage::initializeNestGroup()
 {
     numMiddleCardsAllowedLabel = new QLabel;
     numMiddleCardsAllowedLabel->setText(tr("Choose # cards allowed (%1 to %2): ").arg(3).arg(5));
@@ -18,12 +36,19 @@ GamePage::GamePage(QWidget *parent) : QWidget(parent)
     nestLayout->addWidget(numMiddleCardsAllowedLabel);
     nestLayout->addWidget(numMiddleCardsAllowedSpinBox);
     nestGroup->setLayout(nestLayout);
+}
+
+GamePage::GamePage(QWidget *parent) : QWidget(parent)
+{
+    initializeBidGroup();
+    initializeNestGroup();
 
     applyButton = new QPushButton;
     applyButton->setText("Apply");
     QObject::connect(applyButton, &QAbstractButton::clicked, this, &GamePage::onApply);
 
     mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(bidGroup);
     mainLayout->addWidget(nestGroup);
     mainLayout->addSpacing(12);
     mainLayout->addWidget(applyButton);
@@ -34,7 +59,14 @@ GamePage::GamePage(QWidget *parent) : QWidget(parent)
 
 void GamePage::onApply()
 {
+    applyBid();
     applyNest();
+}
+
+void GamePage::applyBid()
+{
+    int cpuBidAggressionLevel = cpuBidAggressionBox->currentIndex();
+    Settings::Game::writeCpuBidAggressionLevel(cpuBidAggressionLevel);
 }
 
 void GamePage::applyNest()

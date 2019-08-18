@@ -9,7 +9,7 @@
 #include "utils.h"
 
 // globals
-CpuPlayer cpu;
+CpuDecisionMaker cpu;
 GameData gamedata;
 GameDatabase db;
 QPixmapCache pixmapcache;

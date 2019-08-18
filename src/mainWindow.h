@@ -80,7 +80,7 @@ public:
     void showAboutMessage();
 
 private:
-    bool hasRoundStarted();
+    bool hasRoundStarted() const;
 
     void setRookSuitToTrump();
     QString getSlotDbName(int slotNumber) const;

@@ -64,7 +64,7 @@ void RoundInfo::updateScores(HandInfo &handInfo)
 
 void RoundInfo::addPointsMiddleToScores(HandInfo &handInfo)
 {
-    int winningPlayerNum = handInfo.getWinningPlayerNum(*this);
+    int winningPlayerNum = handInfo.getWinningPlayerCardPair(*this).playerNum;
 
     playerScores[winningPlayerNum] += pointsMiddle;
     teamScores[getTeamNumber(winningPlayerNum)] += pointsMiddle;
@@ -82,7 +82,7 @@ map<int, int> RoundInfo::getRoundScores()
         int teamNum = getTeamNumber(playerNum);
         int teamScore = teamScores[teamNum];
         bool negativeScore = (teamNum == bidTeam && !bidTeamMadeBid);
-        roundScores[teamNum] = (negativeScore) ? -teamScore : teamScore;
+        roundScores[playerNum] = (negativeScore) ? -teamScore : teamScore;
     }
 
     return roundScores;
@@ -105,7 +105,7 @@ int RoundInfo::getTeamNumber(int playerNum)
 
 void RoundInfo::updatePlayerScores(HandInfo &handInfo)
 {
-    int winningPlayerNum = handInfo.getWinningPlayerNum(*this);
+    int winningPlayerNum = handInfo.getWinningPlayerCardPair(*this).playerNum;
 
     playerScores[winningPlayerNum] += handInfo.points;
 }

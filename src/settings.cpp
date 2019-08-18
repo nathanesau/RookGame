@@ -92,14 +92,22 @@ void writeScaleFactor(float scaleFactor)
     settings.endGroup();
 }
 
-void writePlayerNames(map<int, string> &playerNames)
+void writePlayerNames(const map<int, string> &playerNames)
 {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
     settings.beginGroup("Appearance");
-    settings.setValue("Player1Name", QString::fromStdString(playerNames[PLAYER_1]));
-    settings.setValue("Player2Name", QString::fromStdString(playerNames[PLAYER_2]));
-    settings.setValue("Player3Name", QString::fromStdString(playerNames[PLAYER_3]));
-    settings.setValue("Player4Name", QString::fromStdString(playerNames[PLAYER_4]));
+
+    auto getPlayerName = [&playerNames](int playerNum)
+    {
+        auto it = playerNames.find(playerNum);
+        string playerName = (it != playerNames.end()) ? it->second : "";
+        return QString::fromStdString(playerName);
+    };
+
+    settings.setValue("Player1Name", getPlayerName(PLAYER_1));
+    settings.setValue("Player2Name", getPlayerName(PLAYER_2));
+    settings.setValue("Player3Name", getPlayerName(PLAYER_3));
+    settings.setValue("Player4Name", getPlayerName(PLAYER_4));
     settings.endGroup();
 }
 
@@ -138,6 +146,18 @@ void writeScreenHeight(int screenHeight)
 
 namespace Game
 {
+int readCpuBidAggressionLevel()
+{
+    int cpuBidAggressionLevel = 1; // mid
+
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.beginGroup("Game");
+    cpuBidAggressionLevel = settings.value("cpuBidAggressionLevel", 1).toInt();
+    settings.endGroup();
+
+    return cpuBidAggressionLevel;
+}
+
 int readNumCardsMiddleAllowed()
 {
     int numCardsMiddleAllowed = 5;
@@ -148,6 +168,14 @@ int readNumCardsMiddleAllowed()
     settings.endGroup();
 
     return numCardsMiddleAllowed;
+}
+
+void writeCpuBidAggressionLevel(int cpuBidAggressionLevel)
+{
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.beginGroup("Game");
+    settings.setValue("cpuBidAggressionLevel", cpuBidAggressionLevel);
+    settings.endGroup();
 }
 
 void writeNumCardsMiddleAllowed(int numCardsAllowed)

@@ -28,7 +28,7 @@ ClickableCard &ClickableCard::operator=(const ClickableCard &pCard)
 
 void ClickableCard::setData(const Card &pData, int drawPosition, QSize size, string style)
 {
-    if (data != pData || data == Card(SUIT_UNDEFINED, VALUE_UNDEFINED))
+    if (data != pData || data.isUndefined())
     {
         data = pData;
 
@@ -84,7 +84,7 @@ void ClickableCard::leaveEvent(QEvent *event)
     parentWidgetWithClickableCardArray->onCardHoverLeave(this);
 }
 
-int ClickableCard::getRotation(int drawPosition)
+int ClickableCard::getRotation(int drawPosition) const
 {
     switch (drawPosition)
     {
@@ -231,9 +231,9 @@ void ClickableCardArray::hideCards()
     clickableCards.clear();
 }
 
-QPoint ClickableCardArray::getCardPosition(int i, int n)
+QPoint ClickableCardArray::getCardPosition(int i, int n) const
 {
-    if (performDynamicPositioning())
+    if (useDynamicPositioning())
     {
         auto WIN_DIMENSIONS = getWindowDimensions();
         auto VERTICAL_SHIFT = getVerticalShift();
@@ -279,7 +279,7 @@ QPoint ClickableCardArray::getCardPosition(int i, int n)
     }
 }
 
-bool ClickableCardArray::performDynamicPositioning()
+bool ClickableCardArray::useDynamicPositioning() const
 {
     switch (drawPosition)
     {
@@ -302,7 +302,7 @@ bool ClickableCardArray::performDynamicPositioning()
     }
 }
 
-QSize ClickableCardArray::getWindowDimensions()
+QSize ClickableCardArray::getWindowDimensions() const
 {
     switch (drawPosition)
     {
@@ -331,7 +331,7 @@ QSize ClickableCardArray::getWindowDimensions()
     }
 }
 
-int ClickableCardArray::getVerticalShift()
+int ClickableCardArray::getVerticalShift() const
 {
     switch (drawPosition)
     {
@@ -362,7 +362,7 @@ int ClickableCardArray::getVerticalShift()
     }
 }
 
-int ClickableCardArray::getHorizontalShift()
+int ClickableCardArray::getHorizontalShift() const
 {
     switch (drawPosition)
     {
@@ -391,7 +391,7 @@ int ClickableCardArray::getHorizontalShift()
     }
 }
 
-int ClickableCardArray::getCardGap()
+int ClickableCardArray::getCardGap() const
 {
     switch (drawPosition)
     {

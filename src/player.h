@@ -51,7 +51,7 @@ struct Team : public set<int>
     using set<int>::set;
 
 public:
-    string getTeamName();
+    string getTeamName() const;
 };
 
 #endif

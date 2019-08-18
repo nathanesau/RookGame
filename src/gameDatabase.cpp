@@ -40,35 +40,62 @@ void GameDatabase::SaveToDb(const QString &dbName, GameData &data, QProgressBar 
     progressBar->setValue(33);
 
     DatabaseInit();
-    progressBar->setValue(66); 
-    
+    progressBar->setValue(66);
+
     DatabasePopulate(data);
     progressBar->setValue(100);
 }
 
 void GameDatabase::DatabaseInit()
 {
-    dropTable("PlayerCards");
-    dropTable("PlayerBids");
-    dropTable("NestCards");
-    dropTable("PastRoundScores");
-    dropTable("RoundScores");
-    dropTable("OverallScores");
-    dropTable("Teams");
-    dropTable("TeamScores");
-    dropTable("CurrentRoundInfo");
-    dropTable("HandInfo");
+    QSqlQuery query;
 
-    createTablePlayerCards();
-    createTablePlayerBids();
-    createTableNestCards();
-    createTablePastRoundScores();
-    createTableRoundScores();
-    createTableOverallScores();
-    createTableTeams();
-    createTableTeamScores();
-    createTableCurrentRoundInfo();
-    createTableHandInfo();
+    if (!query.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"))
+    {
+        qWarning() << "GameDatabase::DatabaseInit - ERROR: " << query.lastError().text();
+    }
+
+    vector<string> availableTableNames; // array of all tables already created in the database
+
+    while (query.next())
+    {
+        availableTableNames.push_back(query.value(0).toString().toStdString());
+    }
+
+    for (auto tableName : vector<string>{"PlayerCards", "PlayerBids", "NestCards", "PastRoundScores", "RoundScores",
+                                         "OverallScores", "Teams", "TeamScores", "CurrentRoundInfo", "HandInfo"})
+    {
+        if (std::find(availableTableNames.begin(), availableTableNames.end(), tableName) != availableTableNames.end()) // table exists
+        {
+            if (!query.exec(QString::fromStdString("DELETE FROM " + tableName)))
+            {
+                qWarning() << "GameDatabase::DatabaseInit - ERROR: " << query.lastError().text();
+            }
+        }
+        else // table does not exist
+        {
+            if (tableName == "PlayerCards")
+                createTablePlayerCards();
+            else if (tableName == "PlayerBids")
+                createTablePlayerBids();
+            else if (tableName == "NestCards")
+                createTableNestCards();
+            else if (tableName == "PastRoundScores")
+                createTablePastRoundScores();
+            else if (tableName == "RoundScores")
+                createTableRoundScores();
+            else if (tableName == "OverallScores")
+                createTableOverallScores();
+            else if (tableName == "Teams")
+                createTableTeams();
+            else if (tableName == "TeamScores")
+                createTableTeamScores();
+            else if (tableName == "CurrentRoundInfo")
+                createTableCurrentRoundInfo();
+            else if (tableName == "HandInfo")
+                createTableHandInfo();
+        }
+    }
 }
 
 void GameDatabase::DatabasePopulate(GameData &data)
@@ -96,9 +123,7 @@ void GameDatabase::DatabasePopulate(GameData &data)
                                   data.roundInfo.trump,
                                   data.roundInfo.pointsMiddle);
 
-    populateTableHandInfo(data.handInfo.winningCard,
-                          data.handInfo.winningPlayerNum,
-                          data.handInfo.startingPlayerNum,
+    populateTableHandInfo(data.handInfo.startingPlayerNum,
                           data.handInfo.cardPlayed,
                           data.handInfo.suit,
                           data.handInfo.points);
@@ -135,9 +160,7 @@ void GameDatabase::DatabaseLoad(GameData &data)
                               data.roundInfo.trump,
                               data.roundInfo.pointsMiddle);
 
-    loadTableHandInfo(data.handInfo.winningCard,
-                      data.handInfo.winningPlayerNum,
-                      data.handInfo.startingPlayerNum,
+    loadTableHandInfo(data.handInfo.startingPlayerNum,
                       data.handInfo.cardPlayed,
                       data.handInfo.suit,
                       data.handInfo.points);
@@ -237,8 +260,8 @@ void GameDatabase::createTableCurrentRoundInfo()
 
 void GameDatabase::createTableHandInfo()
 {
-    QSqlQuery query("CREATE TABLE HandInfo (id INTEGER PRIMARY KEY, WinningCardSuit INTEGER, WinningCardValue INTEGER, "
-                    "WinningPlayerNum INTEGER, StartingPlayerNum INTEGER, Player1CardSuit INTEGER, Player1CardValue INTEGER, "
+    QSqlQuery query("CREATE TABLE HandInfo (id INTEGER PRIMARY KEY, "
+                    "StartingPlayerNum INTEGER, Player1CardSuit INTEGER, Player1CardValue INTEGER, "
                     "Player2CardSuit INTEGER, Player2CardValue INTEGER, Player3CardSuit INTEGER, Player3CardValue INTEGER, "
                     "Player4CardSuit INTEGER, Player4CardValue INTEGER, HandSuit INTEGER, HandPoints INTEGER)");
 
@@ -333,15 +356,20 @@ void GameDatabase::populateTableNestCards(const vector<Card> &cardArr)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTablePastRoundScores(map<int, map<int, int>> &pastRoundScores)
+void GameDatabase::populateTablePastRoundScores(const map<int, map<int, int>> &pastRoundScores)
 {
+    auto getScore = [](const map<int, int> &roundScores, int playerNum) {
+        auto it = roundScores.find(playerNum);
+        return (it != roundScores.end()) ? it->second : 0;
+    };
+
     vector<PastRoundScoresTableRow> tableRows;
 
-    for(auto &round : pastRoundScores)
+    for (auto &round : pastRoundScores)
     {
-        for(auto &playerNo : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+        for (auto &playerNo : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
         {
-            tableRows.push_back({round.first, playerNo, round.second[playerNo]});
+            tableRows.push_back({round.first, playerNo, getScore(round.second, playerNo)});
         }
     }
 
@@ -349,7 +377,7 @@ void GameDatabase::populateTablePastRoundScores(map<int, map<int, int>> &pastRou
     query.prepare("INSERT INTO PastRoundScores(Round, Player, Score) VALUES(?,?,?)");
     QSqlDatabase::database().transaction();
 
-    for(auto &row : tableRows)
+    for (auto &row : tableRows)
     {
         query.bindValue(0, row.Round);
         query.bindValue(1, row.Player);
@@ -364,13 +392,18 @@ void GameDatabase::populateTablePastRoundScores(map<int, map<int, int>> &pastRou
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableRoundScores(map<int, int> &roundScores)
+void GameDatabase::populateTableRoundScores(const map<int, int> &roundScores)
 {
+    auto getScore = [&roundScores](int playerNum) {
+        auto it = roundScores.find(playerNum);
+        return (it != roundScores.end()) ? it->second : 0;
+    };
+
     vector<RoundScoresTableRow> tableRows;
 
     for (auto &playerNo : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        tableRows.push_back({playerNo, roundScores[playerNo]});
+        tableRows.push_back({playerNo, getScore(playerNo)});
     }
 
     QSqlQuery query;
@@ -391,13 +424,18 @@ void GameDatabase::populateTableRoundScores(map<int, int> &roundScores)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableOverallScores(map<int, int> &playerScores)
+void GameDatabase::populateTableOverallScores(const map<int, int> &playerScores)
 {
+    auto getScore = [&playerScores](int playerNum) {
+        auto it = playerScores.find(playerNum);
+        return (it != playerScores.end()) ? it->second : 0;
+    };
+
     vector<OverallScoresTableRow> tableRows;
 
-    for (auto player : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNo : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        tableRows.push_back({player, playerScores[player]});
+        tableRows.push_back({playerNo, getScore(playerNo)});
     }
 
     QSqlQuery query;
@@ -423,9 +461,9 @@ void GameDatabase::populateTableTeams(const array<Team, 2> &teams)
 {
     vector<TeamsTableRow> tableRows;
 
-    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for (auto teamNum : vector<int>{TEAM_1, TEAM_2})
     {
-        for(auto playerNum : teams[teamNum])
+        for (auto playerNum : teams[teamNum])
         {
             tableRows.push_back({teamNum, playerNum});
         }
@@ -449,13 +487,18 @@ void GameDatabase::populateTableTeams(const array<Team, 2> &teams)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableTeamScores(map<int, int> &teamScores)
+void GameDatabase::populateTableTeamScores(const map<int, int> &teamScores)
 {
+    auto getScore = [&teamScores](int teamNum) {
+        auto it = teamScores.find(teamNum);
+        return (it != teamScores.end()) ? it->second : 0;
+    };
+
     vector<TeamScoresTableRow> tableRows;
 
     for (auto teamNum : vector<int>{TEAM_1, TEAM_2})
     {
-        tableRows.push_back({teamNum, teamScores[teamNum]});
+        tableRows.push_back({teamNum, getScore(teamNum)});
     }
 
     QSqlQuery query;
@@ -505,17 +548,27 @@ void GameDatabase::populateTableCurrentRoundInfo(int round, int bidPlayer, int b
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableHandInfo(const Card &winningCard, int winningPlayerNum, int startingPlayerNum, map<int, Card> &cardPlayed, int suit, int points)
+void GameDatabase::populateTableHandInfo(int startingPlayerNum, const map<int, Card> &cardPlayed, int suit, int points)
 {
+    auto getCardPlayed = [&cardPlayed](int playerNum) {
+        auto it = cardPlayed.find(playerNum);
+        return (it != cardPlayed.end()) ? it->second : Card(SUIT_UNDEFINED, VALUE_UNDEFINED);
+    };
+
+    auto player1CardPlayed = getCardPlayed(PLAYER_1);
+    auto player2CardPlayed = getCardPlayed(PLAYER_2);
+    auto player3CardPlayed = getCardPlayed(PLAYER_3);
+    auto player4CardPlayed = getCardPlayed(PLAYER_4);
+
     vector<HandInfoTableRow> tableRows;
 
-    tableRows.push_back({winningCard.suit, winningCard.value, winningPlayerNum, startingPlayerNum,
-                         cardPlayed[PLAYER_1].suit, cardPlayed[PLAYER_1].value, cardPlayed[PLAYER_2].suit, cardPlayed[PLAYER_2].value,
-                         cardPlayed[PLAYER_3].suit, cardPlayed[PLAYER_3].value, cardPlayed[PLAYER_4].suit, cardPlayed[PLAYER_4].value,
+    tableRows.push_back({startingPlayerNum,
+                         player1CardPlayed.suit, player1CardPlayed.value, player2CardPlayed.suit, player2CardPlayed.value,
+                         player3CardPlayed.suit, player3CardPlayed.value, player4CardPlayed.suit, player4CardPlayed.value,
                          suit, points});
 
     QSqlQuery query;
-    query.prepare("INSERT INTO HandInfo(WinningCardSuit, WinningCardValue, WinningPlayerNum, StartingPlayerNum, "
+    query.prepare("INSERT INTO HandInfo(StartingPlayerNum, "
                   "Player1CardSuit, Player1CardValue, Player2CardSuit, Player2CardValue, "
                   "Player3CardSuit, Player3CardValue, Player4CardSuit, Player4CardValue, "
                   "HandSuit, HandPoints) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -523,20 +576,17 @@ void GameDatabase::populateTableHandInfo(const Card &winningCard, int winningPla
 
     for (auto &row : tableRows)
     {
-        query.bindValue(0, row.WinningCardSuit);
-        query.bindValue(1, row.WinningCardValue);
-        query.bindValue(2, row.WinningPlayerNum);
-        query.bindValue(3, row.StartingPlayerNum);
-        query.bindValue(4, row.Player1CardSuit);
-        query.bindValue(5, row.Player1CardValue);
-        query.bindValue(6, row.Player2CardSuit);
-        query.bindValue(7, row.Player2CardValue);
-        query.bindValue(8, row.Player3CardSuit);
-        query.bindValue(9, row.Player3CardValue);
-        query.bindValue(10, row.Player4CardSuit);
-        query.bindValue(11, row.Player4CardValue);
-        query.bindValue(12, row.HandSuit);
-        query.bindValue(13, row.HandPoints);
+        query.bindValue(0, row.StartingPlayerNum);
+        query.bindValue(1, row.Player1CardSuit);
+        query.bindValue(2, row.Player1CardValue);
+        query.bindValue(3, row.Player2CardSuit);
+        query.bindValue(4, row.Player2CardValue);
+        query.bindValue(5, row.Player3CardSuit);
+        query.bindValue(6, row.Player3CardValue);
+        query.bindValue(7, row.Player4CardSuit);
+        query.bindValue(8, row.Player4CardValue);
+        query.bindValue(9, row.HandSuit);
+        query.bindValue(10, row.HandPoints);
 
         if (!query.exec())
         {
@@ -671,7 +721,7 @@ void GameDatabase::loadTableOverallScores(map<int, int> &playerScores)
 
 void GameDatabase::loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playerArr)
 {
-    for(auto &team : teams)
+    for (auto &team : teams)
     {
         team.clear();
     }
@@ -691,9 +741,9 @@ void GameDatabase::loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playe
         teams[teamNo].insert(player);
     }
 
-    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for (auto teamNum : vector<int>{TEAM_1, TEAM_2})
     {
-        for(auto playerNum : teams[teamNum])
+        for (auto playerNum : teams[teamNum])
         {
             playerArr[playerNum].teamNum = teamNum;
         }
@@ -748,10 +798,8 @@ void GameDatabase::loadTableCurrentRoundInfo(int &round, int &bidPlayer, int &bi
     }
 }
 
-void GameDatabase::loadTableHandInfo(Card &winningCard, int &winningPlayerNum, int &startingPlayerNum, map<int, Card> &cardPlayed, int &suit, int &points)
+void GameDatabase::loadTableHandInfo(int &startingPlayerNum, map<int, Card> &cardPlayed, int &suit, int &points)
 {
-    winningCard = Card(SUIT_UNDEFINED, VALUE_UNDEFINED);
-    winningPlayerNum = PLAYER_UNDEFINED;
     startingPlayerNum = PLAYER_UNDEFINED;
     cardPlayed.clear();
     suit = SUIT_UNDEFINED;
@@ -759,7 +807,7 @@ void GameDatabase::loadTableHandInfo(Card &winningCard, int &winningPlayerNum, i
 
     QSqlQuery query;
 
-    if (!query.exec("SELECT WinningCardSuit, WinningCardValue, WinningPlayerNum, StartingPlayerNum, "
+    if (!query.exec("SELECT StartingPlayerNum, "
                     "Player1CardSuit, Player1CardValue, Player2CardSuit, Player2CardValue, "
                     "Player3CardSuit, Player3CardValue, Player4CardSuit, Player4CardValue, "
                     "HandSuit, HandPoints FROM HandInfo"))
@@ -769,15 +817,17 @@ void GameDatabase::loadTableHandInfo(Card &winningCard, int &winningPlayerNum, i
 
     while (query.next())
     {
-        winningCard = Card(query.value(0).toInt(), query.value(1).toInt());
-        winningPlayerNum = query.value(2).toInt();
-        startingPlayerNum = query.value(3).toInt();
-        cardPlayed[PLAYER_1] = Card(query.value(4).toInt(), query.value(5).toInt());
-        cardPlayed[PLAYER_2] = Card(query.value(6).toInt(), query.value(7).toInt());
-        cardPlayed[PLAYER_3] = Card(query.value(8).toInt(), query.value(9).toInt());
-        cardPlayed[PLAYER_4] = Card(query.value(10).toInt(), query.value(11).toInt());
-        suit = query.value(12).toInt();
-        points = query.value(13).toInt();
+        startingPlayerNum = query.value(0).toInt();
+        cardPlayed[PLAYER_1] = Card(query.value(1).toInt(),
+                                    query.value(2).toInt());
+        cardPlayed[PLAYER_2] = Card(query.value(3).toInt(),
+                                    query.value(4).toInt());
+        cardPlayed[PLAYER_3] = Card(query.value(5).toInt(),
+                                    query.value(6).toInt());
+        cardPlayed[PLAYER_4] = Card(query.value(7).toInt(),
+                                    query.value(8).toInt());
+        suit = query.value(9).toInt();
+        points = query.value(10).toInt();
     }
 }
 

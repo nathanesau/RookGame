@@ -12,58 +12,49 @@ HandInfo::HandInfo()
 
 void HandInfo::clear()
 {
-    winningCard = Card(SUIT_UNDEFINED, VALUE_UNDEFINED);
-    winningPlayerNum = PLAYER_UNDEFINED;
     startingPlayerNum = PLAYER_UNDEFINED;
     cardPlayed.clear();
     points = 0;
     suit = SUIT_UNDEFINED;
 }
 
-int HandInfo::getWinningPlayerNum(const RoundInfo &roundInfo)
+PlayerCardPair HandInfo::getWinningPlayerCardPair(const RoundInfo &roundInfo) const
 {
-    updateWinningCombination(roundInfo);
+    auto getCardPlayed = [this](int playerNum)
+    {
+        auto it = cardPlayed.find(playerNum);
+        return (it != cardPlayed.end()) ? it->second : Card(SUIT_UNDEFINED, VALUE_UNDEFINED);
+    };
 
-    return winningPlayerNum;
-}
-
-Card HandInfo::getWinningCard(const RoundInfo &roundInfo)
-{
-    updateWinningCombination(roundInfo);
-
-    return winningCard;
-}
-
-void HandInfo::updateWinningCombination(const RoundInfo &roundInfo)
-{
-    winningPlayerNum = startingPlayerNum;
-    winningCard = cardPlayed[startingPlayerNum];
+    PlayerCardPair winningPair(startingPlayerNum, getCardPlayed(startingPlayerNum));
 
     for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        Card currentCard = cardPlayed[playerNum];
+        Card currentCard = getCardPlayed(playerNum);
 
-        if (playerNum == winningPlayerNum)
+        if (playerNum == winningPair.playerNum)
             continue;
 
-        if (currentCard == Card(SUIT_UNDEFINED, VALUE_UNDEFINED))
+        if (currentCard.isUndefined())
             continue;
 
-        if (currentCard.suit == winningCard.suit)
+        if (currentCard.suit == winningPair.card.suit)
         {
-            if (currentCard.value > winningCard.value)
+            if (currentCard.value > winningPair.card.value)
             {
-                winningPlayerNum = playerNum;
-                winningCard = currentCard;
+                winningPair.playerNum = playerNum;
+                winningPair.card = currentCard;
             }
         }
         else // not the same suit
         {
             if (currentCard.suit == roundInfo.trump)
             {
-                winningPlayerNum = playerNum;
-                winningCard = currentCard;
+                winningPair.playerNum = playerNum;
+                winningPair.card = currentCard;
             }
         }
     }
+    
+    return winningPair;
 }

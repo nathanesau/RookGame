@@ -13,12 +13,12 @@
 using namespace std;
 
 // forward declarations
-class CpuPlayer;
+class CpuDecisionMaker;
 struct GameData;
 class MainWindow;
 
 // global declarations
-extern CpuPlayer cpu;
+extern CpuDecisionMaker cpu;
 extern GameData gamedata;
 
 const QSize MAIN_WIDGET_SIZE = {1200, 850};

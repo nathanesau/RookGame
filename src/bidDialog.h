@@ -10,11 +10,11 @@
 #include "ui_BidDialog.h" // uic -o ui_bidDialog.h bidDialog.ui
 
 // forward declarations
-class CpuPlayer;
+class CpuDecisionMaker;
 struct GameData;
 
 // global declarations
-extern CpuPlayer cpu;
+extern CpuDecisionMaker cpu;
 extern GameData gamedata;
 
 const QSize BID_DIALOG_SIZE = {661, 302};
@@ -25,6 +25,8 @@ class BidDialog : public ScaledQDialog
 
     Ui::BidDialog ui;
 
+    void setupComboBox(int minBid, int maxBid, int incr);
+
 public:
     BidDialog(QMainWindow *pMainWindow, QWidget *parent = nullptr);
     virtual void rescale();
@@ -32,8 +34,6 @@ public:
 
     void onBidButtonPressed();
     void onPassButtonPressed();
-
-    void setupComboBox(int minBid, int maxBid, int incr);
 
 private:
     void showBidResultMsgBox();

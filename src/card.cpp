@@ -38,7 +38,7 @@ bool Card::operator<(const Card &p)
     return false;
 }
 
-int Card::getPointValue()
+int Card::getPointValue() const
 {
     switch (value)
     {
@@ -54,7 +54,7 @@ int Card::getPointValue()
     }
 }
 
-int Card::getSentimentalValue()
+int Card::getSentimentalValue() const
 {
     if (value == VALUE_ROOK)
     {
@@ -215,22 +215,22 @@ void CardVector::append(const vector<const CardVector *> &cardArrays)
     }
 }
 
-bool CardVector::hasSuit(int suit)
+bool CardVector::hasSuit(int suit) const
 {
-    return std::any_of(begin(), end(), [suit](Card &a) { return a.suit == suit; });
+    return std::any_of(begin(), end(), [suit](const Card &a) { return a.suit == suit; });
 }
 
-bool CardVector::hasCard(const Card &card)
+bool CardVector::hasCard(const Card &card) const
 {
-    return std::find_if(begin(), end(), [a = card](Card &b) { return a.suit == b.suit && a.value == b.value; }) != end();
+    return std::find_if(begin(), end(), [a = card](const Card &b) { return a.suit == b.suit && a.value == b.value; }) != end();
 }
 
-int CardVector::getNumPoints()
+int CardVector::getNumPoints() const
 {
-    return accumulate(begin(), end(), 0, [](int a, Card &b) { return a + b.getPointValue(); });
+    return accumulate(begin(), end(), 0, [](int a, const Card &b) { return a + b.getPointValue(); });
 }
 
-CardVector CardVector::getPlayableCards(const HandInfo &handInfo)
+CardVector CardVector::getPlayableCards(const HandInfo &handInfo) const
 {
     int suit = handInfo.suit;
 
@@ -254,7 +254,7 @@ CardVector CardVector::getPlayableCards(const HandInfo &handInfo)
     }
 }
 
-vector<SuitInfo> CardVector::getSuitInfoArray()
+vector<SuitInfo> CardVector::getSuitInfoArray() const
 {
     vector<SuitInfo> suitInfoArr;
 
@@ -277,7 +277,7 @@ vector<SuitInfo> CardVector::getSuitInfoArray()
     return suitInfoArr;
 }
 
-Card CardVector::getCardWithHighestPointValue()
+Card CardVector::getCardWithHighestPointValue() const
 {
     Card highestPointCard = front();
 
@@ -292,7 +292,7 @@ Card CardVector::getCardWithHighestPointValue()
     return highestPointCard;
 }
 
-Card CardVector::getCardWithLowestPointValue()
+Card CardVector::getCardWithLowestPointValue() const
 {
     // relies on cards being sorted from lowest to highest
     Card lowestPointCard = front();

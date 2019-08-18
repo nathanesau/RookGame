@@ -89,7 +89,7 @@ protected:
     void leaveEvent(QEvent *event);
 
 private:
-    int getRotation(int drawPosition);
+    int getRotation(int drawPosition) const;
 };
 
 struct CardKey
@@ -138,15 +138,15 @@ public:
     void hideCards();
 
 private:
-    QPoint getCardPosition(int i, int n);
+    QPoint getCardPosition(int i, int n) const;
 
-    bool performDynamicPositioning();
+    bool useDynamicPositioning() const;
 
     // for dynamic positioning
-    QSize getWindowDimensions();
-    int getVerticalShift();
-    int getHorizontalShift();
-    int getCardGap();
+    QSize getWindowDimensions() const;
+    int getVerticalShift() const;
+    int getHorizontalShift() const;
+    int getCardGap() const;
 };
 
 class QDialogWithClickableCardArray : public ScaledQDialog

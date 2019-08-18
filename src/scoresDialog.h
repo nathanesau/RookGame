@@ -26,7 +26,7 @@ class ScoresDialog : public QDialog
 public:
     ScoresDialog(QWidget *parent = nullptr);
 
-    void setupTableWidget(map<int, map<int, int>> &scoreHistory);
+    void setupTableWidget(const map<int, map<int, int>> &scoreHistory);
 };
 
 #endif

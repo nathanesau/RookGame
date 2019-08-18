@@ -102,7 +102,7 @@ void MainWidget::finishExistingHand(Card player1Card)
 
     for (auto playerNum : vector<int>{PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        if (gamedata.handInfo.cardPlayed[playerNum] == Card(SUIT_UNDEFINED, VALUE_UNDEFINED)) // cpu hasn't played yet
+        if (gamedata.handInfo.cardPlayed[playerNum].isUndefined()) // cpu hasn't played yet
         {
             playCard(cpu.getCardToPlay(playerNum), playerNum);
 
@@ -225,7 +225,7 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
     }
     else
     {
-        startNewHand(gamedata.handInfo.getWinningPlayerNum(gamedata.roundInfo));
+        startNewHand(gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo).playerNum);
     }
 }
 
@@ -249,7 +249,7 @@ void MainWidget::refreshCardWidgets(GameData &pData)
 
             CardVector cardsToDisplay;
 
-            if (data.cardPlayed[playerNum] != Card(SUIT_UNDEFINED, VALUE_UNDEFINED))
+            if (!data.cardPlayed[playerNum].isUndefined())
             {
                 cardsToDisplay.push_back({data.cardPlayed[playerNum]});
             }
@@ -367,13 +367,15 @@ void MainWidget::showPartnerCardIfApplicable()
 
 void MainWidget::showHandResult()
 {
-    auto msg = []() -> string {
-        return gamedata.playerArr[gamedata.handInfo.getWinningPlayerNum(gamedata.roundInfo)].getPlayerName() +
+    auto winningPair = gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo);
+
+    auto msg = [&winningPair]() -> string {
+        return gamedata.playerArr[winningPair.playerNum].getPlayerName() +
                " won the hand for " + to_string(gamedata.handInfo.points) + " points with the";
     }();
 
     MessageBox msgBox;
-    msgBox.showCards({gamedata.handInfo.getWinningCard(gamedata.roundInfo)});
+    msgBox.showCards({winningPair.card});
     msgBox.setText(QString::fromStdString(msg));
     msgBox.setWindowTitle("Hand result");
     msgBox.move({340, 250});
@@ -383,7 +385,9 @@ void MainWidget::showHandResult()
 
 void MainWidget::showNestResult()
 {
-    string msg = gamedata.playerArr[gamedata.handInfo.getWinningPlayerNum(gamedata.roundInfo)].getPlayerName() +
+    auto winningPair = gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo);
+
+    string msg = gamedata.playerArr[winningPair.playerNum].getPlayerName() +
                  " won the nest. Nest had " + to_string(gamedata.roundInfo.pointsMiddle) + " points.";
 
     MessageBox msgBox;

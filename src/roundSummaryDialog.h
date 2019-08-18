@@ -38,7 +38,7 @@ public:
     RoundSummaryDialog(QWidget *parent = nullptr);
     virtual void rescale();
 
-    void updateScores(map<int, int> roundScores);
+    void updateScores(const map<int, int> &roundScores);
 };
 
 #endif

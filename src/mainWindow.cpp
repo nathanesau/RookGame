@@ -365,7 +365,7 @@ void MainWindow::showAboutMessage()
     msgBox.exec();
 }
 
-bool MainWindow::hasRoundStarted()
+bool MainWindow::hasRoundStarted() const
 {
     // if player 1 cards haven't been dealt yet, that round hasn't started yet
     return !gamedata.playerArr[PLAYER_1].cardArr.empty();

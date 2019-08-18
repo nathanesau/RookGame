@@ -14,16 +14,20 @@ struct GameData;
 // global declarations
 extern GameData gamedata;
 
-class CpuPlayer
+const int CPU_BID_AGGRESSION_LEVEL_LOW = 0;
+const int CPU_BID_AGGRESSION_LEVEL_MID = 1;
+const int CPU_BID_AGRESSION_LEVEL_HIGH = 2;
+
+class CpuDecisionMaker
 {
 public:
-    CpuPlayer();
+    CpuDecisionMaker();
 
-    int getBid(int playerNum);
-    Card getCardToPlay(int playerNum);
-    CardVector getChosenNest(int playerNum);
-    int getChosenTrump(int playerNum);
-    Card getChosenPartner(int playerNum);
+    int getBid(int playerNum) const;
+    Card getCardToPlay(int playerNum) const;
+    CardVector getChosenNest(int playerNum) const;
+    int getChosenTrump(int playerNum) const;
+    Card getChosenPartner(int playerNum) const;
 
 private:
     // helper functions (cpu logic can get quite complicated)

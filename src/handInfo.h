@@ -12,11 +12,19 @@ using namespace std;
 // forward declarations
 class RoundInfo;
 
+struct PlayerCardPair
+{
+    int playerNum;
+    Card card;
+
+    PlayerCardPair(int pPlayerNum, Card pCard) : playerNum(pPlayerNum), card(pCard)
+    {
+    }
+};
+
 class HandInfo
 {
 public:
-    Card winningCard;
-    int winningPlayerNum;
     int startingPlayerNum;
     map<int, Card> cardPlayed;
     int suit;
@@ -26,11 +34,9 @@ public:
     HandInfo();
     void clear();
 
-    int getWinningPlayerNum(const RoundInfo &roundInfo);
-    Card getWinningCard(const RoundInfo &roundInfo);
+    PlayerCardPair getWinningPlayerCardPair(const RoundInfo &roundInfo) const;
 
 private:
-    void updateWinningCombination(const RoundInfo &roundInfo);
 };
 
 #endif

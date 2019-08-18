@@ -81,21 +81,27 @@ void RoundSummaryDialog::rescale()
         button->rescale();
 }
 
-void RoundSummaryDialog::updateScores(map<int, int> roundScores)
+void RoundSummaryDialog::updateScores(const map<int, int> &roundScores)
 {
     auto updateLabel = [this](ScaledQLabel *label, int score) {
         string prefix = "";
         if (score > 0)
             prefix = "+";
         else if (score < 0)
-            prefix = "-";
+            prefix = "";
 
         string text = prefix + to_string(score);
         label->setText(QString::fromStdString(text));
     };
 
-    updateLabel(player1Score, roundScores[PLAYER_1]);
-    updateLabel(player2Score, roundScores[PLAYER_2]);
-    updateLabel(player3Score, roundScores[PLAYER_3]);
-    updateLabel(player4Score, roundScores[PLAYER_4]);
+    auto getScore = [&roundScores](auto playerNum)
+    {
+        auto it = roundScores.find(playerNum);
+        return (it != roundScores.end()) ? it->second : 0;
+    };
+
+    updateLabel(player1Score, getScore(PLAYER_1));
+    updateLabel(player2Score, getScore(PLAYER_2));
+    updateLabel(player3Score, getScore(PLAYER_3));
+    updateLabel(player4Score, getScore(PLAYER_4));
 }

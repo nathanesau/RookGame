@@ -50,7 +50,7 @@ int Player::getTeamNum() const
     return TEAM_UNDEFINED;
 }
 
-string Team::getTeamName()
+string Team::getTeamName() const
 {
     if (empty())
     {

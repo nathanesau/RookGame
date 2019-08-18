@@ -1,45 +1,58 @@
 #include "cpuPlayer.h"
 #include "gameData.h"
+#include "settings.h"
 #include "utils.h"
 
 #include <map>
 
 using namespace std;
 
-CpuPlayer::CpuPlayer()
+CpuDecisionMaker::CpuDecisionMaker()
 {
 }
 
-int CpuPlayer::getBid(int playerNum)
+int CpuDecisionMaker::getBid(int playerNum) const
 {
     CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
     cardArr.sort();
 
-    double totalValue = 0.0;
-
-    for (auto &card : cardArr)
-    {
-        totalValue += card.value;
-    }
-
+    double totalValue = accumulate(cardArr.begin(), cardArr.end(), 0, [](int a, const Card &b) { return a + b.value; });
     double averageValue = totalValue / cardArr.size();
 
     const double MU = 7.54;
     const double SIGMA = 0.987;
+    double PHand = Utils::Stat::phi((averageValue - MU) / SIGMA); // percentile for hand
 
-    double P = Utils::Stat::phi((averageValue - MU) / SIGMA); // percentile
+    int minBid = []() {
+        switch (Settings::Game::readCpuBidAggressionLevel())
+        {
+        case CPU_BID_AGGRESSION_LEVEL_LOW:
+            return 45;
+        case CPU_BID_AGGRESSION_LEVEL_MID:
+            return 50;
+        default: // CPU_BID_AGGRESSION_LEVEL_HIGH
+            return 55;
+        }
+    }();
 
-    map<double, int> bidMap{
-        make_pair(0.1, 50), make_pair(0.2, 55), make_pair(0.3, 60), make_pair(0.4, 65),
-        make_pair(0.5, 70), make_pair(0.6, 75), make_pair(0.7, 80), make_pair(0.8, 85),
-        make_pair(0.9, 90)};
+    map<double, int> bidMap;
+    
+    for(double P = 0.1; P <= 0.9; P += 0.1)
+    {
+        bidMap[P] = minBid + (P * 10) * 5;
+    }
 
-    auto It = bidMap.upper_bound(P);
-    auto maxBid = It != bidMap.end() ? It->second : 95;
-
-    int bid = maxBid > gamedata.roundInfo.bidAmount ? gamedata.roundInfo.bidAmount + 5 : gamedata.playerArr[playerNum].bid;
-
-    return bid;
+    auto It = bidMap.upper_bound(PHand);
+    auto maxBid = It != bidMap.end() ? It->second : (--bidMap.end())->second + 5;
+    
+    if (maxBid > gamedata.roundInfo.bidAmount)
+    {
+        return gamedata.roundInfo.bidAmount + 5;
+    }
+    else
+    {
+        return gamedata.playerArr[playerNum].bid; // bid unchanged
+    }
 }
 
 // for bidding team, this would be their partner
@@ -73,18 +86,19 @@ int getPartnerNum(int playerNum)
     return PLAYER_UNDEFINED;
 }
 
-Card CpuPlayer::getCardToPlay(int playerNum) // to be improved
+Card CpuDecisionMaker::getCardToPlay(int playerNum) const // to be improved
 {
     CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
 
     CardVector playableCards = cardArr.getPlayableCards(gamedata.handInfo);
     playableCards.sort(gamedata.roundInfo.trump);
 
+    PlayerCardPair winningPair = gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo);
+
     // determine which card to play
-    int winningPlayerNum = gamedata.handInfo.getWinningPlayerNum(gamedata.roundInfo);
     int partnerNum = getPartnerNum(playerNum);
 
-    if (winningPlayerNum == partnerNum) // "feed" points
+    if (winningPair.playerNum == partnerNum) // "feed" points
     {
         return playableCards.getCardWithHighestPointValue();
     }
@@ -94,11 +108,10 @@ Card CpuPlayer::getCardToPlay(int playerNum) // to be improved
         if (gamedata.handInfo.points > 0)
         {
             auto highestCard = *--playableCards.end();
-            auto winningCard = gamedata.handInfo.getWinningCard(gamedata.roundInfo);
-            
+
             CardCompare cardCompare(gamedata.roundInfo.trump);
-            
-            if (cardCompare(winningCard, highestCard)) // try to win hand (since it has points and is winnable)
+
+            if (cardCompare(winningPair.card, highestCard)) // try to win hand (since it has points and is winnable)
             {
                 return highestCard;
             }
@@ -112,10 +125,10 @@ Card CpuPlayer::getCardToPlay(int playerNum) // to be improved
     return playableCards.getCardWithLowestPointValue(); // save best cards for last
 }
 
-CardVector CpuPlayer::getChosenNest(int playerNum)
+CardVector CpuDecisionMaker::getChosenNest(int playerNum) const
 {
     CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
-    
+
     CardVector newNest;
     CardVector newCardArr;
     newCardArr.append({&cardArr, &gamedata.nest});
@@ -146,7 +159,7 @@ CardVector CpuPlayer::getChosenNest(int playerNum)
     return newNest;
 }
 
-int CpuPlayer::getChosenTrump(int playerNum)
+int CpuDecisionMaker::getChosenTrump(int playerNum) const
 {
     CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
 
@@ -155,19 +168,19 @@ int CpuPlayer::getChosenTrump(int playerNum)
     return suitInfoArr[0].suit != SUIT_SPECIAL ? suitInfoArr[0].suit : suitInfoArr[1].suit;
 }
 
-Card CpuPlayer::getChosenPartner(int playerNum)
+Card CpuDecisionMaker::getChosenPartner(int playerNum) const
 {
     CardVector &cardArr = gamedata.playerArr[playerNum].cardArr;
     vector<const CardVector *> cardArrays = {&gamedata.nest};
 
-    for(auto thisPlayerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto thisPlayerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
-        if(thisPlayerNum != playerNum)
+        if (thisPlayerNum != playerNum)
         {
-            cardArrays.push_back(&gamedata.playerArr[thisPlayerNum].cardArr);   
+            cardArrays.push_back(&gamedata.playerArr[thisPlayerNum].cardArr);
         }
     }
-    
+
     CardVector aggregateCardArr;
     aggregateCardArr.append(cardArrays);
     aggregateCardArr.sort();

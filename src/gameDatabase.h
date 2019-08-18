@@ -105,9 +105,6 @@ struct CurrentRoundInfoTableRow
 
 struct HandInfoTableRow
 {
-    int WinningCardSuit;
-    int WinningCardValue;
-    int WinningPlayerNum;
     int StartingPlayerNum;
     int Player1CardSuit;
     int Player1CardValue;
@@ -120,11 +117,10 @@ struct HandInfoTableRow
     int HandSuit;
     int HandPoints;
 
-    HandInfoTableRow(int pWinningCardSuit, int pWinningCardValue, int pWinningPlayerNum, int pStartingPlayerNum,
+    HandInfoTableRow(int pStartingPlayerNum,
                      int pPlayer1CardSuit, int pPlayer1CardValue, int pPlayer2CardSuit, int pPlayer2CardValue,
                      int pPlayer3CardSuit, int pPlayer3CardValue, int pPlayer4CardSuit, int pPlayer4CardValue,
-                     int pHandSuit, int pHandPoints) : WinningCardSuit(pWinningCardSuit), WinningCardValue(pWinningCardValue),
-                                                       WinningPlayerNum(pWinningPlayerNum), StartingPlayerNum(pStartingPlayerNum),
+                     int pHandSuit, int pHandPoints) : StartingPlayerNum(pStartingPlayerNum),
                                                        Player1CardSuit(pPlayer1CardSuit), Player1CardValue(pPlayer1CardValue),
                                                        Player2CardSuit(pPlayer2CardSuit), Player2CardValue(pPlayer2CardValue),
                                                        Player3CardSuit(pPlayer3CardSuit), Player3CardValue(pPlayer3CardValue),
@@ -154,13 +150,13 @@ class GameDatabase
     void populateTablePlayerCards(const array<Player, 4> &playerArr);
     void populateTablePlayerBids(const array<Player, 4> &playerArr);
     void populateTableNestCards(const vector<Card> &cardArr);
-    void populateTablePastRoundScores(map<int, map<int, int>> &pastRoundScores);
-    void populateTableRoundScores(map<int, int> &roundScores);
-    void populateTableOverallScores(map<int, int> &playerScores);
+    void populateTablePastRoundScores(const map<int, map<int, int>> &pastRoundScores);
+    void populateTableRoundScores(const map<int, int> &roundScores);
+    void populateTableOverallScores(const map<int, int> &playerScores);
     void populateTableTeams(const array<Team, 2> &teams);
-    void populateTableTeamScores(map<int, int> &teamScores);
+    void populateTableTeamScores(const map<int, int> &teamScores);
     void populateTableCurrentRoundInfo(int round, int bidPlayer, int bidAmount, const Card &partnerCard, int trump, int pointsMiddle);
-    void populateTableHandInfo(const Card &winningCard, int winningPlayerNum, int startingPlayerNum, map<int, Card> &cardPlayed, int suit, int points);
+    void populateTableHandInfo(int startingPlayerNum, const map<int, Card> &cardPlayed, int suit, int points);
 
     // read from db
     void loadTablePlayerCards(array<Player, 4> &playerArr);
@@ -172,7 +168,7 @@ class GameDatabase
     void loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playerArr); // we also modify playerArr here
     void loadTableTeamScores(map<int, int> &teamScores);
     void loadTableCurrentRoundInfo(int &round, int &bidPlayer, int &bidAmount, Card &partnerCard, int &trump, int &pointsMiddle);
-    void loadTableHandInfo(Card &winningCard, int &winningPlayerNum, int &startingPlayerNum, map<int, Card> &cardPlayed, int &suit, int &points);
+    void loadTableHandInfo(int &startingPlayerNum, map<int, Card> &cardPlayed, int &suit, int &points);
 
 public:
     GameDatabase();
