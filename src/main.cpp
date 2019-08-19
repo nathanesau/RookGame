@@ -4,12 +4,11 @@
 #include "common.h"
 #include "gameData.h"
 #include "gameDatabase.h"
-#include "cpuPlayer.h"
+#include "cpu.h"
 #include "mainWindow.h"
 #include "utils.h"
 
 // globals
-CpuDecisionMaker cpu;
 GameData gamedata;
 GameDatabase db;
 QPixmapCache pixmapcache;

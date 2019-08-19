@@ -40,8 +40,8 @@ set(rook_SRCS
         src/clickableCard.cpp
         src/clickableCard.h
         src/common.h
-        src/cpuPlayer.cpp
-        src/cpuPlayer.h
+        src/cpu.cpp
+        src/cpu.h
         src/deck.cpp
         src/deck.h
         src/gameData.cpp

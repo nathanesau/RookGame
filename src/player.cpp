@@ -1,14 +1,26 @@
+#include <numeric>
+
+#include "cpu.h"
 #include "gameData.h"
 #include "player.h"
 #include "settings.h"
 
-Player::Player(int pPlayerNum) : playerNum (pPlayerNum)
+Player::Player(int pPlayerNum) : playerNum(pPlayerNum),
+                                 teamNum(TEAM_UNDEFINED),
+                                 cardArr(),
+                                 bid(0),
+                                 passed(false)
 {
-    clear();
+    if (playerNum == PLAYER_2 || playerNum == PLAYER_3 || playerNum == PLAYER_4)
+    {
+        cpu = make_unique<Cpu>(playerNum, teamNum, cardArr, bid, passed);
+    }
 }
 
 void Player::clear()
 {
+    cpu->clear();
+    // playerNum is constant, not cleared
     teamNum = TEAM_UNDEFINED;
     cardArr.clear();
     bid = 0;
@@ -37,34 +49,13 @@ string Player::getPlayerName() const
     return Settings::Appearance::readPlayerNames()[playerNum];
 }
 
-int Player::getTeamNum() const
-{
-    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
-    {
-        if(gamedata.roundInfo.teams[teamNum].find(playerNum) != gamedata.roundInfo.teams[teamNum].end())
-        {
-            return teamNum;
-        }
-    }
-
-    return TEAM_UNDEFINED;
-}
-
 string Team::getTeamName() const
 {
     if (empty())
-    {
         return "???";
-    }
 
-    auto playerNames = Settings::Appearance::readPlayerNames();
-
-    string teamName = "";
-
-    for (auto it = begin(); it != end(); it++)
-    {
-        teamName += (it == begin()) ? playerNames[*it] : (" + " + playerNames[*it]);
-    }
-
+    auto names = Settings::Appearance::readPlayerNames();
+    string teamName = names[*begin()];
+    std::for_each(++begin(), end(), [&](int playerNum) { teamName += " + " + names[playerNum]; });
     return teamName;
 }

@@ -2,6 +2,10 @@
 #define MAINWIDGET_H
 
 #include <map>
+#include <QFont>
+#include <QPaintEvent>
+#include <QPainterPath>
+#include <QPainter>
 #include <QProgressBar>
 
 #include "clickableCard.h"
@@ -22,6 +26,45 @@ extern CpuDecisionMaker cpu;
 extern GameData gamedata;
 
 const QSize MAIN_WIDGET_SIZE = {1200, 850};
+
+// implemented like a ScaledWidget
+class PlayerNameLabel : public QWidget
+{
+    float prevScaleFactor;
+    float scaleFactor;
+    Qt::AlignmentFlag alignType; // only align left, align right, align top, align bottom supported
+
+private:
+    QString text;
+    QFont font;
+
+    // functions related to size or position
+    void setFont(const QFont &pFont);
+
+public:
+    PlayerNameLabel(QWidget *parent = nullptr);
+    void rescale();
+
+    void setAlignType(Qt::AlignmentFlag pAlignType)
+    {
+        alignType = pAlignType;
+    }
+
+    // functions related to size or position
+    void setGeometry(const QRect &rect);
+    void resize(int w, int h);
+    void move(const QPoint &pos);
+
+    // functions to set widget data
+    void setText(const QString &pText);
+
+protected:
+    // functions related to size or position
+    void updateScaleFactor();
+
+    // functions to set widget data
+    void paintEvent(QPaintEvent *event) override;
+};
 
 struct MainWidgetData
 {
@@ -47,16 +90,16 @@ private:
     GameInfoWidget *infoWidget;
     GameMenuWidget *menuWidget;
 
-    ScaledQLabel *player1NameLabel;
+    PlayerNameLabel *player1NameLabel;
     ClickableCardArray *player1CardPlayed;
 
-    ScaledQLabel *player2NameLabel;
+    PlayerNameLabel *player2NameLabel;
     ClickableCardArray *player2CardPlayed;
 
-    ScaledQLabel *player3NameLabel;
+    PlayerNameLabel *player3NameLabel;
     ClickableCardArray *player3CardPlayed;
 
-    ScaledQLabel *player4NameLabel;
+    PlayerNameLabel *player4NameLabel;
     ClickableCardArray *player4CardPlayed;
 
     ClickableCardArray *player1Cards;
@@ -98,7 +141,7 @@ private:
     void showNestResult();
 
     ClickableCardArray *getCardPlayedWidget(int playerNum);
-    QLabel *getPlayerNameLabel(int playerNum);
+    PlayerNameLabel *getPlayerNameLabel(int playerNum);
 };
 
 #endif

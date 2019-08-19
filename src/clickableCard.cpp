@@ -336,7 +336,7 @@ int ClickableCardArray::getVerticalShift() const
     switch (drawPosition)
     {
     case DRAW_POSITION_MAIN_WIDGET_BOTTOM:
-        return 170;
+        return 150;
     case DRAW_POSITION_MAIN_WIDGET_CENTER:
         return -100;
     case DRAW_POSITION_MIDDLE_DLG_NEST:

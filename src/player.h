@@ -1,10 +1,12 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <memory>
 #include <string>
 #include <set>
 
 #include "card.h"
+#include "cpu.h"
 #include "common.h"
 
 using namespace std;
@@ -29,6 +31,8 @@ const int TEAM_2 = 1;
 
 struct Player
 {
+    unique_ptr<Cpu> cpu;
+
     const int playerNum;
     int teamNum;
     CardVector cardArr;
@@ -41,8 +45,6 @@ public:
  
     int getNextPlayerNum() const;
     string getPlayerName() const;
-
-    int getTeamNum() const; // use gamedata
 };
 
 // do not delete objects through base class pointer

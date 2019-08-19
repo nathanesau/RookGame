@@ -1,8 +1,10 @@
+#include <QFont>
+#include <QPainter>
 #include <QThread>
 #include <set>
 #include <string>
 
-#include "cpuPlayer.h"
+#include "cpu.h"
 #include "gameData.h"
 #include "mainWidget.h"
 #include "mainWindow.h"
@@ -11,7 +13,106 @@
 #include "settings.h"
 #include "utils.h"
 
+#include <QGraphicsEffect>
+
 using namespace std;
+
+PlayerNameLabel::PlayerNameLabel(QWidget *parent) : QWidget(parent)
+{
+    scaleFactor = Settings::Appearance::readScaleFactor();
+    prevScaleFactor = scaleFactor;
+
+    // default align type
+    alignType = Qt::AlignCenter;
+
+    // font should be private as padding logic is specific to this font combination
+    setFont(QFont("Times", 18, QFont::Weight::Bold));
+}
+
+void PlayerNameLabel::rescale()
+{
+    updateScaleFactor();
+    setFont(font);
+    resize(width(), height());
+    move({x(), y()});
+}
+
+// functions related to size or position
+void PlayerNameLabel::setFont(const QFont &pFont)
+{
+    font = pFont;
+    font.setPointSizeF(font.pointSizeF() * scaleFactor);
+}
+
+void PlayerNameLabel::setGeometry(const QRect &rect)
+{
+    auto scaledRect = QRect(rect.x() * scaleFactor, rect.y() * scaleFactor,
+                            rect.width() * scaleFactor, rect.height() * scaleFactor);
+
+    QWidget::setGeometry(scaledRect);
+}
+
+void PlayerNameLabel::resize(int w, int h)
+{
+    QWidget::resize(w * scaleFactor, h * scaleFactor);
+}
+
+void PlayerNameLabel::move(const QPoint &pos)
+{
+    QWidget::move(pos * scaleFactor);
+}
+
+void PlayerNameLabel::setText(const QString &pText)
+{
+    text = pText;
+}
+
+void PlayerNameLabel::updateScaleFactor()
+{
+    float newScaleFactor = Settings::Appearance::readScaleFactor();
+    scaleFactor = newScaleFactor / prevScaleFactor;
+    prevScaleFactor = newScaleFactor;
+}
+
+void PlayerNameLabel::paintEvent(QPaintEvent *event)
+{
+    float globalScaleFactor = Settings::Appearance::readScaleFactor();
+
+    int maxNChar = 8;
+    int textWidth = width() * text.length() / (float)maxNChar;
+
+    QPoint fontSubPos;
+    fontSubPos.setX((int)0 * globalScaleFactor);
+    fontSubPos.setY((int)25 * globalScaleFactor);
+
+    const int DEFAULT_X_PAD_AMT = 10 * globalScaleFactor;
+    const int DEFAULT_Y_PAD_AMT = 10 * globalScaleFactor;
+
+    switch (alignType)
+    {
+    case Qt::AlignRight: // left shift
+        fontSubPos.setX(max(width() - textWidth - DEFAULT_X_PAD_AMT, DEFAULT_X_PAD_AMT));
+        break;
+    case Qt::AlignLeft: // right shift
+        fontSubPos.setX(min(width() - textWidth, DEFAULT_X_PAD_AMT));
+        break;
+    case Qt::AlignTop: // bottom shift
+        fontSubPos.setY(fontSubPos.y() + 15 * globalScaleFactor);
+        break;
+    case Qt::AlignBottom: // top shift
+        fontSubPos.setY(fontSubPos.y() + DEFAULT_Y_PAD_AMT);
+        break;
+    }
+
+    QPainter *painter = new QPainter(this);
+    painter->setPen(Qt::black);
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setBrush(Qt::white);
+    QPainterPath *ppath = new QPainterPath;
+
+    ppath->addText(fontSubPos, this->font, this->text);
+    painter->drawPath(*ppath);
+}
 
 MainWidgetData::MainWidgetData()
 {
@@ -20,22 +121,12 @@ MainWidgetData::MainWidgetData()
 MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
                                                                    QDialogWithClickableCardArray(false, parent)
 {
-    auto setupLabel = [this](QLabel *label, QString text, QPoint pos, QSize size) {
-        label->setParent(this);
-        label->setFont(QFont("Times", 11));
-        label->setText(text);
-        label->move(pos);
-        label->resize(size);
-        label->setStyleSheet("background-color: white");
-        label->setAlignment(Qt::AlignCenter);
-    };
-
     player1Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_BOTTOM, SIZE_NORMAL, this);
-    #ifdef CPU_DEBUG
+#ifdef CPU_DEBUG
     player2Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_LEFT, SIZE_SMALL, this);
     player3Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_TOP, SIZE_SMALL, this);
     player4Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_RIGHT, SIZE_SMALL, this);
-    #endif
+#endif
 
     player1CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_BOTTOM, SIZE_NORMAL, this);
     player2CardPlayed = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_CENTER_LEFT, SIZE_NORMAL, this);
@@ -44,17 +135,28 @@ MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pM
 
     auto playerNames = Settings::Appearance::readPlayerNames();
 
-    player1NameLabel = new ScaledQLabel;
-    setupLabel(player1NameLabel, QString::fromStdString(playerNames[PLAYER_1]), {550, 800}, {75, 25});
+    auto setupLabel = [this](PlayerNameLabel *label, const QString &text, const QPoint &pos) {
+        label->setParent(this);
+        label->setText(text);
+        label->move(pos);
+        label->resize(100, 60);
+    };
 
-    player2NameLabel = new ScaledQLabel;
-    setupLabel(player2NameLabel, QString::fromStdString(playerNames[PLAYER_2]), {25, 425}, {75, 25});
+    player1NameLabel = new PlayerNameLabel;
+    setupLabel(player1NameLabel, QString::fromStdString(playerNames[PLAYER_1]), {550, 770});
+    player1NameLabel->setAlignType(Qt::AlignTop);
 
-    player3NameLabel = new ScaledQLabel;
-    setupLabel(player3NameLabel, QString::fromStdString(playerNames[PLAYER_3]), {550, 140}, {75, 25});
+    player2NameLabel = new PlayerNameLabel;
+    setupLabel(player2NameLabel, QString::fromStdString(playerNames[PLAYER_2]), {0, 425});
+    player2NameLabel->setAlignType(Qt::AlignLeft);
 
-    player4NameLabel = new ScaledQLabel;
-    setupLabel(player4NameLabel, QString::fromStdString(playerNames[PLAYER_4]), {1100, 425}, {75, 25});
+    player3NameLabel = new PlayerNameLabel;
+    setupLabel(player3NameLabel, QString::fromStdString(playerNames[PLAYER_3]), {550, 130});
+    player3NameLabel->setAlignType(Qt::AlignBottom);
+
+    player4NameLabel = new PlayerNameLabel;
+    setupLabel(player4NameLabel, QString::fromStdString(playerNames[PLAYER_4]), {1100, 425});
+    player4NameLabel->setAlignType(Qt::AlignRight);
 
     infoWidget = new GameInfoWidget(pMainWindow);
     infoWidget->setParent(this);
@@ -75,14 +177,15 @@ void MainWidget::rescale()
 
     for (auto clickableCardArray : vector<ClickableCardArray *>{player1CardPlayed, player2CardPlayed,
                                                                 player3CardPlayed, player4CardPlayed, player1Cards
-                                                                #ifdef CPU_DEBUG
-                                                                ,player2Cards, player3Cards, player4Cards
-                                                                #endif
-                                                                })
+#ifdef CPU_DEBUG
+                                                                ,
+                                                                player2Cards, player3Cards, player4Cards
+#endif
+         })
         clickableCardArray->rescale();
 
-    for (auto label : vector<ScaledQLabel *>{player1NameLabel, player2NameLabel,
-                                             player3NameLabel, player4NameLabel})
+    for (auto label : vector<PlayerNameLabel *>{player1NameLabel, player2NameLabel,
+                                                player3NameLabel, player4NameLabel})
         label->rescale();
 
     for (auto widget : vector<GameInfoWidget *>{infoWidget})
@@ -104,13 +207,18 @@ void MainWidget::finishExistingHand(Card player1Card)
     {
         if (gamedata.handInfo.cardPlayed[playerNum].isUndefined()) // cpu hasn't played yet
         {
-            playCard(cpu.getCardToPlay(playerNum), playerNum);
+            auto &player = gamedata.playerArr[playerNum];
 
-            #ifdef CPU_DEBUG
-            player2Cards->showCards(gamedata.playerArr[PLAYER_2].cardArr);
-            player3Cards->showCards(gamedata.playerArr[PLAYER_3].cardArr);
-            player4Cards->showCards(gamedata.playerArr[PLAYER_4].cardArr);
-            #endif
+            playCard(player.cpu->getCardToPlay(), playerNum);
+
+#ifdef CPU_DEBUG
+            if (playerNum == PLAYER_2)
+                player2Cards->showCards(gamedata.playerArr[PLAYER_2].cardArr);
+            else if (playerNum == PLAYER_3)
+                player3Cards->showCards(gamedata.playerArr[PLAYER_3].cardArr);
+            else if (playerNum == PLAYER_4)
+                player4Cards->showCards(gamedata.playerArr[PLAYER_4].cardArr);
+#endif
 
             showCardPlayed(gamedata.handInfo.cardPlayed[playerNum], playerNum);
         }
@@ -146,7 +254,9 @@ void MainWidget::startNewHand(int startingPlayerNum)
 
     while (playerNum != PLAYER_1)
     {
-        playCard(cpu.getCardToPlay(playerNum), playerNum);
+        auto &player = gamedata.playerArr[playerNum];
+
+        playCard(player.cpu->getCardToPlay(), playerNum);
 
         showCardPlayed(gamedata.handInfo.cardPlayed[playerNum], playerNum);
 
@@ -177,12 +287,12 @@ bool MainWidget::validateCard(ClickableCard *clickableCard)
 
 void MainWidget::onCardClicked(ClickableCard *clickableCard)
 {
-    #ifdef CPU_DEBUG
+#ifdef CPU_DEBUG
     if (!gamedata.playerArr[PLAYER_1].cardArr.hasCard(clickableCard->data))
     {
         return;
     }
-    #endif
+#endif
 
     if (!validateCard(clickableCard))
     {
@@ -264,9 +374,9 @@ void MainWidget::refreshCardWidgets(GameData &pData)
             return false;
         }
 
-        for(int i = 0; i < cardArr1.size(); i++)
+        for (int i = 0; i < cardArr1.size(); i++)
         {
-            if(cardArr1[i] != cardArr2[i])
+            if (cardArr1[i] != cardArr2[i])
             {
                 return false;
             }
@@ -281,7 +391,7 @@ void MainWidget::refreshCardWidgets(GameData &pData)
         player1Cards->showCards(data.player1Cards);
     }
 
-    #ifdef CPU_DEBUG
+#ifdef CPU_DEBUG
     if (!areCardVectorsEqual(data.player2Cards, pData.playerArr[PLAYER_2].cardArr))
     {
         data.player2Cards = pData.playerArr[PLAYER_2].cardArr;
@@ -299,7 +409,7 @@ void MainWidget::refreshCardWidgets(GameData &pData)
         data.player4Cards = pData.playerArr[PLAYER_4].cardArr;
         player4Cards->showCards(data.player4Cards);
     }
-    #endif
+#endif
 }
 
 void MainWidget::refreshInfoWidget(GameData &pData)
@@ -321,6 +431,7 @@ void MainWidget::refreshNameTags(bool showNameTags)
         auto label = getPlayerNameLabel(playerNum);
         label->setText(QString::fromStdString(playerNames[playerNum]));
         label->setVisible(showNameTags);
+        label->repaint();
     }
 }
 
@@ -416,7 +527,7 @@ ClickableCardArray *MainWidget::getCardPlayedWidget(int playerNum)
     }
 }
 
-QLabel *MainWidget::getPlayerNameLabel(int playerNum)
+PlayerNameLabel *MainWidget::getPlayerNameLabel(int playerNum)
 {
     switch (playerNum)
     {

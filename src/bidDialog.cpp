@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "bidDialog.h"
-#include "cpuPlayer.h"
+#include "cpu.h"
 #include "gameData.h"
 #include "messageBox.h"
 #include "utils.h"
@@ -102,14 +102,20 @@ void BidDialog::onPassButtonPressed()
         getCpuBids();
     }
 
-    auto newNest = cpu.getChosenNest(gamedata.roundInfo.bidPlayer);
+    auto &bidPlayer = gamedata.playerArr[gamedata.roundInfo.bidPlayer];
 
-    auto &cardArr = gamedata.playerArr[gamedata.roundInfo.bidPlayer].cardArr;
+    // similar to "autoSelectNest"
+    auto newNest = bidPlayer.cpu->getChosenNest();
+
+    auto &cardArr = bidPlayer.cardArr;
     cardArr.insert(cardArr.end(), gamedata.nest.begin(), gamedata.nest.end());
     cardArr.remove(newNest);
 
-    gamedata.roundInfo.trump = cpu.getChosenTrump(gamedata.roundInfo.bidPlayer);
-    gamedata.roundInfo.partnerCard = cpu.getChosenPartner(gamedata.roundInfo.bidPlayer);
+    // similar to "autoSelectTrump"
+    gamedata.roundInfo.trump = bidPlayer.cpu->getChosenTrump();
+
+    // similar to "autoSelectPartner"
+    gamedata.roundInfo.partnerCard = bidPlayer.cpu->getChosenPartner();
 
     QDialog::reject(); // close bid dialog
     showBidResultMsgBox();
@@ -153,7 +159,7 @@ void BidDialog::getCpuBids()
             continue;
 
         int prevBid = player.bid;
-        player.bid = cpu.getBid(playerNum);
+        player.bid = player.cpu->getBid();
         player.passed = (player.bid == prevBid);
 
         if (player.bid > gamedata.roundInfo.bidAmount)
