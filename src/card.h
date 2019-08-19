@@ -1,6 +1,7 @@
 #ifndef CARD_H
 #define CARD_H
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -128,12 +129,13 @@ struct SuitInfoCompareTotalValue // ascending order
 class CardVector : public vector<Card>
 {
     using vector<Card>::vector;
+    using CardVectorRef = CardVector &;
 
 public:
     void sort(int trump = SUIT_UNDEFINED);
     void remove(const CardVector &cardArr);
     CardVector removeThisSuit(int suit, int n);
-    void append(const vector<const CardVector *> &cardArrays);
+    void append(const CardVector &cardArr);
 
     bool hasSuit(int suit) const;
     bool hasCard(const Card &card) const;
@@ -145,5 +147,7 @@ public:
     Card getCardWithHighestPointValue() const;
     Card getCardWithLowestPointValue() const; 
 };
+
+using CardVectorRef = CardVector &;
 
 #endif

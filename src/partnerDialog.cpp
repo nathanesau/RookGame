@@ -1,6 +1,6 @@
 #include "gameData.h"
 #include "partnerDialog.h"
-#include "utils.h"
+#include "settings.h"
 
 PartnerDialogLabel::PartnerDialogLabel(PartnerDialog *parent) : ScaledQLabel(parent)
 {
@@ -56,9 +56,9 @@ PartnerDialog::PartnerDialog(Card &pCardSelected, QWidget *parent) : cardSelecte
 
     setWindowTitle("Click partner card...");
     setWindowIcon(QIcon(":rookicon.gif"));
-    #ifdef WINDOW_ALWAYS_ON_TOP
+#ifdef WINDOW_ALWAYS_ON_TOP
     setWindowFlags(Qt::WindowStaysOnTopHint);
-    #endif
+#endif
     resize(PARTNER_DIALOG_SIZE);
 }
 
@@ -128,39 +128,26 @@ void PartnerDialog::onCardHoverLeave(ClickableCard *clickableCard)
 
 void PartnerDialog::setupCardArrays()
 {
-    auto splitCardArray = [](vector<CardVector *> &suitArrays, CardVector &cardArr) {
-        for (auto card : cardArr)
-        {
-            if (card.suit == SUIT_BLACK)
-            {
-                suitArrays[SUIT_BLACK]->push_back(card);
-            }
-            else if (card.suit == SUIT_GREEN)
-            {
-                suitArrays[SUIT_GREEN]->push_back(card);
-            }
-            else if (card.suit == SUIT_RED)
-            {
-                suitArrays[SUIT_RED]->push_back(card);
-            }
-            else if (card.suit == SUIT_YELLOW)
-            {
-                suitArrays[SUIT_YELLOW]->push_back(card);
-            }
-            else if (card.suit == SUIT_SPECIAL)
-            {
-                suitArrays[SUIT_SPECIAL]->push_back(card);
-            }
-        }
-    };
-
-    // don't allow user to pick themself as partner
-    vector<const CardVector *> cardArrays = {&gamedata.playerArr[PLAYER_2].cardArr, &gamedata.playerArr[PLAYER_3].cardArr,
-                                             &gamedata.playerArr[PLAYER_4].cardArr};
     CardVector aggregateCardArr;
-    aggregateCardArr.append(cardArrays);
+
+    if (Settings::Game::readPickNestAsPartner())
+    {
+        aggregateCardArr.append(gamedata.nest);
+    }
+
+    if(Settings::Game::readPickSelfAsPartner ())
+    {
+        aggregateCardArr.append(gamedata.playerArr[PLAYER_1].cardArr);
+    }
+
+    aggregateCardArr.append(gamedata.playerArr[PLAYER_2].cardArr);
+    aggregateCardArr.append(gamedata.playerArr[PLAYER_3].cardArr);
+    aggregateCardArr.append(gamedata.playerArr[PLAYER_4].cardArr);
     aggregateCardArr.sort();
 
-    vector<CardVector *> suitArrays = {&blackCards, &greenCards, &redCards, &yellowCards, &wildCards};
-    splitCardArray(suitArrays, aggregateCardArr);
+    copy_if(aggregateCardArr.begin(), aggregateCardArr.end(), back_inserter(blackCards), [](auto &c) { return c.suit == SUIT_BLACK; });
+    copy_if(aggregateCardArr.begin(), aggregateCardArr.end(), back_inserter(greenCards), [](auto &c) { return c.suit == SUIT_GREEN; });
+    copy_if(aggregateCardArr.begin(), aggregateCardArr.end(), back_inserter(redCards), [](auto &c) { return c.suit == SUIT_RED; });
+    copy_if(aggregateCardArr.begin(), aggregateCardArr.end(), back_inserter(yellowCards), [](auto &c) { return c.suit == SUIT_YELLOW; });
+    copy_if(aggregateCardArr.begin(), aggregateCardArr.end(), back_inserter(wildCards), [](auto &c) { return c.suit == SUIT_SPECIAL; });
 }

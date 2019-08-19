@@ -105,7 +105,7 @@ void BidDialog::onPassButtonPressed()
     auto newNest = cpu.getChosenNest(gamedata.roundInfo.bidPlayer);
 
     auto &cardArr = gamedata.playerArr[gamedata.roundInfo.bidPlayer].cardArr;
-    cardArr.append({&gamedata.nest});
+    cardArr.insert(cardArr.end(), gamedata.nest.begin(), gamedata.nest.end());
     cardArr.remove(newNest);
 
     gamedata.roundInfo.trump = cpu.getChosenTrump(gamedata.roundInfo.bidPlayer);

@@ -1,3 +1,4 @@
+#include <array>
 #include <QPushButton>
 #include <QObject>
 #include <string>
@@ -53,9 +54,9 @@ MiddleDialog::MiddleDialog(int &pTrumpSuitSelected, Card &pPartnerCardSelected,
     resize(MIDDLE_DIALOG_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
     setStyleSheet("background-color: white");
-    #ifdef WINDOW_ALWAYS_ON_TOP
+#ifdef WINDOW_ALWAYS_ON_TOP
     setWindowFlags(Qt::WindowStaysOnTopHint);
-    #endif
+#endif
 }
 
 void MiddleDialog::rescale()
@@ -106,6 +107,8 @@ void MiddleDialog::selectNestButtonPressed()
         qFatal("Problem executing nest dialog");
         return;
     }
+
+    nestCards->showCards(gamedata.nest);
 
     // refresh nest, player 1 cards
     mainWidget->refreshCardWidgets(gamedata);
@@ -166,10 +169,12 @@ void MiddleDialog::autoSelectPartnerButtonPressed()
 
     CardVector &cardArr = gamedata.playerArr[PLAYER_1].cardArr;
 
-    vector<const CardVector *> cardArrays = {&gamedata.playerArr[PLAYER_2].cardArr, &gamedata.playerArr[PLAYER_3].cardArr,
-                                             &gamedata.playerArr[PLAYER_4].cardArr, &gamedata.nest};
+    // auto-choose will not try to pick self as partner
     CardVector aggregateCardArr;
-    aggregateCardArr.append(cardArrays);
+    aggregateCardArr.append(gamedata.nest);
+    aggregateCardArr.append(gamedata.playerArr[PLAYER_2].cardArr);
+    aggregateCardArr.append(gamedata.playerArr[PLAYER_3].cardArr);
+    aggregateCardArr.append(gamedata.playerArr[PLAYER_4].cardArr);
     aggregateCardArr.sort();
 
     auto suitInfoArr = cardArr.getSuitInfoArray();

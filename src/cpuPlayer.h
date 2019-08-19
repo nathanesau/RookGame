@@ -24,14 +24,13 @@ public:
     CpuDecisionMaker();
 
     int getBid(int playerNum) const;
-    Card getCardToPlay(int playerNum) const;
     CardVector getChosenNest(int playerNum) const;
     int getChosenTrump(int playerNum) const;
     Card getChosenPartner(int playerNum) const;
+    Card getCardToPlay(int playerNum) const;
 
 private:
-    // helper functions (cpu logic can get quite complicated)
-    // consider cpu cache if the code is too time consuming
+    int getPartnerNum(int playerNum) const;
 };
 
 #endif

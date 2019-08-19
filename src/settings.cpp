@@ -170,6 +170,30 @@ int readNumCardsMiddleAllowed()
     return numCardsMiddleAllowed;
 }
 
+bool readPickSelfAsPartner()
+{
+    bool pickSelfAsPartner = false;
+
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.beginGroup("Game");
+    pickSelfAsPartner = settings.value("pickSelfAsPartner", false).toBool();
+    settings.endGroup();
+
+    return pickSelfAsPartner;
+}
+
+bool readPickNestAsPartner()
+{
+    bool pickNestAsPartner = false;
+
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.beginGroup("Game");
+    pickNestAsPartner = settings.value("pickNestAsPartner", false).toBool();
+    settings.endGroup();
+
+    return pickNestAsPartner;
+}
+
 void writeCpuBidAggressionLevel(int cpuBidAggressionLevel)
 {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
@@ -183,6 +207,22 @@ void writeNumCardsMiddleAllowed(int numCardsAllowed)
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
     settings.beginGroup("Game");
     settings.setValue("numCardsMiddleAllowed", numCardsAllowed);
+    settings.endGroup();
+}
+
+void writePickSelfAsPartner(bool pickSelfAsPartner)
+{
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.beginGroup("Game");
+    settings.setValue("pickSelfAsPartner", pickSelfAsPartner);
+    settings.endGroup();
+}
+
+void writePickNestAsPartner(bool pickNestAsPartner)
+{
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.beginGroup("Game");
+    settings.setValue("pickNestAsPartner", pickNestAsPartner);
     settings.endGroup();
 }
 } // namespace Game

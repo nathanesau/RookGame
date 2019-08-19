@@ -35,9 +35,13 @@ namespace Game
 {
 int readCpuBidAggressionLevel();
 int readNumCardsMiddleAllowed();
+bool readPickSelfAsPartner();
+bool readPickNestAsPartner();
 
 void writeCpuBidAggressionLevel(int cpuBidAggressionLevel);
 void writeNumCardsMiddleAllowed(int numCardsAllowed);
+void writePickSelfAsPartner(bool pickSelfAsPartner);
+void writePickNestAsPartner(bool pickNestAsPartner);
 } // namespace Game
 } // namespace Settings
 

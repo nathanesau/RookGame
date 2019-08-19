@@ -38,10 +38,30 @@ void GamePage::initializeNestGroup()
     nestGroup->setLayout(nestLayout);
 }
 
+void GamePage::initializePartnerGroup()
+{
+    pickSelfAsPartnerCheckBox = new QCheckBox;
+    pickSelfAsPartnerCheckBox->setText("Allow pick self as partner");
+    pickSelfAsPartnerCheckBox->setChecked(Settings::Game::readPickSelfAsPartner());
+
+    pickNestAsPartnerCheckBox = new QCheckBox;
+    pickNestAsPartnerCheckBox->setText("Allow pick nest as partner");
+    pickNestAsPartnerCheckBox->setChecked(Settings::Game::readPickNestAsPartner());
+
+    partnerGroup = new QGroupBox;
+    partnerGroup->setTitle("Partner");
+
+    partnerLayout = new QVBoxLayout;
+    partnerLayout->addWidget(pickSelfAsPartnerCheckBox);
+    partnerLayout->addWidget(pickNestAsPartnerCheckBox);
+    partnerGroup->setLayout(partnerLayout);
+}
+
 GamePage::GamePage(QWidget *parent) : QWidget(parent)
 {
     initializeBidGroup();
     initializeNestGroup();
+    initializePartnerGroup();
 
     applyButton = new QPushButton;
     applyButton->setText("Apply");
@@ -50,6 +70,7 @@ GamePage::GamePage(QWidget *parent) : QWidget(parent)
     mainLayout = new QVBoxLayout;
     mainLayout->addWidget(bidGroup);
     mainLayout->addWidget(nestGroup);
+    mainLayout->addWidget(partnerGroup);
     mainLayout->addSpacing(12);
     mainLayout->addWidget(applyButton);
     mainLayout->addStretch(1);
@@ -59,19 +80,29 @@ GamePage::GamePage(QWidget *parent) : QWidget(parent)
 
 void GamePage::onApply()
 {
-    applyBid();
-    applyNest();
+    applyBidGroup();
+    applyNestGroup();
+    applyPartnerGroup();
 }
 
-void GamePage::applyBid()
+void GamePage::applyBidGroup()
 {
     int cpuBidAggressionLevel = cpuBidAggressionBox->currentIndex();
     Settings::Game::writeCpuBidAggressionLevel(cpuBidAggressionLevel);
 }
 
-void GamePage::applyNest()
+void GamePage::applyNestGroup()
 {
     // these settings will be taken into account the next time a player wins bid
     int numMiddleCardsAllowed = numMiddleCardsAllowedSpinBox->value();
     Settings::Game::writeNumCardsMiddleAllowed(numMiddleCardsAllowed);
+}
+
+void GamePage::applyPartnerGroup()
+{
+    bool allowPickSelfAsPartner = pickSelfAsPartnerCheckBox->isChecked();
+    Settings::Game::writePickSelfAsPartner(allowPickSelfAsPartner);
+
+    bool allowPickNestAsPartner = pickNestAsPartnerCheckBox->isChecked();
+    Settings::Game::writePickNestAsPartner(allowPickNestAsPartner);
 }

@@ -303,7 +303,7 @@ void MainWindow::startNewRound()
 void MainWindow::showNewGameMessage()
 {
     MessageBox msgBox;
-    msgBox.setText("Clearing previous scoires and starting new game...");
+    msgBox.setText("Clearing previous scores and starting new game...");
     msgBox.setWindowTitle("New game");
     Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
     msgBox.exec();

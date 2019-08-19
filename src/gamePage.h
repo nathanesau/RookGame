@@ -26,12 +26,18 @@ class GamePage : public QWidget
     QLabel *numMiddleCardsAllowedLabel;
     QSpinBox *numMiddleCardsAllowedSpinBox;
 
+    QGroupBox *partnerGroup;
+    QVBoxLayout *partnerLayout;
+    QCheckBox *pickSelfAsPartnerCheckBox;
+    QCheckBox *pickNestAsPartnerCheckBox;
+
     QPushButton *applyButton;
 
     QVBoxLayout *mainLayout;
 
     void initializeBidGroup();
     void initializeNestGroup();
+    void initializePartnerGroup();
 
 public:
     GamePage(QWidget *parent = nullptr);
@@ -40,8 +46,9 @@ private:
 
     void onApply();
 
-    void applyBid();
-    void applyNest();
+    void applyBidGroup();
+    void applyNestGroup();
+    void applyPartnerGroup();
 };
 
 #endif

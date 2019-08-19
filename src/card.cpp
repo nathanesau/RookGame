@@ -156,6 +156,11 @@ void CardVector::sort(int trump)
     std::sort(this->begin(), this->end(), CardCompare(trump));
 }
 
+void CardVector::append(const CardVector &cardArr)
+{
+    insert(end(), cardArr.begin(), cardArr.end());
+}
+
 void CardVector::remove(const CardVector &cardArr)
 {
     for (int i = 0; i < cardArr.size(); i++)
@@ -175,44 +180,11 @@ CardVector CardVector::removeThisSuit(int suit, int n)
 {
     sort();
 
-    CardVector cardsRemoved; // return cards which were removed
+    CardVector ctr;
+    copy_if(begin(), end(), back_inserter(ctr), [&](Card &c) { return c.suit == suit && ctr.size() < n; });
+    remove(ctr);
 
-    if (n > 0)
-    {
-        for (auto It = this->begin(); It != this->end();)
-        {
-            if (It->suit == suit)
-            {
-                cardsRemoved.push_back(*It);
-                It = this->erase(It);
-            }
-            else
-            {
-                It++;
-            }
-
-            if (cardsRemoved.size() == n)
-            {
-                break;
-            }
-        }
-    }
-
-    return cardsRemoved;
-}
-
-void CardVector::append(const vector<const CardVector *> &cardArrays)
-{
-    for (auto cardArr : cardArrays)
-    {
-        if (cardArr)
-        {
-            for (auto It = cardArr->begin(); It != cardArr->end(); It++)
-            {
-                this->push_back(*It);
-            }
-        }
-    }
+    return ctr;
 }
 
 bool CardVector::hasSuit(int suit) const
@@ -237,15 +209,7 @@ CardVector CardVector::getPlayableCards(const HandInfo &handInfo) const
     if (hasSuit(suit))
     {
         CardVector playableCards;
-
-        for (auto It = this->begin(); It != this->end(); It++)
-        {
-            if (It->suit == suit)
-            {
-                playableCards.push_back(*It);
-            }
-        }
-
+        copy_if(begin(), end(), back_inserter(playableCards), [suit](auto &c) { return c.suit == suit; });
         return playableCards;
     }
     else // all cards are playable

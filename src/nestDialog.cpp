@@ -142,8 +142,9 @@ void NestDialog::autoChooseNest()
     CardVector &nest = gamedata.nest;
     CardVector &cardArr = gamedata.playerArr[PLAYER_1].cardArr;
 
-    auto combinedCardArr = CardVector();
-    combinedCardArr.append({&nest, &cardArr});
+    CardVector combinedCardArr;
+    combinedCardArr.append(nest);
+    combinedCardArr.append(cardArr);
     auto suitInfoArr = combinedCardArr.getSuitInfoArray();
 
     // from best cards (at front) to worst cards (at back)
@@ -157,7 +158,7 @@ void NestDialog::autoChooseNest()
         int countThisSuit = It->count;
 
         auto cardsThisSuit = combinedCardArr.removeThisSuit(suit, countThisSuit);
-        cardQualityQueue.append({&cardsThisSuit});
+        cardQualityQueue.append(cardsThisSuit);
 
         suitInfoArr.erase(It);
     }
@@ -203,7 +204,7 @@ void NestDialog::autoChooseNest()
 
     // sort cards before showing them
     newCardArr.sort();
-    nest.sort();
+    newNest.sort();
 
     cardArr = newCardArr;
     nest = newNest;
@@ -219,7 +220,7 @@ void NestDialog::autoChooseNestButtonPressed()
 
 void NestDialog::resetNestButtonPressed()
 {
-    gamedata.playerArr[PLAYER_1].cardArr.append({&gamedata.nest});
+    gamedata.playerArr[PLAYER_1].cardArr.append(gamedata.nest);
     gamedata.playerArr[PLAYER_1].cardArr.remove(originalNest);
     gamedata.playerArr[PLAYER_1].cardArr.sort();
 
