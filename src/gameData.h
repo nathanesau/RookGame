@@ -18,6 +18,7 @@ struct GameData
     map<int, map<int, int>> scoreHistory;
     OverallInfo overallInfo;
     RoundInfo roundInfo;
+    DetailedRoundInfo detailRoundInfo;
     HandInfo handInfo;
     CardVector nest;
     array<Player, 4> playerArr;

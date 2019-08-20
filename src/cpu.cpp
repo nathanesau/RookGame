@@ -125,23 +125,21 @@ void Cpu::selectTrump()
 // output: gamedata.roundInfo.partnerCard
 void Cpu::selectPartner()
 {
-    CardVector aggregateCardArr;
-    aggregateCardArr.append(gamedata.nest);
-
-    for(auto otherPlayerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    CardVector otherCards; // don't pick own cards as partner
+    
+    for(auto suit : {SUIT_BLACK, SUIT_GREEN, SUIT_RED, SUIT_YELLOW})
     {
-        if (playerNum != otherPlayerNum)
-        {
-            aggregateCardArr.append(gamedata.playerArr[otherPlayerNum].cardArr);
-        }
+        otherCards.append(cardArr.getOtherCardsThisSuit(suit));
     }
+    
+    otherCards.remove(gamedata.nest); // don't pick nest card as partner
 
     // logic from selectTrump (partner is conditional on trump suit)
     auto suitInfoArr = cardArr.getSuitInfoArray();
     std::remove_if(suitInfoArr.begin(), suitInfoArr.end(), [](const SuitInfo &info) { return info.suit == SUIT_SPECIAL; });
     int bestSuit = suitInfoArr.front().suit;
 
-    CardVector bestCards = aggregateCardArr.getCardsThisSuit(bestSuit);
+    CardVector bestCards = otherCards.getCardsThisSuit(bestSuit);
     bestCards.sort();
     
     Card bestCard = bestCards.back();
@@ -172,8 +170,24 @@ int Cpu::getPartnerNum() const
 
 Card Cpu::getCardToPlay() const
 {
-    // information used to make decision
     CardVector playableCards = cardArr.getPlayableCards(gamedata.handInfo);
+    
+    map<int, int> suitPointsRemaining;
+    
+    for(auto suit : {SUIT_BLACK, SUIT_GREEN, SUIT_RED, SUIT_YELLOW})
+    {
+        auto playerSuitCards = cardArr.getCardsThisSuit(suit);
+        auto otherSuitCards = cardArr.getOtherCardsThisSuit(suit);
+        auto playedSuitCards = gamedata.detailRoundInfo.suitCardsPlayed[suit];
+        
+        suitPointsRemaining[suit] = playerSuitCards.getNumPoints() + otherSuitCards.getNumPoints() - playedSuitCards.getNumPoints();
+    }
+    
+    //if (gamedata.handInfo.startingPlayerNum == PLAYER_UNDEFINED)
+    //{
+    //
+    //}
+    
     PlayerCardPair winningPair = gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo);
     int partnerNum = getPartnerNum();
 

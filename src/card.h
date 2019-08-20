@@ -145,6 +145,7 @@ public:
     int getTotalValue() const;
 
     CardVector getCardsThisSuit(int suit) const;
+    CardVector getOtherCardsThisSuit(int suit) const;
     CardVector getPlayableCards(const HandInfo &handInfo) const;
     CardVector getCardQualityQueue() const;
     SuitInfoArray getSuitInfoArray() const;

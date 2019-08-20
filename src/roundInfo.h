@@ -47,4 +47,12 @@ private:
     void updateTeamScores();
 };
 
+// used for determining what cpu card to play
+class DetailedRoundInfo
+{
+public:
+    map<int, int> suitPointsRemaining;
+    map<int, CardVector> suitCardsPlayed;
+};
+
 #endif
