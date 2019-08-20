@@ -1,4 +1,8 @@
+#include <algorithm>
+
 #include "gameData.h"
+
+using namespace std;
 
 GameData::GameData() : playerArr{Player(PLAYER_1), Player(PLAYER_2), Player(PLAYER_3), Player(PLAYER_4)}
 {

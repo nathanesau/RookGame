@@ -1,3 +1,5 @@
+#include <cassert>
+#include <math.h>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QSettings>
@@ -5,6 +7,8 @@
 
 #include "settings.h"
 #include "utils.h"
+
+using namespace std;
 
 namespace Utils
 {

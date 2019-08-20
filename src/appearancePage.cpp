@@ -1,7 +1,7 @@
 #include <QSettings>
 #include <vector>
 
-#include "AppearancePage.h"
+#include "appearancePage.h"
 #include "mainWindow.h"
 #include "settings.h"
 #include "utils.h"

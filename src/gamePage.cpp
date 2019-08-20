@@ -1,4 +1,4 @@
-#include "GamePage.h"
+#include "gamePage.h"
 #include "settings.h"
 
 void GamePage::initializeBidGroup()

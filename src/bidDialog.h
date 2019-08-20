@@ -7,7 +7,7 @@
 
 #include "common.h"
 #include "scaledWidgets.h"
-#include "ui_BidDialog.h" // uic -o ui_bidDialog.h bidDialog.ui
+#include "ui_bidDialog.h" // uic -o ui_bidDialog.h bidDialog.ui
 
 // forward declarations
 class CpuDecisionMaker;
