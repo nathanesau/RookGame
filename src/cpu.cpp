@@ -115,10 +115,11 @@ void Cpu::selectNest()
 // output: gamedata.roundInfo.trump
 void Cpu::selectTrump()
 {
-    vector<SuitInfo> suitInfoArr = cardArr.getSuitInfoArray();
+    SuitInfoArray suitInfoArr = cardArr.getSuitInfoArray();
+    std::remove_if(suitInfoArr.begin(), suitInfoArr.end(), [](const SuitInfo &info) { return info.suit == SUIT_SPECIAL; });
 
-    int trump = suitInfoArr[0].suit != SUIT_SPECIAL ? suitInfoArr[0].suit : suitInfoArr[1].suit;
-    gamedata.roundInfo.trump = trump;
+    int bestSuit = suitInfoArr.front().suit;
+    gamedata.roundInfo.trump = bestSuit;
 }
 
 // output: gamedata.roundInfo.partnerCard
