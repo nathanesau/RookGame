@@ -104,18 +104,9 @@ void BidDialog::onPassButtonPressed()
 
     auto &bidPlayer = gamedata.playerArr[gamedata.roundInfo.bidPlayer];
 
-    // similar to "autoSelectNest"
-    auto newNest = bidPlayer.cpu->getChosenNest();
-
-    auto &cardArr = bidPlayer.cardArr;
-    cardArr.insert(cardArr.end(), gamedata.nest.begin(), gamedata.nest.end());
-    cardArr.remove(newNest);
-
-    // similar to "autoSelectTrump"
-    gamedata.roundInfo.trump = bidPlayer.cpu->getChosenTrump();
-
-    // similar to "autoSelectPartner"
-    gamedata.roundInfo.partnerCard = bidPlayer.cpu->getChosenPartner();
+    bidPlayer.cpu->selectNest();
+    bidPlayer.cpu->selectTrump();
+    bidPlayer.cpu->selectPartner();
 
     QDialog::reject(); // close bid dialog
     showBidResultMsgBox();

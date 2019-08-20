@@ -11,10 +11,8 @@ Player::Player(int pPlayerNum) : playerNum(pPlayerNum),
                                  bid(0),
                                  passed(false)
 {
-    if (playerNum == PLAYER_2 || playerNum == PLAYER_3 || playerNum == PLAYER_4)
-    {
-        cpu = make_unique<Cpu>(playerNum, teamNum, cardArr, bid, passed);
-    }
+    // for PLAYER_1, cpu is used for "AUTO" decisions
+    cpu = make_unique<Cpu>(playerNum, teamNum, cardArr, bid, passed);
 }
 
 void Player::clear()

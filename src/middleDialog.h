@@ -20,12 +20,10 @@ extern GameData gamedata;
 
 const QSize MIDDLE_DIALOG_SIZE = {724, 435};
 
+// output: gamedata.nest, gamedata.roundInfo.trump, gamedata.roundInfo.partnerCard
 class MiddleDialog : public QDialogWithClickableCardArray
 {
     CardVector originalNest;
-
-    int &trumpSuitSelected; // output of dialog
-    Card &partnerCardSelected; // output of dialog
 
 private:
     MainWidget *mainWidget; // non-owning
@@ -37,7 +35,7 @@ private:
     ClickableCardArray *partnerCards;
 
 public:
-    MiddleDialog(int &pTrumpSuitSelected, Card &pPartnerCardSelected, MainWidget *pMainWidget, QMainWindow *pMainWindow, QWidget *parent = nullptr);
+    MiddleDialog(MainWidget *pMainWidget, QMainWindow *pMainWindow, QWidget *parent = nullptr);
     virtual void rescale();
     virtual void reject();
 

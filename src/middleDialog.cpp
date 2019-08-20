@@ -14,10 +14,7 @@
 
 using namespace std;
 
-MiddleDialog::MiddleDialog(int &pTrumpSuitSelected, Card &pPartnerCardSelected,
-                           MainWidget *pMainWidget, QMainWindow *pMainWindow, QWidget *parent) : trumpSuitSelected(pTrumpSuitSelected),
-                                                                                                 partnerCardSelected(pPartnerCardSelected),
-                                                                                                 mainWidget(pMainWidget),
+MiddleDialog::MiddleDialog(MainWidget *pMainWidget, QMainWindow *pMainWindow, QWidget *parent) : mainWidget(pMainWidget),
                                                                                                  mainWindow(pMainWindow),
                                                                                                  QDialogWithClickableCardArray(true, parent),
                                                                                                  originalNest(gamedata.nest)
@@ -116,8 +113,8 @@ void MiddleDialog::selectNestButtonPressed()
 
 void MiddleDialog::autoSelectNestButtonPressed()
 {
-    NestDialog::autoChooseNest();
-
+    gamedata.playerArr[PLAYER_1].cpu->selectNest();
+    
     nestCards->showCards(gamedata.nest);
 
     // refresh nest, player 1 cards
@@ -126,7 +123,7 @@ void MiddleDialog::autoSelectNestButtonPressed()
 
 void MiddleDialog::selectTrumpButtonPressed()
 {
-    TrumpDialog trumpDlg(trumpSuitSelected);
+    TrumpDialog trumpDlg(gamedata.roundInfo.trump);
     Utils::Ui::moveParentlessDialog(&trumpDlg, mainWindow, DIALOG_POSITION_TRUMP_DLG);
 
     if (!trumpDlg.exec())
@@ -135,22 +132,19 @@ void MiddleDialog::selectTrumpButtonPressed()
         return;
     }
 
-    setupTrumpLabel(trumpSuitSelected);
+    setupTrumpLabel(gamedata.roundInfo.trump);
 }
 
 void MiddleDialog::autoSelectTrumpButtonPressed()
 {
-    // choose suit which player has most of as trump
-    vector<SuitInfo> suitInfoArr = gamedata.playerArr[PLAYER_1].cardArr.getSuitInfoArray();
+    gamedata.playerArr[PLAYER_1].cpu->selectTrump();
 
-    trumpSuitSelected = suitInfoArr[0].suit != SUIT_SPECIAL ? suitInfoArr[0].suit
-                                                            : suitInfoArr[1].suit;
-    setupTrumpLabel(trumpSuitSelected);
+    setupTrumpLabel(gamedata.roundInfo.trump);
 }
 
 void MiddleDialog::selectPartnerButtonPressed()
 {
-    PartnerDialog partnerDlg(partnerCardSelected);
+    PartnerDialog partnerDlg(gamedata.roundInfo.partnerCard);
     Utils::Ui::moveParentlessDialog(&partnerDlg, mainWindow, DIALOG_POSITION_PARTNER_DLG);
 
     if (!partnerDlg.exec())
@@ -159,51 +153,19 @@ void MiddleDialog::selectPartnerButtonPressed()
         return;
     }
 
-    partnerCards->showCards({partnerCardSelected});
+    partnerCards->showCards({gamedata.roundInfo.partnerCard});
 }
 
 void MiddleDialog::autoSelectPartnerButtonPressed()
 {
-    // choose highest card NOT in players hand
-    //      of suit which player has most of
+    gamedata.playerArr[PLAYER_1].cpu->selectPartner();
 
-    CardVector &cardArr = gamedata.playerArr[PLAYER_1].cardArr;
-
-    // auto-choose will not try to pick self as partner
-    CardVector aggregateCardArr;
-    aggregateCardArr.append(gamedata.nest);
-    aggregateCardArr.append(gamedata.playerArr[PLAYER_2].cardArr);
-    aggregateCardArr.append(gamedata.playerArr[PLAYER_3].cardArr);
-    aggregateCardArr.append(gamedata.playerArr[PLAYER_4].cardArr);
-    aggregateCardArr.sort();
-
-    auto suitInfoArr = cardArr.getSuitInfoArray();
-
-    int bestSuit = suitInfoArr[0].suit != SUIT_SPECIAL ? suitInfoArr[0].suit : suitInfoArr[1].suit;
-
-    Card bestCard(bestSuit, VALUE_1);
-
-    for (auto &card : aggregateCardArr) // guaranteed to have at least one card of bestSuit
-    {
-        if (card.suit != bestSuit)
-            continue;
-
-        if (card.value > bestCard.value)
-        {
-            bestCard = card;
-        }
-    }
-
-    if (bestCard != Card(bestSuit, VALUE_1)) // found a good card
-    {
-        partnerCardSelected = bestCard;
-        partnerCards->showCards({partnerCardSelected});
-    }
+    partnerCards->showCards({gamedata.roundInfo.partnerCard});
 }
 
 void MiddleDialog::okButtonPressed()
 {
-    if (trumpSuitSelected == SUIT_UNDEFINED || partnerCardSelected == Card())
+    if (gamedata.roundInfo.trump == SUIT_UNDEFINED || gamedata.roundInfo.partnerCard.isUndefined())
     {
         MessageBox msgBox;
         msgBox.setText("Trump and partner card must be selected");

@@ -124,6 +124,8 @@ struct SuitInfoCompareTotalValue // ascending order
     }
 };
 
+using SuitInfoArray = vector<SuitInfo>;
+
 // do not delete objects through base class pointer
 // https://stackoverflow.com/questions/56296536/how-to-derive-from-vector-class
 class CardVector : public vector<Card>
@@ -134,16 +136,19 @@ class CardVector : public vector<Card>
 public:
     void sort(int trump = SUIT_UNDEFINED);
     void remove(const CardVector &cardArr);
-    CardVector removeThisSuit(int suit, int n);
     void append(const CardVector &cardArr);
 
     bool hasSuit(int suit) const;
     bool hasCard(const Card &card) const;
-    int getNumPoints() const;
-    CardVector getPlayableCards(const HandInfo &handInfo) const;
-    vector<SuitInfo> getSuitInfoArray() const;
 
-    // helpful functions for cpu logic
+    int getNumPoints() const;
+    int getTotalValue() const;
+
+    CardVector getCardsThisSuit(int suit) const;
+    CardVector getPlayableCards(const HandInfo &handInfo) const;
+    CardVector getCardQualityQueue() const;
+    SuitInfoArray getSuitInfoArray() const;
+
     Card getCardWithHighestPointValue() const;
     Card getCardWithLowestPointValue() const; 
 };

@@ -176,17 +176,6 @@ void CardVector::remove(const CardVector &cardArr)
     }
 }
 
-CardVector CardVector::removeThisSuit(int suit, int n)
-{
-    sort();
-
-    CardVector ctr;
-    copy_if(begin(), end(), back_inserter(ctr), [&](Card &c) { return c.suit == suit && ctr.size() < n; });
-    remove(ctr);
-
-    return ctr;
-}
-
 bool CardVector::hasSuit(int suit) const
 {
     return std::any_of(begin(), end(), [suit](const Card &a) { return a.suit == suit; });
@@ -200,6 +189,18 @@ bool CardVector::hasCard(const Card &card) const
 int CardVector::getNumPoints() const
 {
     return accumulate(begin(), end(), 0, [](int a, const Card &b) { return a + b.getPointValue(); });
+}
+
+int CardVector::getTotalValue() const
+{
+    return accumulate(begin(), end(), 0, [](int a, const Card &b) { return a + b.value; });
+}
+
+CardVector CardVector::getCardsThisSuit(int suit) const
+{
+    CardVector cts;
+    copy_if(begin(), end(), back_inserter(cts), [&](const Card &c) { return c.suit == suit; });
+    return cts;
 }
 
 CardVector CardVector::getPlayableCards(const HandInfo &handInfo) const
@@ -218,9 +219,27 @@ CardVector CardVector::getPlayableCards(const HandInfo &handInfo) const
     }
 }
 
-vector<SuitInfo> CardVector::getSuitInfoArray() const
+CardVector CardVector::getCardQualityQueue() const
 {
-    vector<SuitInfo> suitInfoArr;
+    // best suits are at front of suitInfoArr
+    auto suitInfoArr = getSuitInfoArray();
+
+    // from best cards (at front) to worst cards (at back)
+    CardVector cardQualityQueue;
+    
+    for(auto It = suitInfoArr.begin(); It != suitInfoArr.end(); It++)
+    {
+        auto cardsThisSuit = getCardsThisSuit(It->suit);
+        reverse(cardsThisSuit.begin(), cardsThisSuit.end());
+        cardQualityQueue.append(cardsThisSuit);
+    }
+
+    return cardQualityQueue;
+}
+
+SuitInfoArray CardVector::getSuitInfoArray() const
+{
+    SuitInfoArray suitInfoArr;
 
     for (auto suit : vector<int>{SUIT_BLACK, SUIT_GREEN, SUIT_RED, SUIT_YELLOW, SUIT_SPECIAL})
     {

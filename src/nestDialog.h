@@ -55,8 +55,6 @@ public:
     virtual void onCardHoverEnter(ClickableCard *clickableCard);
     virtual void onCardHoverLeave(ClickableCard *clickableCard);
 
-    static void autoChooseNest();
-
     void autoChooseNestButtonPressed();
     void resetNestButtonPressed();
     void doneNestButtonPressed();

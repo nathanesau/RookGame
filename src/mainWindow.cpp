@@ -268,7 +268,7 @@ void MainWindow::startNewRound()
 
     if (player1WonBid)
     {
-        MiddleDialog middleDlg(gamedata.roundInfo.trump, gamedata.roundInfo.partnerCard, widget, this);
+        MiddleDialog middleDlg(widget, this);
         Utils::Ui::moveParentlessDialog(&middleDlg, this, DIALOG_POSITION_MIDDLE_DLG);
 
         if (!middleDlg.exec())

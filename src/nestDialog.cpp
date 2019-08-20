@@ -137,82 +137,9 @@ void NestDialog::onCardHoverLeave(ClickableCard *clickableCard)
     // do nothing
 }
 
-void NestDialog::autoChooseNest()
-{
-    CardVector &nest = gamedata.nest;
-    CardVector &cardArr = gamedata.playerArr[PLAYER_1].cardArr;
-
-    CardVector combinedCardArr;
-    combinedCardArr.append(nest);
-    combinedCardArr.append(cardArr);
-    auto suitInfoArr = combinedCardArr.getSuitInfoArray();
-
-    // from best cards (at front) to worst cards (at back)
-    CardVector cardQualityQueue;
-    
-    while (combinedCardArr.size() > 0)
-    {
-        auto It = --suitInfoArr.end();
-
-        int suit = It->suit;
-        int countThisSuit = It->count;
-
-        auto cardsThisSuit = combinedCardArr.removeThisSuit(suit, countThisSuit);
-        cardQualityQueue.append(cardsThisSuit);
-
-        suitInfoArr.erase(It);
-    }
-
-    reverse(cardQualityQueue.begin(), cardQualityQueue.end());
-
-    CardVector newNest;
-    CardVector newCardArr;
-
-    int numNestCardsAllowed = Settings::Game::readNumCardsMiddleAllowed();
-    int numNestCardsTaken = 0;
-    int numCardsProcessed = 0;
-
-    for (auto &card : cardQualityQueue)
-    {
-        bool isNestCard = nest.hasCard(card);
-
-        if (newCardArr.size() == 13)
-        {
-            // do not take card (back to nest)
-            newNest.push_back(card);
-        }
-        else
-        {
-            if (isNestCard)
-            {
-                if (numNestCardsTaken < numNestCardsAllowed) // take card
-                {
-                    newCardArr.push_back(card);
-                    numNestCardsTaken++;
-                }
-                else // do not take card (back to nest)
-                {
-                    newNest.push_back(card);
-                }
-            }
-            else // take card
-            {
-                newCardArr.push_back(card);
-            }
-        }
-    }
-
-    // sort cards before showing them
-    newCardArr.sort();
-    newNest.sort();
-
-    cardArr = newCardArr;
-    nest = newNest;
-}
-
 void NestDialog::autoChooseNestButtonPressed()
 {
-    NestDialog::autoChooseNest();
+    gamedata.playerArr[PLAYER_1].cpu->selectNest();
 
     nestCards->showCards(gamedata.nest, &originalNestStyles);
     player1CardsPreview->showCards(gamedata.playerArr[PLAYER_1].cardArr, &originalNestStyles);

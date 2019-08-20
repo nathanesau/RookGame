@@ -32,9 +32,11 @@ public:
     void clear();
 
     int getBid() const;
-    CardVector getChosenNest() const;
-    int getChosenTrump() const;
-    Card getChosenPartner() const;
+
+    void selectNest();    // output: gamedata.nest, this->cardArr
+    void selectTrump();   // output: gamedata.roundInfo.trump
+    void selectPartner(); // output: gamedata.roundInfo.partnerCard
+
     Card getCardToPlay() const;
 
 private:

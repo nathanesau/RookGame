@@ -24,8 +24,7 @@ int Cpu::getBid() const
 {
     cardArr.sort();
 
-    double totalValue = accumulate(cardArr.begin(), cardArr.end(), 0, [](int a, const Card &b) { return a + b.value; });
-    double averageValue = totalValue / cardArr.size();
+    double averageValue = (double) cardArr.getTotalValue() / cardArr.size();
 
     const double MU = 7.54;
     const double SIGMA = 0.987;
@@ -63,73 +62,87 @@ int Cpu::getBid() const
     }
 }
 
-CardVector Cpu::getChosenNest() const
+// output: gamedata.nest, this->cardArr
+void Cpu::selectNest()
 {
+    CardVector combinedCardArr;
+    combinedCardArr.append(gamedata.nest);
+    combinedCardArr.append(cardArr);
+
+    // best cards at front, worst cards at back
+    CardVector cardQualityQueue = combinedCardArr.getCardQualityQueue();
+
     CardVector newNest;
     CardVector newCardArr;
-    newCardArr.append(cardArr);
-    newCardArr.append(gamedata.nest);
 
-    auto suitInfoArr = cardArr.getSuitInfoArray();
+    const int numNestCardsAllowed = Settings::Game::readNumCardsMiddleAllowed();
+    int numNestCardsTaken = 0;
 
-    int cardsToRemove = 5;
-
-    while (cardsToRemove > 0) // discard worst cards to nest
+    for (auto &card : cardQualityQueue)
     {
-        auto It = --suitInfoArr.end();
-
-        if (It->count > 0)
+        // we should check that player's hand is not too large here before trying to take more cards
+        if (newCardArr.size() == 13)
         {
-            int n = min(It->count, cardsToRemove);
-            auto cardsRemoved = newCardArr.removeThisSuit(It->suit, n);
-            cardsToRemove -= n;
+            newNest.push_back(card);
+            continue;
+        }
 
-            for (auto &card : cardsRemoved)
+        if (gamedata.nest.hasCard(card))
+        {
+            if (numNestCardsTaken < numNestCardsAllowed)
+            {
+                newCardArr.push_back(card);
+                numNestCardsTaken++;
+            }
+            else
             {
                 newNest.push_back(card);
             }
         }
-
-        suitInfoArr.erase(It);
+        else
+        {
+            newCardArr.push_back(card);
+        }
     }
 
-    return newNest;
+    newCardArr.sort();
+    newNest.sort();
+
+    cardArr = newCardArr;
+    gamedata.nest = newNest;
 }
 
-int Cpu::getChosenTrump() const
+// output: gamedata.roundInfo.trump
+void Cpu::selectTrump()
 {
     vector<SuitInfo> suitInfoArr = cardArr.getSuitInfoArray();
 
-    return suitInfoArr[0].suit != SUIT_SPECIAL ? suitInfoArr[0].suit : suitInfoArr[1].suit;
+    int trump = suitInfoArr[0].suit != SUIT_SPECIAL ? suitInfoArr[0].suit : suitInfoArr[1].suit;
+    gamedata.roundInfo.trump = trump;
 }
 
-Card Cpu::getChosenPartner() const
+// output: gamedata.roundInfo.partnerCard
+void Cpu::selectPartner()
 {
-    pair<int, int> otherCpuPlayers = [](int playerNum) {
-        switch (playerNum)
-        {
-        case PLAYER_2:
-            return make_pair(PLAYER_3, PLAYER_4);
-        case PLAYER_3:
-            return make_pair(PLAYER_2, PLAYER_4);
-        default: // PLAYER_4
-            return make_pair(PLAYER_2, PLAYER_3);
-        }
-    }(playerNum);
-
     CardVector aggregateCardArr;
     aggregateCardArr.append(gamedata.nest);
-    aggregateCardArr.append(gamedata.playerArr[PLAYER_1].cardArr);
-    aggregateCardArr.append(gamedata.playerArr[otherCpuPlayers.first].cardArr);
-    aggregateCardArr.append(gamedata.playerArr[otherCpuPlayers.second].cardArr);
+
+    for(auto otherPlayerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    {
+        if (playerNum != otherPlayerNum)
+        {
+            aggregateCardArr.append(gamedata.playerArr[otherPlayerNum].cardArr);
+        }
+    }
 
     auto suitInfoArr = cardArr.getSuitInfoArray();
+    std::remove_if(suitInfoArr.begin(), suitInfoArr.end(), [](const SuitInfo &info) { return info.suit == SUIT_SPECIAL; });
 
-    int bestSuit = suitInfoArr[0].suit != SUIT_SPECIAL ? suitInfoArr[0].suit : suitInfoArr[1].suit;
-
+    int bestSuit = suitInfoArr.front().suit;
     Card bestCard(bestSuit, VALUE_1);
 
-    for (auto &card : aggregateCardArr) // guaranteed to have at least one card of bestSuit
+    // guaranteed to find at least one card of bestSuit
+    for (auto &card : aggregateCardArr)
     {
         if (card.suit != bestSuit)
             continue;
@@ -140,9 +153,7 @@ Card Cpu::getChosenPartner() const
         }
     }
 
-    assert(bestCard != Card(bestSuit, VALUE_1)); // found appropriate partner card
-
-    return bestCard;
+    gamedata.roundInfo.partnerCard = bestCard;
 }
 
 int Cpu::getPartnerNum() const

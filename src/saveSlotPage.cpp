@@ -17,7 +17,7 @@ SaveSlotPage::SaveSlotPage(QString dbName, QWidget *parent) : QWidget(parent)
     existsGroup->setLayout(existsLayout);
 
     auto setupScoreLabel = [this](QLabel *scoreLabel, int playerNum) {
-        string labelText = pageData.playerArr[playerNum].getPlayerName() + " " +
+        string labelText = pageData.playerArr[playerNum].getPlayerName() + ": " +
                            to_string(pageData.overallInfo.playerScores[playerNum]);
 
         scoreLabel->setText(QString::fromStdString(labelText));
@@ -91,7 +91,7 @@ SaveSlotPage::SaveSlotPage(QString dbName, QWidget *parent) : QWidget(parent)
     roundGroup->setLayout(roundLayout);
 
     auto setupCardLabel = [this](QLabel *cardLabel, int playerNum) {
-        string labelText = "Player " + to_string(playerNum) + ": " +
+        string labelText = pageData.playerArr[playerNum].getPlayerName() + ": " + 
                            pageData.handInfo.cardPlayed[playerNum].getCardAsString();
         QString labelTextQt = QString::fromStdString(labelText);
         cardLabel->setText(labelTextQt);
