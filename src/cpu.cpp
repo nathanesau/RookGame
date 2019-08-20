@@ -117,8 +117,8 @@ void Cpu::selectTrump()
 {
     SuitInfoArray suitInfoArr = cardArr.getSuitInfoArray();
     std::remove_if(suitInfoArr.begin(), suitInfoArr.end(), [](const SuitInfo &info) { return info.suit == SUIT_SPECIAL; });
-
     int bestSuit = suitInfoArr.front().suit;
+
     gamedata.roundInfo.trump = bestSuit;
 }
 
@@ -136,24 +136,15 @@ void Cpu::selectPartner()
         }
     }
 
+    // logic from selectTrump (partner is conditional on trump suit)
     auto suitInfoArr = cardArr.getSuitInfoArray();
     std::remove_if(suitInfoArr.begin(), suitInfoArr.end(), [](const SuitInfo &info) { return info.suit == SUIT_SPECIAL; });
-
     int bestSuit = suitInfoArr.front().suit;
-    Card bestCard(bestSuit, VALUE_1);
 
-    // guaranteed to find at least one card of bestSuit
-    for (auto &card : aggregateCardArr)
-    {
-        if (card.suit != bestSuit)
-            continue;
-
-        if (card.value > bestCard.value)
-        {
-            bestCard = card;
-        }
-    }
-
+    CardVector bestCards = aggregateCardArr.getCardsThisSuit(bestSuit);
+    bestCards.sort();
+    
+    Card bestCard = bestCards.back();
     gamedata.roundInfo.partnerCard = bestCard;
 }
 
