@@ -57,11 +57,31 @@ void GamePage::initializePartnerGroup()
     partnerGroup->setLayout(partnerLayout);
 }
 
+void GamePage::initializeCpuGroup()
+{
+    cpuRandomnessLabel = new QLabel;
+    cpuRandomnessLabel->setText("Choose CPU randomness level: ");
+
+    cpuRandomnessBox = new QComboBox;
+    cpuRandomnessBox->addItems({"None (0%)", "Low (10%)", "Medium (20%)", "High (30%)"});
+    cpuRandomnessBox->setToolTip("Set the randomness for when CPU plays cards");
+    cpuRandomnessBox->setCurrentIndex(Settings::Game::readCpuRandomnessLevel());    
+
+    cpuGroup = new QGroupBox;
+    cpuGroup->setTitle("CPU settings");
+    
+    cpuLayout = new QHBoxLayout;
+    cpuLayout->addWidget(cpuRandomnessLabel);
+    cpuLayout->addWidget(cpuRandomnessBox);
+    cpuGroup->setLayout(cpuLayout);
+}
+
 GamePage::GamePage(QWidget *parent) : QWidget(parent)
 {
     initializeBidGroup();
     initializeNestGroup();
     initializePartnerGroup();
+    initializeCpuGroup();
 
     applyButton = new QPushButton;
     applyButton->setText("Apply");
@@ -71,6 +91,7 @@ GamePage::GamePage(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(bidGroup);
     mainLayout->addWidget(nestGroup);
     mainLayout->addWidget(partnerGroup);
+    mainLayout->addWidget(cpuGroup);
     mainLayout->addSpacing(12);
     mainLayout->addWidget(applyButton);
     mainLayout->addStretch(1);
@@ -83,6 +104,7 @@ void GamePage::onApply()
     applyBidGroup();
     applyNestGroup();
     applyPartnerGroup();
+    applyCpuGroup();
 }
 
 void GamePage::applyBidGroup()
@@ -105,4 +127,10 @@ void GamePage::applyPartnerGroup()
 
     bool allowPickNestAsPartner = pickNestAsPartnerCheckBox->isChecked();
     Settings::Game::writePickNestAsPartner(allowPickNestAsPartner);
+}
+
+void GamePage::applyCpuGroup()
+{
+    int cpuRandomnessLevel = cpuRandomnessBox->currentIndex();
+    Settings::Game::writeCpuRandomnessLevel(cpuRandomnessLevel);
 }

@@ -288,8 +288,32 @@ void Cpu::selectPartner()
     gamedata.roundInfo.partnerCard = bestCard;
 }
 
+bool Cpu::useRandomStrategy() const
+{
+    int randomnessLevel = Settings::Game::readCpuRandomnessLevel();
+    double p = ((double)rand() / (RAND_MAX));
+
+    switch (randomnessLevel)
+    {
+    case CPU_RANDOMNESS_LEVEL_NONE:
+        return false;
+    case CPU_RANDOMNESS_LEVEL_LOW:
+        return (p <= 0.1);
+    case CPU_RANDOMNESS_LEVEL_MID:
+        return (p <= 0.2);
+    case CPU_RANDOMNESS_LEVEL_HIGH:
+        return (p <= 0.3);
+    }
+}
+
 PlayCardStrategy Cpu::getPlayCardStrategy(CpuPlayCardStrategyInputs &inputs) const
 {
+    if (useRandomStrategy())
+    {
+        return STRATEGY_RANDOM;
+    }
+    
+    // deterministic strategy
     if (inputs.isPartner(inputs.winningPlayerNum))
     {
         if (inputs.isWinningPlayerNumLikelyToWinHand())
@@ -402,7 +426,7 @@ Card Cpu::getHighestCardToPlay(CpuPlayCardStrategyInputs &inputs) const
 Card Cpu::getThrowAwayCardToPlay(CpuPlayCardStrategyInputs &inputs) const
 {
     auto card_is_trump = [](const Card &card) { return card.suit == gamedata.roundInfo.trump; };
-    auto card_has_points = [](const Card &card) { return card.getPointValue () > 0; };
+    auto card_has_points = [](const Card &card) { return card.getPointValue() > 0; };
 
     auto &playableCards = inputs.playableCards;
     Card cardToPlay; // undefined

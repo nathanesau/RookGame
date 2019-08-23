@@ -31,6 +31,11 @@ class GamePage : public QWidget
     QCheckBox *pickSelfAsPartnerCheckBox;
     QCheckBox *pickNestAsPartnerCheckBox;
 
+    QGroupBox *cpuGroup;
+    QHBoxLayout *cpuLayout;
+    QLabel *cpuRandomnessLabel;
+    QComboBox *cpuRandomnessBox;
+
     QPushButton *applyButton;
 
     QVBoxLayout *mainLayout;
@@ -38,6 +43,7 @@ class GamePage : public QWidget
     void initializeBidGroup();
     void initializeNestGroup();
     void initializePartnerGroup();
+    void initializeCpuGroup();
 
 public:
     GamePage(QWidget *parent = nullptr);
@@ -49,6 +55,7 @@ private:
     void applyBidGroup();
     void applyNestGroup();
     void applyPartnerGroup();
+    void applyCpuGroup();
 };
 
 #endif

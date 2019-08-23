@@ -37,11 +37,13 @@ int readCpuBidAggressionLevel();
 int readNumCardsMiddleAllowed();
 bool readPickSelfAsPartner();
 bool readPickNestAsPartner();
+int readCpuRandomnessLevel();
 
 void writeCpuBidAggressionLevel(int cpuBidAggressionLevel);
 void writeNumCardsMiddleAllowed(int numCardsAllowed);
 void writePickSelfAsPartner(bool pickSelfAsPartner);
 void writePickNestAsPartner(bool pickNestAsPartner);
+void writeCpuRandomnessLevel(int cpuRandomnessLevel);
 } // namespace Game
 } // namespace Settings
 

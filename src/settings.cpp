@@ -194,6 +194,18 @@ bool readPickNestAsPartner()
     return pickNestAsPartner;
 }
 
+int readCpuRandomnessLevel()
+{
+    int cpuRandomnessLevel = 1; // low (10%)
+
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.beginGroup("Game");
+    cpuRandomnessLevel = settings.value("cpuRandomnessLevel", cpuRandomnessLevel).toInt();
+    settings.endGroup();
+
+    return cpuRandomnessLevel;
+}
+
 void writeCpuBidAggressionLevel(int cpuBidAggressionLevel)
 {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
@@ -223,6 +235,14 @@ void writePickNestAsPartner(bool pickNestAsPartner)
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
     settings.beginGroup("Game");
     settings.setValue("pickNestAsPartner", pickNestAsPartner);
+    settings.endGroup();
+}
+
+void writeCpuRandomnessLevel(int cpuRandomnessLevel)
+{
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.beginGroup("Game");
+    settings.setValue("cpuRandomnessLevel", cpuRandomnessLevel);
     settings.endGroup();
 }
 } // namespace Game

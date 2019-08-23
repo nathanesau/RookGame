@@ -19,6 +19,11 @@ const int CPU_BID_AGGRESSION_LEVEL_LOW = 0;
 const int CPU_BID_AGGRESSION_LEVEL_MID = 1;
 const int CPU_BID_AGRESSION_LEVEL_HIGH = 2;
 
+const int CPU_RANDOMNESS_LEVEL_NONE = 0;
+const int CPU_RANDOMNESS_LEVEL_LOW = 1; // low (10%)
+const int CPU_RANDOMNESS_LEVEL_MID = 2; // mid (20%)
+const int CPU_RANDOMNESS_LEVEL_HIGH = 3; // high (30%)
+
 enum PlayCardStrategy
 {
     STRATEGY_UNDEFINED = -1,
@@ -91,6 +96,7 @@ public:
     Card getThrowAwayCardToPlay(CpuPlayCardStrategyInputs &inputs) const; // STRATEGY_THROW_AWAY_CARD
 
 private:
+    bool useRandomStrategy() const;
     PlayCardStrategy getPlayCardStrategy(CpuPlayCardStrategyInputs &inputs) const;
 };
 

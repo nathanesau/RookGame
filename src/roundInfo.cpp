@@ -133,8 +133,5 @@ DetailedRoundInfo::DetailedRoundInfo()
 
 void DetailedRoundInfo::clear()
 {
-    for(auto suit : suitCardsPlayed)
-    {
-        suit.clear();
-    }
+    for_each(suitCardsPlayed.begin(), suitCardsPlayed.end(), [](auto &cardArr) { cardArr.clear(); });
 }
