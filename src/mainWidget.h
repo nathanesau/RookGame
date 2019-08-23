@@ -28,11 +28,16 @@ extern GameData gamedata;
 const QSize MAIN_WIDGET_SIZE = {1200, 850};
 
 // implemented like a ScaledWidget
+// ignore warnings from QBackingStore::endPaint()... it's a known Qt Bug
 class PlayerNameLabel : public QWidget
 {
+    bool painted;
+
+    const float MAX_NAME_CHAR = 8;
+
+    const Qt::AlignmentFlag align;
     float prevScaleFactor;
     float scaleFactor;
-    Qt::AlignmentFlag alignType; // only align left, align right, align top, align bottom supported
 
 private:
     QString text;
@@ -42,13 +47,8 @@ private:
     void setFont(const QFont &pFont);
 
 public:
-    PlayerNameLabel(QWidget *parent = nullptr);
+    PlayerNameLabel(const Qt::AlignmentFlag pAlign, QWidget *parent = nullptr);
     void rescale();
-
-    void setAlignType(Qt::AlignmentFlag pAlignType)
-    {
-        alignType = pAlignType;
-    }
 
     // functions related to size or position
     void setGeometry(const QRect &rect);
@@ -61,6 +61,8 @@ public:
 protected:
     // functions related to size or position
     void updateScaleFactor();
+    
+    QPoint getFontSubPos() const;
 
     // functions to set widget data
     void paintEvent(QPaintEvent *event) override;

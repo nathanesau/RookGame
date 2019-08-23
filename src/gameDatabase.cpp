@@ -164,6 +164,21 @@ void GameDatabase::DatabaseLoad(GameData &data)
                       data.handInfo.cardPlayed,
                       data.handInfo.suit,
                       data.handInfo.points);
+
+    // update detailed round info
+    gamedata.detailRoundInfo.clear();
+
+    CardVector remainCardArr;
+    remainCardArr.append(gamedata.playerArr[PLAYER_1].cardArr);
+    remainCardArr.append(gamedata.playerArr[PLAYER_2].cardArr);
+    remainCardArr.append(gamedata.playerArr[PLAYER_3].cardArr);
+    remainCardArr.append(gamedata.playerArr[PLAYER_4].cardArr);
+    remainCardArr.append(gamedata.nest);
+
+    for (auto suit : {SUIT_BLACK, SUIT_GREEN, SUIT_RED, SUIT_YELLOW})
+    {
+        gamedata.detailRoundInfo.suitCardsPlayed[suit] = remainCardArr.getOtherCardsThisSuit(suit, gamedata.roundInfo.trump);
+    }
 }
 
 void GameDatabase::createTablePlayerCards()

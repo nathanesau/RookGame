@@ -47,6 +47,7 @@ struct Card
     bool operator==(const Card &p);
     bool operator!=(const Card &p);
     bool operator<(const Card &p);
+    bool operator>=(const Card &p);
 
     bool isUndefined() const
     {
@@ -64,19 +65,23 @@ struct Card
 
 struct CardCompare
 {
-    int pTrump;
+    int trump;
 
-    CardCompare(int trump) : pTrump(trump)
+    CardCompare(int pTrump) : trump(pTrump)
     {
     }
 
     inline bool operator()(const Card &card1, const Card &card2)
     {
-        if (pTrump != SUIT_UNDEFINED && card1.suit == pTrump && card2.suit != pTrump)
+        if (trump != SUIT_UNDEFINED)
         {
-            return false;
+            if (card1.suit == trump && card2.suit != trump)
+            {
+                return false;
+            }
         }
-        else if (card1.suit < card2.suit)
+
+        if (card1.suit < card2.suit)
         {
             return true;
         }
@@ -124,8 +129,6 @@ struct SuitInfoCompareTotalValue // ascending order
     }
 };
 
-using SuitInfoArray = vector<SuitInfo>;
-
 // do not delete objects through base class pointer
 // https://stackoverflow.com/questions/56296536/how-to-derive-from-vector-class
 class CardVector : public vector<Card>
@@ -134,7 +137,7 @@ class CardVector : public vector<Card>
     using CardVectorRef = CardVector &;
 
 public:
-    void sort(int trump = SUIT_UNDEFINED);
+    void sort();
     void remove(const CardVector &cardArr);
     void append(const CardVector &cardArr);
 
@@ -145,10 +148,13 @@ public:
     int getTotalValue() const;
 
     CardVector getCardsThisSuit(int suit) const;
-    CardVector getOtherCardsThisSuit(int suit) const;
+
+    // suit should be SUIT_BLACK, SUIT_GREEN, SUIT_RED or SUIT YELLOW (trump determines rook suit)
+    CardVector getOtherCardsThisSuit(int suit, int trump) const;
+
     CardVector getPlayableCards(const HandInfo &handInfo) const;
     CardVector getCardQualityQueue() const;
-    SuitInfoArray getSuitInfoArray() const;
+    array<SuitInfo, 5> getSuitInfoArray() const;
 
     Card getCardWithHighestPointValue() const;
     Card getCardWithLowestPointValue() const; 

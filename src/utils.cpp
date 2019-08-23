@@ -4,6 +4,7 @@
 #include <QDesktopWidget>
 #include <QSettings>
 #include <QScreen>
+#include <stdlib.h>
 
 #include "settings.h"
 #include "utils.h"
@@ -92,5 +93,15 @@ double phi(double x)
     return 0.5 * (1.0 + sign * y);
 }
 } // namespace Stat
+
+namespace Random
+{
+int randbetween(int a, int b)
+{
+    // rand() % (b - a + 1):        random number between 0 and (b - a)
+    // rand() & (b - a + 1) + a:    random number between a and b
+    return rand() % (b - a + 1) + a;
+}
+} // namespace Random
 
 } // namespace Utils

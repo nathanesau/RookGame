@@ -17,15 +17,13 @@
 
 using namespace std;
 
-PlayerNameLabel::PlayerNameLabel(QWidget *parent) : QWidget(parent)
+PlayerNameLabel::PlayerNameLabel(const Qt::AlignmentFlag pAlign, QWidget *parent) : align(pAlign),
+                                                                                        QWidget(parent)
 {
     scaleFactor = Settings::Appearance::readScaleFactor();
     prevScaleFactor = scaleFactor;
 
-    // default align type
-    alignType = Qt::AlignCenter;
-
-    // font should be private as padding logic is specific to this font combination
+    // font should be private (padding logic is specific to this font combination)
     setFont(QFont("Times", 18, QFont::Weight::Bold));
 }
 
@@ -74,42 +72,47 @@ void PlayerNameLabel::updateScaleFactor()
     prevScaleFactor = newScaleFactor;
 }
 
-void PlayerNameLabel::paintEvent(QPaintEvent *event)
+QPoint PlayerNameLabel::getFontSubPos() const
 {
-    float globalScaleFactor = Settings::Appearance::readScaleFactor();
-
-    int maxNChar = 8;
-    int textWidth = width() * text.length() / (float)maxNChar;
+    const float globalScaleFactor = Settings::Appearance::readScaleFactor();
+    const int xPadAmt = 10 * globalScaleFactor;
+    const int yPadAmt = 10 * globalScaleFactor;
+    const int textWidth = width() * text.length() / MAX_NAME_CHAR;
 
     QPoint fontSubPos;
-    fontSubPos.setX((int)0 * globalScaleFactor);
-    fontSubPos.setY((int)25 * globalScaleFactor);
 
-    const int DEFAULT_X_PAD_AMT = 10 * globalScaleFactor;
-    const int DEFAULT_Y_PAD_AMT = 10 * globalScaleFactor;
-
-    switch (alignType)
+    switch (align)
     {
-    case Qt::AlignRight: // left shift
-        fontSubPos.setX(max(width() - textWidth - DEFAULT_X_PAD_AMT, DEFAULT_X_PAD_AMT));
+    case Qt::AlignRight:
+        fontSubPos.setX(max(width() - textWidth - xPadAmt, xPadAmt));
+        fontSubPos.setY((int) 25 * globalScaleFactor);
         break;
-    case Qt::AlignLeft: // right shift
-        fontSubPos.setX(min(width() - textWidth, DEFAULT_X_PAD_AMT));
+    case Qt::AlignLeft:
+        fontSubPos.setX(min(width() - textWidth, xPadAmt));
+        fontSubPos.setY((int) 25 * globalScaleFactor);
         break;
-    case Qt::AlignTop: // bottom shift
-        fontSubPos.setY(fontSubPos.y() + 15 * globalScaleFactor);
+    case Qt::AlignTop:
+        fontSubPos.setX(0);
+        fontSubPos.setY((int) 25 * globalScaleFactor + yPadAmt);
         break;
-    case Qt::AlignBottom: // top shift
-        fontSubPos.setY(fontSubPos.y() + DEFAULT_Y_PAD_AMT);
+    case Qt::AlignBottom:
+        fontSubPos.setX(0);
+        fontSubPos.setY((int) 25 * globalScaleFactor + yPadAmt);
         break;
     }
 
+    return fontSubPos;
+}
+
+void PlayerNameLabel::paintEvent(QPaintEvent *event)
+{
     QPainter *painter = new QPainter(this);
     painter->setPen(Qt::black);
-    painter->setRenderHint(QPainter::Antialiasing);
     painter->setBrush(Qt::white);
+    painter->setRenderHint(QPainter::Antialiasing);
     QPainterPath *ppath = new QPainterPath;
 
+    QPoint fontSubPos = getFontSubPos();
     ppath->addText(fontSubPos, this->font, this->text);
     painter->drawPath(*ppath);
 }
@@ -142,21 +145,17 @@ MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pM
         label->resize(100, 60);
     };
 
-    player1NameLabel = new PlayerNameLabel;
+    player1NameLabel = new PlayerNameLabel(Qt::AlignTop);
     setupLabel(player1NameLabel, QString::fromStdString(playerNames[PLAYER_1]), {550, 770});
-    player1NameLabel->setAlignType(Qt::AlignTop);
 
-    player2NameLabel = new PlayerNameLabel;
+    player2NameLabel = new PlayerNameLabel(Qt::AlignLeft);
     setupLabel(player2NameLabel, QString::fromStdString(playerNames[PLAYER_2]), {0, 425});
-    player2NameLabel->setAlignType(Qt::AlignLeft);
 
-    player3NameLabel = new PlayerNameLabel;
+    player3NameLabel = new PlayerNameLabel(Qt::AlignBottom);
     setupLabel(player3NameLabel, QString::fromStdString(playerNames[PLAYER_3]), {550, 130});
-    player3NameLabel->setAlignType(Qt::AlignBottom);
 
-    player4NameLabel = new PlayerNameLabel;
+    player4NameLabel = new PlayerNameLabel(Qt::AlignRight);
     setupLabel(player4NameLabel, QString::fromStdString(playerNames[PLAYER_4]), {1100, 425});
-    player4NameLabel->setAlignType(Qt::AlignRight);
 
     infoWidget = new GameInfoWidget(pMainWindow);
     infoWidget->setParent(this);
@@ -567,4 +566,7 @@ void MainWidget::playCard(Card cardPlayed, int playerNum)
     }
 
     gamedata.playerArr[playerNum].cardArr.remove({cardPlayed});
+
+    // detailed round info
+    gamedata.detailRoundInfo.suitCardsPlayed[cardPlayed.suit].append({cardPlayed});
 }

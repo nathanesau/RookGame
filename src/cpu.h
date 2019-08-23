@@ -1,6 +1,7 @@
 #ifndef CPUPLAYER_H
 #define CPUPLAYER_H
 
+#include <set>
 #include <vector>
 
 #include "card.h"
@@ -17,6 +18,51 @@ extern GameData gamedata;
 const int CPU_BID_AGGRESSION_LEVEL_LOW = 0;
 const int CPU_BID_AGGRESSION_LEVEL_MID = 1;
 const int CPU_BID_AGRESSION_LEVEL_HIGH = 2;
+
+enum PlayCardStrategy
+{
+    STRATEGY_UNDEFINED = -1,
+    STRATEGY_RANDOM = 0,
+    STRATEGY_FEED_POINTS = 1,
+    STRATEGY_PLAY_HIGHEST_CARD = 2,
+    STRATEGY_THROW_AWAY_CARD = 3
+};
+
+// inputs used to determine which strategy to use
+struct CpuPlayCardStrategyInputs
+{
+    const int cpuPlayerNum;
+
+    CardVector playableCards;
+    vector<int> partnerNum;
+
+    Card winningCard;
+    int winningPlayerNum;
+
+    CardVector winningSuitCardsLeft;
+    Card maxWinningSuitCardLeft;
+
+    CardVector trumpCardsLeft;
+    Card maxTrumpCardLeft;
+
+    CardVector currentHandCards;
+
+    double probWinningCardTrumpable;
+
+public:
+    CpuPlayCardStrategyInputs(const int pCpuPlayerNum);
+
+    bool isWinningPlayerNumLikelyToWinHand();
+    bool isPartner(int playerNum);
+
+    bool isHandWorthWinning();
+    bool isCpuAbleToWinHand();
+
+private:
+    void initializePartnerNum();
+    void initializeProbWinningCardTrumpable();
+    void initializeCurrentHandCards();
+};
 
 class Cpu
 {
@@ -39,8 +85,13 @@ public:
 
     Card getCardToPlay() const;
 
+    Card getRandomCardToPlay(CpuPlayCardStrategyInputs &inputs) const;    // STRATEGY_RANDOM
+    Card getFeedCardToPlay(CpuPlayCardStrategyInputs &inputs) const;      // STRATEGY_FEED_POINTS
+    Card getHighestCardToPlay(CpuPlayCardStrategyInputs &inputs) const;   // STRATEGY_PLAY_HIGHEST_CARD
+    Card getThrowAwayCardToPlay(CpuPlayCardStrategyInputs &inputs) const; // STRATEGY_THROW_AWAY_CARD
+
 private:
-    int getPartnerNum() const;
+    PlayCardStrategy getPlayCardStrategy(CpuPlayCardStrategyInputs &inputs) const;
 };
 
 #endif

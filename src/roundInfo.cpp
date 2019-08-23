@@ -125,3 +125,16 @@ void RoundInfo::updateTeamScores()
         });
     }
 }
+
+DetailedRoundInfo::DetailedRoundInfo()
+{
+    clear();
+}
+
+void DetailedRoundInfo::clear()
+{
+    for(auto suit : suitCardsPlayed)
+    {
+        suit.clear();
+    }
+}

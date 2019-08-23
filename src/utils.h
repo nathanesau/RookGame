@@ -33,7 +33,13 @@ void moveParentlessDialog(QDialog *dialog, QMainWindow *mainWindow, int position
 namespace Stat
 {
 // standard normal distribution cdf
-double phi(double x);}
+double phi(double x);
 } // namespace Utils
+
+namespace Random
+{
+int randbetween(int a, int b);
+}
+}
 
 #endif

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <map>
 #include <numeric>
 
@@ -38,6 +39,12 @@ bool Card::operator<(const Card &p)
     return false;
 }
 
+bool Card::operator>=(const Card &p)
+{
+    if(*this == p) return true;
+    else return !(*this < p);
+}
+
 int Card::getPointValue() const
 {
     switch (value)
@@ -52,16 +59,6 @@ int Card::getPointValue() const
     default:
         return 0;
     }
-}
-
-int Card::getSentimentalValue() const
-{
-    if (value == VALUE_ROOK)
-    {
-        return 100;
-    }
-
-    return value;
 }
 
 string Card::getSuitAsString() const
@@ -136,7 +133,7 @@ string Card::getCardAsString() const
 
     // capitalize first letter
     auto toUpper = [](string &s) -> void {
-        if(!s.empty())
+        if (!s.empty())
         {
             s[0] = toupper(s[0]);
         }
@@ -151,9 +148,9 @@ string Card::getCardAsString() const
     return valueStr + (!valueStr.empty() ? " " : "") + suitStr;
 }
 
-void CardVector::sort(int trump)
+void CardVector::sort()
 {
-    std::sort(this->begin(), this->end(), CardCompare(trump));
+    std::sort(this->begin(), this->end(), CardCompare(SUIT_UNDEFINED));
 }
 
 void CardVector::append(const CardVector &cardArr)
@@ -203,18 +200,23 @@ CardVector CardVector::getCardsThisSuit(int suit) const
     return cts;
 }
 
-CardVector CardVector::getOtherCardsThisSuit(int suit) const
+CardVector CardVector::getOtherCardsThisSuit(int suit, int trump) const
 {
     CardVector otherSuitCards;
-    
-    for(auto value : {VALUE_1, VALUE_2, VALUE_3, VALUE_4, VALUE_5, VALUE_6, VALUE_7,
-                      VALUE_8, VALUE_9, VALUE_10, VALUE_11, VALUE_12, VALUE_13, VALUE_14})
+
+    for (auto value : {VALUE_1, VALUE_2, VALUE_3, VALUE_4, VALUE_5, VALUE_6, VALUE_7,
+                       VALUE_8, VALUE_9, VALUE_10, VALUE_11, VALUE_12, VALUE_13, VALUE_14})
     {
         otherSuitCards.push_back({suit, value});
     }
-    
+
+    if (suit == trump)
+    {
+        otherSuitCards.push_back({suit, VALUE_ROOK});
+    }
+
     otherSuitCards.remove(getCardsThisSuit(suit));
-    
+
     return otherSuitCards;
 }
 
@@ -241,47 +243,52 @@ CardVector CardVector::getCardQualityQueue() const
 
     // from best cards (at front) to worst cards (at back)
     CardVector cardQualityQueue;
-    
-    for(auto It = suitInfoArr.begin(); It != suitInfoArr.end(); It++)
+
+    for (auto It = suitInfoArr.begin(); It != suitInfoArr.end(); It++)
     {
         auto cardsThisSuit = getCardsThisSuit(It->suit);
         reverse(cardsThisSuit.begin(), cardsThisSuit.end());
         cardQualityQueue.append(cardsThisSuit);
     }
 
+    // due to the way cardQualityQueue is constructed, if it contains rook, rook will be at back
+    // move rook to front of queue in this case
+
+    Card rook(SUIT_SPECIAL, VALUE_ROOK);
+
+    if(cardQualityQueue.hasCard(rook))
+    {
+        cardQualityQueue.remove({rook});
+        cardQualityQueue.insert(cardQualityQueue.begin(), rook);
+    }
+
     return cardQualityQueue;
 }
 
-SuitInfoArray CardVector::getSuitInfoArray() const
+array<SuitInfo, 5> CardVector::getSuitInfoArray() const
 {
-    SuitInfoArray suitInfoArr;
+    array<SuitInfo, 5> arr = {SuitInfo(SUIT_BLACK), SuitInfo(SUIT_GREEN), SuitInfo(SUIT_RED),
+                              SuitInfo(SUIT_YELLOW), SuitInfo(SUIT_SPECIAL)};
 
-    for (auto suit : vector<int>{SUIT_BLACK, SUIT_GREEN, SUIT_RED, SUIT_YELLOW, SUIT_SPECIAL})
+    for (auto it = this->begin(); it != this->end(); it++)
     {
-        suitInfoArr.push_back(SuitInfo(suit));
+        arr[it->suit].count += 1;
+        arr[it->suit].totalValue += it->value;
     }
 
-    for (auto It = this->begin(); It != this->end(); It++)
-    {
-        auto SuitIt = std::find(suitInfoArr.begin(), suitInfoArr.end(), SuitInfo(It->suit));
+    std::sort(arr.begin(), arr.end(), SuitInfoCompareCount());
+    std::sort(arr.begin(), arr.end(), SuitInfoCompareTotalValue());
 
-        SuitIt->count += 1;
-        SuitIt->totalValue += It->getSentimentalValue();
-    }
-
-    std::sort(suitInfoArr.begin(), suitInfoArr.end(), SuitInfoCompareCount());
-    std::sort(suitInfoArr.begin(), suitInfoArr.end(), SuitInfoCompareTotalValue());
-
-    return suitInfoArr;
+    return arr;
 }
 
 Card CardVector::getCardWithHighestPointValue() const
 {
     Card highestPointCard = front();
 
-    for(auto it = this->begin() + 1; it != this->end(); it++)
+    for (auto it = this->begin() + 1; it != this->end(); it++)
     {
-        if(it->getPointValue() > highestPointCard.getPointValue())
+        if (it->getPointValue() > highestPointCard.getPointValue())
         {
             highestPointCard = *it;
         }
@@ -297,7 +304,7 @@ Card CardVector::getCardWithLowestPointValue() const
 
     for (auto it = this->begin() + 1; it != this->end(); it++)
     {
-        if(it->getPointValue () < lowestPointCard.getPointValue())
+        if (it->getPointValue() < lowestPointCard.getPointValue())
         {
             lowestPointCard = *it;
         }

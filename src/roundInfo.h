@@ -51,8 +51,12 @@ private:
 class DetailedRoundInfo
 {
 public:
-    map<int, int> suitPointsRemaining;
-    map<int, CardVector> suitCardsPlayed;
+    // for db load, can be auto determined using player cards
+    array<CardVector, 4> suitCardsPlayed;
+
+public:
+    DetailedRoundInfo();
+    void clear();
 };
 
 #endif

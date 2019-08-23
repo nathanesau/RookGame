@@ -283,7 +283,7 @@ void MainWindow::startNewRound()
     if (gamedata.playerArr[PLAYER_1].cardArr.hasCard({gamedata.roundInfo.trump, VALUE_ROOK}))
     {
         // re-sort and redraw player 1 cards
-        gamedata.playerArr[PLAYER_1].cardArr.sort(gamedata.roundInfo.trump);
+        gamedata.playerArr[PLAYER_1].cardArr.sort();
         widget->refreshCardWidgets(gamedata);
     }
 

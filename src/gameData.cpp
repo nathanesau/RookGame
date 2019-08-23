@@ -17,6 +17,7 @@ void GameData::clear()
 void GameData::clearRoundSpecificInfo()
 {
     roundInfo.clear();
+    detailRoundInfo.clear();
     handInfo.clear();
     nest.clear();
     for_each(playerArr.begin(), playerArr.end(), [](Player &player) { player.clear(); });
