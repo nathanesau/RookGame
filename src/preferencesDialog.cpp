@@ -66,9 +66,6 @@ PreferencesDialog::PreferencesDialog(MainWindow *pMainWindow, QWidget *parent) :
 
     setWindowTitle("Preferences Dialog");
     setWindowIcon(QIcon(":rookicon.gif"));
-    #ifdef WINDOW_ALWAYS_ON_TOP
-    setWindowFlags(Qt::WindowStaysOnTopHint);
-    #endif
 }
 
 void PreferencesDialog::changePage(QListWidgetItem *current, QListWidgetItem *previous)

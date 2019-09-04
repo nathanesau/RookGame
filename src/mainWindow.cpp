@@ -121,9 +121,6 @@ MainWindow::MainWindow(QWidget *parent) : ScaledQMainWindow(parent)
     setWindowTitle("Rook");
     setWindowIcon(QIcon(":rookicon.gif"));
     resize(MAIN_WINDOW_SIZE);
-    #ifdef WINDOW_ALWAYS_ON_TOP
-    setWindowFlags(Qt::WindowStaysOnTopHint);
-    #endif
 
     QPixmap bkgnd(":background.PNG");
     bkgnd = bkgnd.scaled(size(), Qt::IgnoreAspectRatio);

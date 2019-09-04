@@ -51,9 +51,6 @@ MiddleDialog::MiddleDialog(MainWidget *pMainWidget, QMainWindow *pMainWindow, QW
     resize(MIDDLE_DIALOG_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
     setStyleSheet("background-color: white");
-#ifdef WINDOW_ALWAYS_ON_TOP
-    setWindowFlags(Qt::WindowStaysOnTopHint);
-#endif
 }
 
 void MiddleDialog::rescale()

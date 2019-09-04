@@ -36,9 +36,6 @@ BidDialog::BidDialog(QMainWindow *pMainWindow, QWidget *parent) : mainWindow(pMa
     resize(BID_DIALOG_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
     setStyleSheet("background-color: white");
-    #ifdef WINDOW_ALWAYS_ON_TOP
-    setWindowFlags(Qt::WindowStaysOnTopHint);
-    #endif
 }
 
 void BidDialog::rescale()

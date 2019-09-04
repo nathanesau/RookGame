@@ -61,9 +61,6 @@ RoundSummaryDialog::RoundSummaryDialog(QWidget *parent) : ScaledQDialog(true, pa
     resize(ROUND_SUMMARY_DIALOG_SIZE);
     setWindowTitle("Round summary");
     setWindowIcon(QIcon(":rookicon.gif"));
-    #ifdef WINDOW_ALWAYS_ON_TOP
-    setWindowFlags(Qt::WindowStaysOnTopHint);
-    #endif
     setStyleSheet("background-color: white");
 }
 

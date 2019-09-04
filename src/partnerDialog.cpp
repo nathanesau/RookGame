@@ -56,9 +56,6 @@ PartnerDialog::PartnerDialog(Card &pCardSelected, QWidget *parent) : cardSelecte
 
     setWindowTitle("Click partner card...");
     setWindowIcon(QIcon(":rookicon.gif"));
-#ifdef WINDOW_ALWAYS_ON_TOP
-    setWindowFlags(Qt::WindowStaysOnTopHint);
-#endif
     resize(PARTNER_DIALOG_SIZE);
 }
 

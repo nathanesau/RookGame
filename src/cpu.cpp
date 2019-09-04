@@ -304,6 +304,8 @@ bool Cpu::useRandomStrategy() const
     case CPU_RANDOMNESS_LEVEL_HIGH:
         return (p <= 0.3);
     }
+
+    return false;
 }
 
 PlayCardStrategy Cpu::getPlayCardStrategy(CpuPlayCardStrategyInputs &inputs) const
