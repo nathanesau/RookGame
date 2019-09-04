@@ -11,5 +11,5 @@ jobs:
     - uses: actions/checkout@v1
     
     - name: qt
-      uses: "docker://https://hub.docker.com/r/theshadowx/qt5/dockerfile"
+      uses: "docker://theshadowx/qt5/dockerfile.latest"
       run: cmake CMakeLists.txt && make
