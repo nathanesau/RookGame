@@ -5,10 +5,12 @@ on: [push]
 jobs:
   build:
 
-    runs-on: qt5builder/ubuntu-16.04
+    runs-on: ubuntu-16.04
     
     steps:
     - uses: actions/checkout@v1
+    - name: qt
+    - run: apt-get install qt5-default
     - name: cmake
       run: cmake CMakeLists.txt
     - name: make
