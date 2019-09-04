@@ -1,0 +1,15 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-16.04
+
+    steps:
+    - uses: actions/checkout@v1
+    
+    - name: qt
+      uses: "docker://https://hub.docker.com/r/theshadowx/qt5/dockerfile"
+      run: cmake CMakeLists.txt && make
