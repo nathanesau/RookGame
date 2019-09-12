@@ -92,8 +92,6 @@ set(rook_SRCS
         src/settings.h
         src/trumpDialog.cpp
         src/trumpDialog.h
-        src/ui_bidDialog.h
-        src/ui_middleDialog.h
         src/utils.cpp
         src/utils.h
 )

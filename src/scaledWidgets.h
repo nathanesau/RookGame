@@ -58,7 +58,7 @@ class ScaledQComboBox : public QComboBox
     float scaleFactor;
 
 public:
-    ScaledQComboBox(QWidget *parent);
+    ScaledQComboBox(QWidget *parent = nullptr);
     void rescale();
 
     // override functions related to size or position

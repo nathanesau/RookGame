@@ -6,10 +6,80 @@
 #include "trumpDialog.h"
 #include "utils.h"
 
+void MiddleDialog::setupUi()
+{   
+    QFont categoryFont;
+    categoryFont.setPointSize(12);
+    categoryFont.setBold(true);
+    categoryFont.setWeight(75);
+
+    QFont buttonFont;
+    buttonFont.setPointSize(10);
+
+    QFont labelFont;
+    labelFont.setPointSize(10);
+
+    trumpCategoryLabel = new ScaledQLabel;
+    trumpCategoryLabel->setParent(this);
+    trumpCategoryLabel->setGeometry(QRect(90, 160, 121, 31));
+    trumpCategoryLabel->setFont(categoryFont);
+
+    selectPartnerButton = new ScaledQPushButton;
+    selectPartnerButton->setParent(this);
+    selectPartnerButton->setGeometry(QRect(260, 270, 141, 28));
+    selectPartnerButton->setFont(buttonFont);
+
+    partnerCategoryLabel = new ScaledQLabel;
+    partnerCategoryLabel->setParent(this);
+    partnerCategoryLabel->setGeometry(QRect(90, 270, 131, 31));
+    partnerCategoryLabel->setFont(categoryFont);
+
+    selectTrumpButton = new ScaledQPushButton;
+    selectTrumpButton->setParent(this);
+    selectTrumpButton->setGeometry(QRect(260, 160, 141, 31));
+    selectTrumpButton->setFont(buttonFont);
+    
+    trumpLabel = new ScaledQLabel;
+    trumpLabel->setParent(this);
+    trumpLabel->setGeometry(QRect(510, 150, 121, 51));
+    trumpLabel->setAlignment(Qt::AlignCenter);
+    trumpLabel->setFont(labelFont);
+
+    okButton = new ScaledQPushButton;
+    okButton->setParent(this);
+    okButton->setGeometry(QRect(620, 390, 75, 23));
+    okButton->setFont(buttonFont);
+
+    autoSelectTrumpButton = new ScaledQPushButton;
+    autoSelectTrumpButton->setParent(this);
+    autoSelectTrumpButton->setGeometry(QRect(260, 190, 141, 31));
+    autoSelectTrumpButton->setFont(buttonFont);
+
+    autoSelectPartnerButton = new ScaledQPushButton;
+    autoSelectPartnerButton->setParent(this);
+    autoSelectPartnerButton->setGeometry(QRect(260, 300, 141, 28));
+    autoSelectPartnerButton->setFont(buttonFont);
+
+    nestCategoryLabel = new ScaledQLabel;
+    nestCategoryLabel->setParent(this);
+    nestCategoryLabel->setGeometry(QRect(90, 40, 121, 31));
+    nestCategoryLabel->setFont(categoryFont);
+
+    selectNestButton = new ScaledQPushButton;
+    selectNestButton->setParent(this);
+    selectNestButton->setGeometry(QRect(260, 40, 141, 31));
+    selectNestButton->setFont(buttonFont);
+
+    autoSelectNestButton = new ScaledQPushButton;
+    autoSelectNestButton->setParent(this);
+    autoSelectNestButton->setGeometry(QRect(260, 70, 141, 31));
+    autoSelectNestButton->setFont(buttonFont);
+}
+
 MiddleDialog::MiddleDialog(QWidget *parent) : QDialogWithClickableCardArray(true, parent),
                                               originalNest(gamedata.nest)
 {
-    ui.setupUi(this);
+    setupUi();
 
     nestCards = new ClickableCardArray(DRAW_POSITION_MIDDLE_DLG_NEST, SIZE_TINY, this);
     nestCards->showCards(gamedata.nest);
@@ -17,13 +87,13 @@ MiddleDialog::MiddleDialog(QWidget *parent) : QDialogWithClickableCardArray(true
     partnerCards = new ClickableCardArray(DRAW_POSITION_MIDDLE_DLG_PARTNER, SIZE_TINY, this);
     partnerCards->showCards({Card(SUIT_UNDEFINED, VALUE_UNDEFINED)});
 
-    connect(ui.selectNestButton, &QPushButton::pressed, this, &MiddleDialog::onSelectNestButtonPressed);
-    connect(ui.autoSelectNestButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectNestButtonPressed);
-    connect(ui.selectTrumpButton, &QPushButton::pressed, this, &MiddleDialog::onSelectTrumpButtonPressed);
-    connect(ui.autoSelectTrumpButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectTrumpButtonPressed);
-    connect(ui.selectPartnerButton, &QPushButton::pressed, this, &MiddleDialog::onSelectPartnerButtonPressed);
-    connect(ui.autoSelectPartnerButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectPartnerButtonPressed);
-    connect(ui.okButton, &QPushButton::pressed, this, &MiddleDialog::onOkButtonPressed);
+    connect(selectNestButton, &QPushButton::pressed, this, &MiddleDialog::onSelectNestButtonPressed);
+    connect(autoSelectNestButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectNestButtonPressed);
+    connect(selectTrumpButton, &QPushButton::pressed, this, &MiddleDialog::onSelectTrumpButtonPressed);
+    connect(autoSelectTrumpButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectTrumpButtonPressed);
+    connect(selectPartnerButton, &QPushButton::pressed, this, &MiddleDialog::onSelectPartnerButtonPressed);
+    connect(autoSelectPartnerButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectPartnerButtonPressed);
+    connect(okButton, &QPushButton::pressed, this, &MiddleDialog::onOkButtonPressed);
 
     resize(MIDDLE_DIALOG_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
@@ -38,13 +108,13 @@ void MiddleDialog::rescale()
     for (auto clickableCardArray : std::vector<ClickableCardArray *>{nestCards, partnerCards})
         clickableCardArray->rescale();
 
-    for (auto label : std::vector<ScaledQLabel *>{ui.trumpCategoryLabel, ui.partnerCategoryLabel, ui.trumpLabel,
-                                                  ui.nestCategoryLabel})
+    for (auto label : std::vector<ScaledQLabel *>{trumpCategoryLabel, partnerCategoryLabel, trumpLabel,
+                                                  nestCategoryLabel})
         label->rescale();
 
-    for (auto button : std::vector<ScaledQPushButton *>{ui.selectPartnerButton, ui.selectTrumpButton, ui.okButton,
-                                                        ui.autoSelectTrumpButton, ui.autoSelectPartnerButton,
-                                                        ui.autoSelectNestButton})
+    for (auto button : std::vector<ScaledQPushButton *>{selectPartnerButton, selectTrumpButton, okButton,
+                                                        autoSelectTrumpButton, autoSelectPartnerButton,
+                                                        autoSelectNestButton})
         button->rescale();
 }
 
@@ -123,8 +193,6 @@ void MiddleDialog::onOkButtonPressed()
 
 void MiddleDialog::setupTrumpLabel(int suit)
 {
-    auto trumpLabel = ui.trumpLabel;
-
     switch (suit)
     {
     case SUIT_BLACK:
