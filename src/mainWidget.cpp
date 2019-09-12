@@ -110,9 +110,10 @@ MainWidgetData::MainWidgetData()
 {
 }
 
-MainWidget::MainWidget(QWidget *parent) : QDialogWithClickableCardArray(false, parent)
+MainWidget::MainWidget(QWidget *parent) : ScaledQDialog(false, parent)
 {
     player1Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_BOTTOM, SIZE_NORMAL, this);
+    connect(player1Cards, &ClickableCardArray::clicked, this, &MainWidget::onCardClicked);
 #ifdef CPU_DEBUG
     player2Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_LEFT, SIZE_SMALL, this);
     player3Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_TOP, SIZE_SMALL, this);
@@ -276,13 +277,6 @@ bool MainWidget::validateCard(ClickableCard *clickableCard)
 
 void MainWidget::onCardClicked(ClickableCard *clickableCard)
 {
-#ifdef CPU_DEBUG
-    if (!gamedata.playerArr[PLAYER_1].cardArr.hasCard(clickableCard->data))
-    {
-        return;
-    }
-#endif
-
     if (!validateCard(clickableCard))
     {
         return;

@@ -26,7 +26,7 @@ protected:
 const QSize PARTNER_DIALOG_SIZE = {850, 300};
 
 // for selecting a partner card from available cards
-class PartnerDialog : public QDialogWithClickableCardArray
+class PartnerDialog : public ScaledQDialog
 {
     Card &cardSelected; // output of dialog
 

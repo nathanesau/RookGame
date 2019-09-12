@@ -15,7 +15,7 @@ extern GameData gamedata;
 const QSize MIDDLE_DIALOG_SIZE = {724, 435};
 
 // output: gamedata.nest, gamedata.roundInfo.trump, gamedata.roundInfo.partnerCard
-class MiddleDialog : public QDialogWithClickableCardArray
+class MiddleDialog : public ScaledQDialog
 {
     Q_OBJECT
 
@@ -51,8 +51,6 @@ public:
     MiddleDialog(QWidget *parent = nullptr);
     virtual void rescale();
     virtual void reject();
-
-    virtual void onCardClicked(ClickableCard *clickableCard);
 
 private:
     void onSelectNestButtonPressed();

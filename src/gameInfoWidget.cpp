@@ -15,7 +15,7 @@ GameInfoWidgetData::GameInfoWidgetData()
     pointsMiddleKnown = false;
 }
 
-GameInfoWidget::GameInfoWidget(QWidget *parent) : QDialogWithClickableCardArray(false, parent)
+GameInfoWidget::GameInfoWidget(QWidget *parent) : ScaledQDialog(false, parent)
 {
     partnerCards = new ClickableCardArray(DRAW_POSITION_GAME_INFO_WIDGET, SIZE_TINY, this);
 
@@ -128,11 +128,6 @@ void GameInfoWidget::rescale()
 
     for (auto clickableCardArray : std::vector<ClickableCardArray *>{partnerCards})
         clickableCardArray->rescale();
-}
-
-void GameInfoWidget::onCardClicked(ClickableCard *clickableCard)
-{
-    // do nothing
 }
 
 void GameInfoWidget::refreshWidget(GameData &pData)

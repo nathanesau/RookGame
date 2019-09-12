@@ -14,7 +14,7 @@ void PartnerDialogLabel::mousePressEvent(QMouseEvent *event)
 }
 
 PartnerDialog::PartnerDialog(Card &pCardSelected, QWidget *parent) : cardSelected(pCardSelected),
-                                                                     QDialogWithClickableCardArray(true, parent)
+                                                                     ScaledQDialog(true, parent)
 {
     setupCardArrays();
 
@@ -29,6 +29,7 @@ PartnerDialog::PartnerDialog(Card &pCardSelected, QWidget *parent) : cardSelecte
     };
 
     partnerOptionsCards = new ClickableCardArray(DRAW_POSITION_PARTNER_DLG, SIZE_TINY, this);
+    connect(partnerOptionsCards, &ClickableCardArray::clicked, this, &PartnerDialog::onCardClicked);
 
     redLabel = new PartnerDialogLabel;
     setupPartnerLabel(redLabel, "Red", "background-color: red; border: 2px solid", QPoint(25, 25));

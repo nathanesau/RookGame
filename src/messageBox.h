@@ -7,7 +7,7 @@
 
 const QSize MESSAGE_BOX_SIZE = {400, 250};
 
-class MessageBox : public QDialogWithClickableCardArray
+class MessageBox : public ScaledQDialog
 {
     ScaledQLabel *msgLabel;
     ScaledQPushButton *okButton;
@@ -27,8 +27,6 @@ public:
 protected:
     void okButtonPressed();
     void hyperLinkClicked(const QString &link);
-
-    void onCardClicked(ClickableCard *clickableCard);
 };
 
 #endif

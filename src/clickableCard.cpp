@@ -6,7 +6,7 @@
 #include "partnerDialog.h"
 #include "settings.h"
 
-ClickableCard::ClickableCard(QDialogWithClickableCardArray *parent) : ScaledQLabel(parent)
+ClickableCard::ClickableCard(QWidget *parent) : ScaledQLabel(parent)
 {
 }
 
@@ -62,9 +62,7 @@ void ClickableCard::setData(const Card &pData, int drawPosition, QSize size, std
 
 void ClickableCard::mousePressEvent(QMouseEvent *event)
 {
-    auto parentWidgetWithClickableCardArray = dynamic_cast<QDialogWithClickableCardArray *>(parent());
-
-    parentWidgetWithClickableCardArray->onCardClicked(this);
+    emit clicked(this);
 }
 
 int ClickableCard::getRotation(int drawPosition) const
@@ -156,7 +154,7 @@ bool CompareCardPixmapKey::operator()(const CardPixmapKey &a, const CardPixmapKe
     return false;
 }
 
-ClickableCardArray::ClickableCardArray(int pDrawPosition, QSize pSize, QDialogWithClickableCardArray *parent) : QWidget(parent)
+ClickableCardArray::ClickableCardArray(int pDrawPosition, QSize pSize, QWidget *parent) : QWidget(parent)
 {
     drawPosition = pDrawPosition;
     size = pSize;
@@ -189,6 +187,7 @@ void ClickableCardArray::showCards(const CardVector &cardArr, CardStyleMap *card
     for (auto i = 0; i < n; i++)
     {
         clickableCards[i].setParent(parentWidget());
+        connect(&clickableCards[i], &ClickableCard::clicked, this, &ClickableCardArray::clicked);
 
         Card card = cardArr[i];
         std::string style = "";
@@ -397,8 +396,4 @@ int ClickableCardArray::getCardGap() const
     default:
         return 0; // only one card shown for this draw position
     }
-}
-
-QDialogWithClickableCardArray::QDialogWithClickableCardArray(bool pFixedSize, QWidget *parent) : ScaledQDialog(pFixedSize, parent)
-{
 }

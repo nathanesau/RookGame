@@ -73,7 +73,7 @@ struct MainWidgetData
     MainWidgetData();
 };
 
-class MainWidget : public QDialogWithClickableCardArray
+class MainWidget : public ScaledQDialog
 {
     Q_OBJECT
 

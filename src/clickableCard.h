@@ -45,7 +45,6 @@ struct CardKey;
 struct CardPixmapKey;
 struct CompareCardKey;
 struct CompareCardPixmapKey;
-class QDialogWithClickableCardArray;
 
 // typedef declarations
 typedef std::map<CardKey, std::string, CompareCardKey> CardStyleMap; 
@@ -58,10 +57,13 @@ class ClickableCard : public ScaledQLabel
 {
     Q_OBJECT
 
+signals:
+    void clicked(ClickableCard *clickableCard);
+
 public:
     Card data;
 
-    ClickableCard(QDialogWithClickableCardArray *parent = nullptr);
+    ClickableCard(QWidget *parent = nullptr);
     ClickableCard(const ClickableCard &pCard);
     ClickableCard &operator=(const ClickableCard &pCard);
 
@@ -105,15 +107,18 @@ struct CompareCardPixmapKey
 
 class ClickableCardArray : public QWidget
 {
-    QDialogWithClickableCardArray *parent;
+    Q_OBJECT
 
     std::vector<ClickableCard> clickableCards;
 
     int drawPosition;
     QSize size;
 
+signals:
+    void clicked(ClickableCard *clickableCard);
+
 public:
-    ClickableCardArray(int pDrawPosition, QSize pSize = SIZE_NORMAL, QDialogWithClickableCardArray *parent = nullptr);
+    ClickableCardArray(int pDrawPosition, QSize pSize = SIZE_NORMAL, QWidget *parent = nullptr);
     void rescale();
 
     void changeDrawPosition(int newDrawPosition);
@@ -131,15 +136,6 @@ private:
     int getVerticalShift() const;
     int getHorizontalShift() const;
     int getCardGap() const;
-};
-
-class QDialogWithClickableCardArray : public ScaledQDialog
-{
-public:
-    QDialogWithClickableCardArray(bool pFixedSize, QWidget *parent = nullptr);
-    virtual void rescale() = 0;
-
-    virtual void onCardClicked(ClickableCard *clickableCard) = 0;
 };
 
 #endif

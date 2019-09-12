@@ -15,7 +15,7 @@ extern GameData gamedata;
 const QSize NEST_DIALOG_SIZE = {911, 506};
 
 // for selecting cards from nest
-class NestDialog : public QDialogWithClickableCardArray
+class NestDialog : public ScaledQDialog
 {
     Q_OBJECT
 

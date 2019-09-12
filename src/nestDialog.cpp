@@ -4,7 +4,7 @@
 #include "settings.h"
 #include "utils.h"
 
-NestDialog::NestDialog(CardVector pOriginalNest, QWidget *parent) : originalNest(pOriginalNest), QDialogWithClickableCardArray(true, parent)
+NestDialog::NestDialog(CardVector pOriginalNest, QWidget *parent) : originalNest(pOriginalNest), ScaledQDialog(true, parent)
 {
     setOriginalNestStyles("background-color: white; border: 2px solid");
 
@@ -27,12 +27,14 @@ NestDialog::NestDialog(CardVector pOriginalNest, QWidget *parent) : originalNest
     setupLabel(nestCardsLabel, "Middle cards (click to take)", {300, 10});
 
     nestCards = new ClickableCardArray(DRAW_POSITION_NEST_DLG_TOP, SIZE_SMALL, this);
+    connect(nestCards, &ClickableCardArray::clicked, this, &NestDialog::onCardClicked);
     nestCards->showCards(gamedata.nest, &originalNestStyles);
 
     player1CardsPreviewLabel = new ScaledQLabel;
     setupLabel(player1CardsPreviewLabel, "New hand (click to discard)", {300, 235});
 
     player1CardsPreview = new ClickableCardArray(DRAW_POSITION_NEST_DLG_BOTTOM, SIZE_SMALL, this);
+    connect(player1CardsPreview, &ClickableCardArray::clicked, this, &NestDialog::onCardClicked);
     player1CardsPreview->showCards(gamedata.playerArr[PLAYER_1].cardArr, &originalNestStyles);
 
     autoChooseNestButton = new ScaledQPushButton;

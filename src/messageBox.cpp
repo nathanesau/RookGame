@@ -1,6 +1,6 @@
 #include "messageBox.h"
 
-MessageBox::MessageBox(QWidget *parent) : QDialogWithClickableCardArray(true, parent)
+MessageBox::MessageBox(QWidget *parent) : ScaledQDialog(true, parent)
 {
     msgLabel = new ScaledQLabel(this);
     msgLabel->setAlignment(Qt::AlignTop);
@@ -76,7 +76,3 @@ void MessageBox::hyperLinkClicked(const QString &link)
     QDesktopServices::openUrl(QUrl(link));
 }
 
-void MessageBox::onCardClicked(ClickableCard *clickableCard)
-{
-    // do nothing
-}

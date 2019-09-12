@@ -87,7 +87,7 @@ void MiddleDialog::setupUi()
     autoSelectNestButton->setFont(buttonFont);
 }
 
-MiddleDialog::MiddleDialog(QWidget *parent) : QDialogWithClickableCardArray(true, parent),
+MiddleDialog::MiddleDialog(QWidget *parent) : ScaledQDialog(true, parent),
                                               originalNest(gamedata.nest)
 {
     setupUi();
@@ -129,11 +129,6 @@ void MiddleDialog::rescale()
 }
 
 void MiddleDialog::reject()
-{
-    // do nothing
-}
-
-void MiddleDialog::onCardClicked(ClickableCard *clickableCard)
 {
     // do nothing
 }

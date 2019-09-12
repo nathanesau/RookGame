@@ -45,7 +45,7 @@ struct GameInfoWidgetData
     GameInfoWidgetData();
 };
 
-struct GameInfoWidget : public QDialogWithClickableCardArray
+struct GameInfoWidget : public ScaledQDialog
 {
     // data variables corresponding to what is shown in widget
     // these may differ from what is in "GameData"
@@ -88,8 +88,6 @@ private:
 public:
     GameInfoWidget(QWidget *parent = nullptr);
     virtual void rescale();
-
-    virtual void onCardClicked(ClickableCard *clickableCard);
 
     void refreshWidget(GameData &pData);
 
