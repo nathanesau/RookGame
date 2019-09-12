@@ -20,57 +20,68 @@ void MiddleDialog::setupUi()
     labelFont.setPointSize(10);
 
     trumpCategoryLabel = new ScaledQLabel;
+    trumpCategoryLabel->setText("Trump");
     trumpCategoryLabel->setParent(this);
     trumpCategoryLabel->setGeometry(QRect(90, 160, 121, 31));
     trumpCategoryLabel->setFont(categoryFont);
 
     selectPartnerButton = new ScaledQPushButton;
+    selectPartnerButton->setText("Select partner...");
     selectPartnerButton->setParent(this);
     selectPartnerButton->setGeometry(QRect(260, 270, 141, 28));
     selectPartnerButton->setFont(buttonFont);
 
     partnerCategoryLabel = new ScaledQLabel;
+    partnerCategoryLabel->setText("Partner");
     partnerCategoryLabel->setParent(this);
     partnerCategoryLabel->setGeometry(QRect(90, 270, 131, 31));
     partnerCategoryLabel->setFont(categoryFont);
 
     selectTrumpButton = new ScaledQPushButton;
+    selectTrumpButton->setText("Select trump...");
     selectTrumpButton->setParent(this);
     selectTrumpButton->setGeometry(QRect(260, 160, 141, 31));
     selectTrumpButton->setFont(buttonFont);
     
     trumpLabel = new ScaledQLabel;
+    trumpLabel->setText("Trump");
     trumpLabel->setParent(this);
     trumpLabel->setGeometry(QRect(510, 150, 121, 51));
     trumpLabel->setAlignment(Qt::AlignCenter);
     trumpLabel->setFont(labelFont);
 
     okButton = new ScaledQPushButton;
+    okButton->setText("OK");
     okButton->setParent(this);
     okButton->setGeometry(QRect(620, 390, 75, 23));
     okButton->setFont(buttonFont);
 
     autoSelectTrumpButton = new ScaledQPushButton;
+    autoSelectTrumpButton->setText("Auto select nest...");
     autoSelectTrumpButton->setParent(this);
     autoSelectTrumpButton->setGeometry(QRect(260, 190, 141, 31));
     autoSelectTrumpButton->setFont(buttonFont);
 
     autoSelectPartnerButton = new ScaledQPushButton;
+    autoSelectPartnerButton->setText("Auto select partner...");
     autoSelectPartnerButton->setParent(this);
     autoSelectPartnerButton->setGeometry(QRect(260, 300, 141, 28));
     autoSelectPartnerButton->setFont(buttonFont);
 
     nestCategoryLabel = new ScaledQLabel;
+    nestCategoryLabel->setText("Nest");
     nestCategoryLabel->setParent(this);
     nestCategoryLabel->setGeometry(QRect(90, 40, 121, 31));
     nestCategoryLabel->setFont(categoryFont);
 
     selectNestButton = new ScaledQPushButton;
+    selectNestButton->setText("Select nest...");
     selectNestButton->setParent(this);
     selectNestButton->setGeometry(QRect(260, 40, 141, 31));
     selectNestButton->setFont(buttonFont);
 
     autoSelectNestButton = new ScaledQPushButton;
+    autoSelectNestButton->setText("Auto select nest...");
     autoSelectNestButton->setParent(this);
     autoSelectNestButton->setGeometry(QRect(260, 70, 141, 31));
     autoSelectNestButton->setFont(buttonFont);
@@ -97,7 +108,6 @@ MiddleDialog::MiddleDialog(QWidget *parent) : QDialogWithClickableCardArray(true
 
     resize(MIDDLE_DIALOG_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
-    setStyleSheet("background-color: white");
 }
 
 void MiddleDialog::rescale()

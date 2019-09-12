@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) : ScaledQMainWindow(parent)
     setupActions();
     setupMenus();
 
-    widget = new MainWidget(this);
+    widget = new MainWidget;
     widget->setParent(this);
     widget->refreshInfoWidget(gamedata);
 

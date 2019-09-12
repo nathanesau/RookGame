@@ -51,11 +51,13 @@ void BidDialog::setupUi()
     player4BidLabel->setFont(labelFont);
 
     bidButton = new ScaledQPushButton;
+    bidButton->setText("Bid");
     bidButton->setParent(this);
     bidButton->setGeometry(QRect(160, 200, 71, 31));
     bidButton->setFont(buttonFont);
 
     passButton = new ScaledQPushButton;
+    passButton->setText("Pass");
     passButton->setParent(this);
     passButton->setGeometry(QRect(440, 200, 81, 31));
     passButton->setFont(buttonFont);
@@ -66,6 +68,7 @@ void BidDialog::setupUi()
     bidAmountComboBox->setFont(labelFont);
 
     bidAmountLabel = new ScaledQLabel;
+    bidAmountLabel->setText("Bid Amount");
     bidAmountLabel->setParent(this);
     bidAmountLabel->setGeometry(QRect(300, 110, 121, 21));
     bidAmountLabel->setFont(titleFont);
@@ -82,6 +85,11 @@ BidDialog::BidDialog(QWidget *parent) : ScaledQDialog(true, parent)
     player3Label->setText(QString::fromStdString(gamedata.playerArr[PLAYER_3].getPlayerName()));
     player4Label->setText(QString::fromStdString(gamedata.playerArr[PLAYER_4].getPlayerName()));
 
+    player1BidLabel->setText("0");
+    player2BidLabel->setText("0");
+    player3BidLabel->setText("0");
+    player4BidLabel->setText("0");
+
     bidAmountLabel->adjustSize();
     player1Label->adjustSize();
     player2Label->adjustSize();
@@ -93,7 +101,6 @@ BidDialog::BidDialog(QWidget *parent) : ScaledQDialog(true, parent)
 
     resize(BID_DIALOG_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
-    setStyleSheet("background-color: white");
 }
 
 void BidDialog::rescale()
