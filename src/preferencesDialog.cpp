@@ -1,4 +1,3 @@
-#include "mainWindow.h"
 #include "preferencesDialog.h"
 
 void PreferencesDialog::setupContentsWidget()
@@ -22,12 +21,15 @@ void PreferencesDialog::setupContentsWidget()
     setupListWidgetItem(appearanceButton, "Appearance", QIcon(":appearanceButton.png"));
     setupListWidgetItem(gameButton, "Game", QIcon(":gameButton.png"));
 
-    QObject::connect(contentsWidget, &QListWidget::currentItemChanged, this, &PreferencesDialog::changePage);
+    connect(contentsWidget, &QListWidget::currentItemChanged, this, &PreferencesDialog::changePage);
 }
 
 void PreferencesDialog::setupPagesWidget()
 {
-    appearancePage = new AppearancePage(mainWindow);
+    appearancePage = new AppearancePage;
+    connect(appearancePage, &AppearancePage::nameTagsChanged, this, &PreferencesDialog::nameTagsChanged);
+    connect(appearancePage, &AppearancePage::gameResolutionChanged, this, &PreferencesDialog::gameResolutionChanged);
+
     gamePage = new GamePage;
 
     pagesWidget = new QStackedWidget;
@@ -35,8 +37,7 @@ void PreferencesDialog::setupPagesWidget()
     pagesWidget->addWidget(gamePage);
 }
 
-PreferencesDialog::PreferencesDialog(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
-                                                                                 QDialog(parent)
+PreferencesDialog::PreferencesDialog(QWidget *parent) : QDialog(parent)
 {
     setupContentsWidget();
     setupPagesWidget();
@@ -44,7 +45,7 @@ PreferencesDialog::PreferencesDialog(MainWindow *pMainWindow, QWidget *parent) :
     closeButton = new QPushButton;
     closeButton->setText("Close");
 
-    QObject::connect(closeButton, &QAbstractButton::clicked, this, &PreferencesDialog::onCloseButton);
+    connect(closeButton, &QAbstractButton::clicked, this, &PreferencesDialog::onCloseButton);
 
     horizontalLayout = new QHBoxLayout;
     horizontalLayout->addWidget(contentsWidget);

@@ -15,8 +15,7 @@ GameInfoWidgetData::GameInfoWidgetData()
     pointsMiddleKnown = false;
 }
 
-GameInfoWidget::GameInfoWidget(QMainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
-                                                                            QDialogWithClickableCardArray(false, parent)
+GameInfoWidget::GameInfoWidget(QWidget *parent) : QDialogWithClickableCardArray(false, parent)
 {
     partnerCards = new ClickableCardArray(DRAW_POSITION_GAME_INFO_WIDGET, SIZE_TINY, this);
 
@@ -132,34 +131,6 @@ void GameInfoWidget::rescale()
 }
 
 void GameInfoWidget::onCardClicked(ClickableCard *clickableCard)
-{
-    // do nothing
-}
-
-void GameInfoWidget::onCardHoverEnter(ClickableCard *clickableCard)
-{
-    if (Settings::Appearance::readShowPartnerToolTip())
-    {
-        auto playerNames = Settings::Appearance::readPlayerNames();
-
-        auto toolTipText = [&playerNames](int playerNum) -> QString {
-            switch (playerNum)
-            {
-            case PLAYER_1:
-            case PLAYER_2:
-            case PLAYER_3:
-            case PLAYER_4:
-                return QString::fromStdString(playerNames[playerNum]);
-            default:
-                return "???";
-            }
-        }(data.partnerPlayerNum);
-
-        QToolTip::showText(mainWindow->pos() + clickableCard->pos(), toolTipText, clickableCard);
-    }
-}
-
-void GameInfoWidget::onCardHoverLeave(ClickableCard *clickableCard)
 {
     // do nothing
 }

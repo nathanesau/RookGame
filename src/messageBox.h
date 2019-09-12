@@ -29,8 +29,6 @@ protected:
     void hyperLinkClicked(const QString &link);
 
     void onCardClicked(ClickableCard *clickableCard);
-    void onCardHoverEnter(ClickableCard *clickableCard);
-    void onCardHoverLeave(ClickableCard *clickableCard);
 };
 
 #endif

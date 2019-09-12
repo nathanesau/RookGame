@@ -9,12 +9,9 @@ const float SCALE_FACTOR_INCR = 0.05F;
 // windowed app will not take up for of screen than this
 const float MAX_PROPORTION_SCREEN = 0.975F;
 
-// forward declarations
-class MainWindow;
-
 class AppearancePage : public QWidget
 {
-    MainWindow *mainWindow; // non-owning
+    Q_OBJECT
 
     std::map<int, float> indexScaleFactorMap;
 
@@ -45,17 +42,21 @@ class AppearancePage : public QWidget
     QLineEdit *screenHeightLineEdit;
 
     QPushButton *applyButton;
-    
+
     QVBoxLayout *mainLayout;
+
+signals:
+    void nameTagsChanged();
+    void gameResolutionChanged();
 
 private:
     void initializeResolutionGroup();
     void initializeNamesGroup();
     void initializeHUDGroup();
     void initializeScreenGroup();
-public:
 
-    AppearancePage(MainWindow *pMainWindow, QWidget *parent = 0);
+public:
+    AppearancePage(QWidget *parent = 0);
 
 private:
     void onApply();

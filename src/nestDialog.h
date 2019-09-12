@@ -17,14 +17,14 @@ const QSize NEST_DIALOG_SIZE = {911, 506};
 // for selecting cards from nest
 class NestDialog : public QDialogWithClickableCardArray
 {
+    Q_OBJECT
+
     // output of dialog is gamedata (modify directly)
 
     CardVector originalNest;
     CardStyleMap originalNestStyles;
 
 private:
-    QMainWindow *mainWindow; // non-owning
-
     ScaledQPushButton *autoChooseNestButton;
     ScaledQPushButton *resetNestButton;
     ScaledQPushButton *doneNestButton;
@@ -37,16 +37,18 @@ private:
 
     ScaledQCheckBox *highlightCardsCheckBox;
 
+signals:
+    void showWrongNumNestCardsMessage();
+    void showTooManyNestCardsMessage(int numMiddleCardsSelected, int numMiddleCardsAllowed);
+
 public:
-    NestDialog(CardVector pOriginalNest, QMainWindow *pMainWindow, QWidget *parent = nullptr);
+    NestDialog(CardVector pOriginalNest, QWidget *parent = nullptr);
     virtual void rescale();
     virtual void reject();
 
     void setOriginalNestStyles(std::string style);
 
     virtual void onCardClicked(ClickableCard *clickableCard);
-    virtual void onCardHoverEnter(ClickableCard *clickableCard);
-    virtual void onCardHoverLeave(ClickableCard *clickableCard);
 
     void autoChooseNestButtonPressed();
     void resetNestButtonPressed();

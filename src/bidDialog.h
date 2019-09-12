@@ -17,14 +17,12 @@ const QSize BID_DIALOG_SIZE = {661, 302};
 
 class BidDialog : public ScaledQDialog
 {
-    QMainWindow *mainWindow; // non-owning
-
     Ui::BidDialog ui;
 
     void setupComboBox(int minBid, int maxBid, int incr);
 
 public:
-    BidDialog(QMainWindow *pMainWindow, QWidget *parent = nullptr);
+    BidDialog(QWidget *parent = nullptr);
     virtual void rescale();
     virtual void reject();
 

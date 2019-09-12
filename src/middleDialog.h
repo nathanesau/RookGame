@@ -18,34 +18,38 @@ const QSize MIDDLE_DIALOG_SIZE = {724, 435};
 // output: gamedata.nest, gamedata.roundInfo.trump, gamedata.roundInfo.partnerCard
 class MiddleDialog : public QDialogWithClickableCardArray
 {
+    Q_OBJECT
+
     CardVector originalNest;
 
 private:
-    MainWidget *mainWidget; // non-owning
-    QMainWindow *mainWindow; // non-owning
-
     Ui::MiddleDialog ui;
     
     ClickableCardArray *nestCards;
     ClickableCardArray *partnerCards;
 
+signals:
+    void showInvalidMiddleDialogMessage();
+    void showNestDialog(const CardVector &originalNest);
+    void showPartnerDialog();
+    void showTrumpDialog();
+    void refreshCardWidgets(GameData &pData);
+
 public:
-    MiddleDialog(MainWidget *pMainWidget, QMainWindow *pMainWindow, QWidget *parent = nullptr);
+    MiddleDialog(QWidget *parent = nullptr);
     virtual void rescale();
     virtual void reject();
 
     virtual void onCardClicked(ClickableCard *clickableCard);
-    virtual void onCardHoverEnter(ClickableCard *clickableCard);
-    virtual void onCardHoverLeave(ClickableCard *clickableCard);
 
 private:
-    void selectNestButtonPressed();
-    void autoSelectNestButtonPressed();
-    void selectTrumpButtonPressed();
-    void autoSelectTrumpButtonPressed();
-    void selectPartnerButtonPressed();
-    void autoSelectPartnerButtonPressed();
-    void okButtonPressed();
+    void onSelectNestButtonPressed();
+    void onAutoSelectNestButtonPressed();
+    void onSelectTrumpButtonPressed();
+    void onAutoSelectTrumpButtonPressed();
+    void onSelectPartnerButtonPressed();
+    void onAutoSelectPartnerButtonPressed();
+    void onOkButtonPressed();
 
     void setupTrumpLabel(int suit);
 };

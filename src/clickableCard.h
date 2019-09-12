@@ -71,8 +71,6 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *event);
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
 
 private:
     int getRotation(int drawPosition) const;
@@ -142,8 +140,6 @@ public:
     virtual void rescale() = 0;
 
     virtual void onCardClicked(ClickableCard *clickableCard) = 0;
-    virtual void onCardHoverEnter(ClickableCard *clickableCard) = 0;
-    virtual void onCardHoverLeave(ClickableCard *clickableCard) = 0;
 };
 
 #endif

@@ -1,11 +1,9 @@
 #include "bidDialog.h"
 #include "cpu.h"
 #include "gameData.h"
-#include "messageBox.h"
 #include "utils.h"
 
-BidDialog::BidDialog(QMainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
-                                                                  ScaledQDialog(true, parent)
+BidDialog::BidDialog(QWidget *parent) : ScaledQDialog(true, parent)
 {
     ui.setupUi(this);
 
@@ -22,8 +20,8 @@ BidDialog::BidDialog(QMainWindow *pMainWindow, QWidget *parent) : mainWindow(pMa
     ui.player3Label->adjustSize();
     ui.player4Label->adjustSize();
 
-    QObject::connect(ui.bidButton, &QPushButton::pressed, this, &BidDialog::onBidButtonPressed);
-    QObject::connect(ui.passButton, &QPushButton::pressed, this, &BidDialog::onPassButtonPressed);
+    connect(ui.bidButton, &QPushButton::pressed, this, &BidDialog::onBidButtonPressed);
+    connect(ui.passButton, &QPushButton::pressed, this, &BidDialog::onPassButtonPressed);
 
     resize(BID_DIALOG_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
@@ -73,7 +71,6 @@ void BidDialog::onBidButtonPressed()
     if (getNumPassed() == 3) // bidding round over
     {
         QDialog::accept(); // close bid dialog
-        showBidResultMsgBox();
     }
     else
     {
@@ -98,7 +95,6 @@ void BidDialog::onPassButtonPressed()
     bidPlayer.cpu->selectPartner();
 
     QDialog::reject(); // close bid dialog
-    showBidResultMsgBox();
 }
 
 void BidDialog::setupComboBox(int minBid, int maxBid, int incr)
@@ -112,18 +108,6 @@ void BidDialog::setupComboBox(int minBid, int maxBid, int incr)
     }
 
     ui.bidAmountComboBox->showNormal();
-}
-
-void BidDialog::showBidResultMsgBox()
-{
-    std::string bidResultMsg = gamedata.playerArr[gamedata.roundInfo.bidPlayer].getPlayerName() + " won the bid for " +
-                               std::to_string(gamedata.roundInfo.bidAmount) + ". " + "Bid updated.";
-
-    MessageBox msgBox;
-    msgBox.setText(QString::fromStdString(bidResultMsg));
-    msgBox.setWindowTitle("Bid Result");
-    Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
-    msgBox.exec();
 }
 
 void BidDialog::getCpuBids()

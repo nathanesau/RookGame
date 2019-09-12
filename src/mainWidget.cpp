@@ -1,7 +1,6 @@
 #include "cpu.h"
 #include "gameData.h"
 #include "mainWidget.h"
-#include "mainWindow.h"
 #include "messageBox.h"
 #include "roundSummaryDialog.h"
 #include "settings.h"
@@ -111,8 +110,7 @@ MainWidgetData::MainWidgetData()
 {
 }
 
-MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
-                                                                   QDialogWithClickableCardArray(false, parent)
+MainWidget::MainWidget(QWidget *parent) : QDialogWithClickableCardArray(false, parent)
 {
     player1Cards = new ClickableCardArray(DRAW_POSITION_MAIN_WIDGET_BOTTOM, SIZE_NORMAL, this);
 #ifdef CPU_DEBUG
@@ -147,11 +145,18 @@ MainWidget::MainWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pM
     player4NameLabel = new PlayerNameLabel(Qt::AlignRight);
     setupLabel(player4NameLabel, QString::fromStdString(playerNames[PLAYER_4]), {1100, 425});
 
-    infoWidget = new GameInfoWidget(pMainWindow);
+    infoWidget = new GameInfoWidget;
     infoWidget->setParent(this);
     infoWidget->move(QPoint(0, 0));
 
-    menuWidget = new GameMenuWidget(pMainWindow);
+    menuWidget = new GameMenuWidget;
+
+    connect(menuWidget, &GameMenuWidget::newGameButtonPressed, this, &MainWidget::newGameButtonPressed);
+    connect(menuWidget, &GameMenuWidget::newRoundButtonPressed, this, &MainWidget::newRoundButtonPressed);
+    connect(menuWidget, &GameMenuWidget::saveGameButtonPressed, this, &MainWidget::saveGameButtonPressed);
+    connect(menuWidget, &GameMenuWidget::loadGameButtonPressed, this, &MainWidget::loadGameButtonPressed);
+    connect(menuWidget, &GameMenuWidget::quitGameButtonPressed, this, &MainWidget::quitGameButtonPressed);
+
     menuWidget->setParent(this);
     menuWidget->move(QPoint(400, 300));
 
@@ -261,12 +266,7 @@ bool MainWidget::validateCard(ClickableCard *clickableCard)
 
     if (!playableCards.hasCard(clickableCard->data)) // invalid card
     {
-        MessageBox msgBox;
-        msgBox.showCards({clickableCard->data});
-        msgBox.setText("Invalid card clicked. Must follow suit.");
-        msgBox.setWindowTitle("Invalid card");
-        Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
-        msgBox.exec();
+        emit invalidCardPlayed(clickableCard);
 
         return false;
     }
@@ -304,15 +304,7 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
         // refresh overallScores
         infoWidget->refreshWidget(gamedata);
 
-        RoundSummaryDialog summaryDlg;
-        summaryDlg.updateScores(gamedata.roundInfo.getRoundScores());
-        Utils::Ui::moveParentlessDialog(&summaryDlg, mainWindow, DIALOG_POSITION_CENTER);
-
-        if (!summaryDlg.exec())
-        {
-            qFatal("Problem executing round summary dialog");
-            return;
-        }
+        emit roundSummary();
 
         gamedata.scoreHistory[gamedata.overallInfo.roundNum] = gamedata.roundInfo.getRoundScores();
         gamedata.clearRoundSpecificInfo();
@@ -326,16 +318,6 @@ void MainWidget::onCardClicked(ClickableCard *clickableCard)
     {
         startNewHand(gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo).playerNum);
     }
-}
-
-void MainWidget::onCardHoverEnter(ClickableCard *clickableCard)
-{
-    // do nothing
-}
-
-void MainWidget::onCardHoverLeave(ClickableCard *clickableCard)
-{
-    // do nothing
 }
 
 void MainWidget::refreshCardWidgets(GameData &pData)
@@ -451,14 +433,7 @@ void MainWidget::showPartnerCardIfApplicable()
             // refresh partner card, teams
             infoWidget->refreshWidget(gamedata);
 
-            std::string msg = gamedata.playerArr[gamedata.roundInfo.partnerPlayerNum].getPlayerName() + " is the partner. Teams updated.";
-
-            MessageBox msgBox;
-            msgBox.showCards({gamedata.roundInfo.partnerCard});
-            msgBox.setText(QString::fromStdString(msg));
-            msgBox.setWindowTitle("Partner card");
-            Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
-            msgBox.exec();
+            emit partnerMessage();
 
             return;
         }
@@ -469,34 +444,14 @@ void MainWidget::showHandResult()
 {
     auto winningPair = gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo);
 
-    auto msg = [&winningPair]() -> std::string {
-        return gamedata.playerArr[winningPair.playerNum].getPlayerName() +
-               " won the hand for " + std::to_string(gamedata.handInfo.points) + " points with the";
-    }();
-
-    MessageBox msgBox;
-    msgBox.showCards({winningPair.card});
-    msgBox.setText(QString::fromStdString(msg));
-    msgBox.setWindowTitle("Hand result");
-    msgBox.move({340, 250});
-    Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
-    msgBox.exec();
+    emit handResultMessage(winningPair);
 }
 
 void MainWidget::showNestResult()
 {
     auto winningPair = gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo);
 
-    std::string msg = gamedata.playerArr[winningPair.playerNum].getPlayerName() +
-                 " won the nest. Nest had " + std::to_string(gamedata.roundInfo.pointsMiddle) + " points.";
-
-    MessageBox msgBox;
-    msgBox.changeCardArrayDrawPosition(DRAW_POSITION_MESSAGE_BOX_NEST);
-    msgBox.showCards(gamedata.nest);
-    msgBox.setText(QString::fromStdString(msg));
-    msgBox.setWindowTitle("Last hand");
-    Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
-    msgBox.exec();
+    emit nestResultMessage(winningPair);
 }
 
 ClickableCardArray *MainWidget::getCardPlayedWidget(int playerNum)

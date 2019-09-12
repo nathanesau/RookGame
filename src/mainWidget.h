@@ -5,12 +5,12 @@
 #include "common.h"
 #include "gameInfoWidget.h"
 #include "gameMenuWidget.h"
+#include "handInfo.h"
 #include "scaledWidgets.h"
 
 // forward declarations
 class CpuDecisionMaker;
 struct GameData;
-class MainWindow;
 
 // global declarations
 extern CpuDecisionMaker cpu;
@@ -75,11 +75,11 @@ struct MainWidgetData
 
 class MainWidget : public QDialogWithClickableCardArray
 {
+    Q_OBJECT
+
     MainWidgetData data;
 
 private:
-    MainWindow *mainWindow; // non-owning
-
     GameInfoWidget *infoWidget;
     GameMenuWidget *menuWidget;
 
@@ -103,13 +103,23 @@ private:
     ClickableCardArray *player4Cards;
     #endif
 
+signals:
+    void handResultMessage(PlayerCardPair &winningPair);
+    void nestResultMessage(PlayerCardPair &winningPair);
+    void invalidCardPlayed(ClickableCard *clickableCard);
+    void loadGameButtonPressed();
+    void newGameButtonPressed();
+    void newRoundButtonPressed();
+    void partnerMessage();
+    void quitGameButtonPressed();
+    void roundSummary();
+    void saveGameButtonPressed();
+
 public:
-    MainWidget(MainWindow *pMainWindow, QWidget *parent = nullptr);
+    MainWidget(QWidget *parent = nullptr);
     virtual void rescale();
 
     virtual void onCardClicked(ClickableCard *clickableCard);
-    virtual void onCardHoverEnter(ClickableCard *clickableCard);
-    virtual void onCardHoverLeave(ClickableCard *clickableCard);
 
     void refreshCardWidgets(GameData &pData);
     void refreshInfoWidget(GameData &pData);

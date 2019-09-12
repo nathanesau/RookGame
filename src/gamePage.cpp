@@ -85,7 +85,7 @@ GamePage::GamePage(QWidget *parent) : QWidget(parent)
 
     applyButton = new QPushButton;
     applyButton->setText("Apply");
-    QObject::connect(applyButton, &QAbstractButton::clicked, this, &GamePage::onApply);
+    connect(applyButton, &QAbstractButton::clicked, this, &GamePage::onApply);
 
     mainLayout = new QVBoxLayout;
     mainLayout->addWidget(bidGroup);

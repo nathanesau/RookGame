@@ -1,8 +1,6 @@
 #include "gameMenuWidget.h"
-#include "mainWindow.h"
 
-GameMenuWidget::GameMenuWidget(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
-                                                                           ScaledQDialog(parent)
+GameMenuWidget::GameMenuWidget(QWidget *parent) : ScaledQDialog(parent)
 {
     auto setupButton = [this](ScaledQPushButton *button, QString text, QPoint pos, QSize size) {
         button->setParent(this);
@@ -39,11 +37,11 @@ GameMenuWidget::GameMenuWidget(MainWindow *pMainWindow, QWidget *parent) : mainW
     setupButton(quitGameButton, "Quit Game", {125, 255}, {100, 25});
     quitGameButton->setToolTip("Exist the program");
 
-    QObject::connect(newGameButton, &QPushButton::pressed, this, &GameMenuWidget::onNewGameButtonPressed);
-    QObject::connect(newRoundButton, &QPushButton::pressed, this, &GameMenuWidget::onNewRoundButtonPressed);
-    QObject::connect(saveGameButton, &QPushButton::pressed, this, &GameMenuWidget::onSaveGameButtonPressed);
-    QObject::connect(loadGameButton, &QPushButton::pressed, this, &GameMenuWidget::onLoadGameButtonPressed);
-    QObject::connect(quitGameButton, &QPushButton::pressed, this, &GameMenuWidget::onQuitGameButtonPressed);
+    connect(newGameButton, &QPushButton::pressed, this, &GameMenuWidget::newGameButtonPressed);
+    connect(newRoundButton, &QPushButton::pressed, this, &GameMenuWidget::newRoundButtonPressed);
+    connect(saveGameButton, &QPushButton::pressed, this, &GameMenuWidget::saveGameButtonPressed);
+    connect(loadGameButton, &QPushButton::pressed, this, &GameMenuWidget::loadGameButtonPressed);
+    connect(quitGameButton, &QPushButton::pressed, this, &GameMenuWidget::quitGameButtonPressed);
 
     setStyleSheet("background-color: white");
     resize(GAME_MENU_WIDGET_SIZE);
@@ -60,29 +58,4 @@ void GameMenuWidget::rescale()
     for (auto button : std::vector<ScaledQPushButton *>{newGameButton, newRoundButton, saveGameButton,
                                                         loadGameButton, quitGameButton})
         button->rescale();
-}
-
-void GameMenuWidget::onNewGameButtonPressed()
-{
-    mainWindow->onNewGameAction();
-}
-
-void GameMenuWidget::onNewRoundButtonPressed()
-{
-    mainWindow->startNewRound();
-}
-
-void GameMenuWidget::onSaveGameButtonPressed()
-{
-    mainWindow->onSaveGameAction();
-}
-
-void GameMenuWidget::onLoadGameButtonPressed()
-{
-    mainWindow->onLoadGameAction();
-}
-
-void GameMenuWidget::onQuitGameButtonPressed()
-{
-    mainWindow->close();
 }

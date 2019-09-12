@@ -50,7 +50,7 @@ RoundSummaryDialog::RoundSummaryDialog(QWidget *parent) : ScaledQDialog(true, pa
     okButton->resize(50, 25);
     okButton->move({400, 200});
 
-    QObject::connect(okButton, &QPushButton::pressed, this, &RoundSummaryDialog::accept);
+    connect(okButton, &QPushButton::pressed, this, &RoundSummaryDialog::accept);
 
     resize(ROUND_SUMMARY_DIALOG_SIZE);
     setWindowTitle("Round summary");

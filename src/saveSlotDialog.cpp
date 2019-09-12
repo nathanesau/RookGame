@@ -23,7 +23,7 @@ SaveSlotDialog::SaveSlotDialog(int &pSlotSelected, QWidget *parent) : slotSelect
     setupListWidgetItem(saveSlot2Button, "File 2", QIcon(":saveSlot.png"));
     setupListWidgetItem(saveSlot3Button, "File 3", QIcon(":saveSlot.png"));
 
-    QObject::connect(contentsWidget, &QListWidget::currentItemChanged, this, &SaveSlotDialog::changePage);
+    connect(contentsWidget, &QListWidget::currentItemChanged, this, &SaveSlotDialog::changePage);
 
     saveSlot1Page = new SaveSlotPage("slot1.db");
     saveSlot2Page = new SaveSlotPage("slot2.db");
@@ -39,7 +39,7 @@ SaveSlotDialog::SaveSlotDialog(int &pSlotSelected, QWidget *parent) : slotSelect
     selectButton = new QPushButton;
     selectButton->setText("Select");
 
-    QObject::connect(selectButton, &QAbstractButton::clicked, this, &SaveSlotDialog::onSelectButton);
+    connect(selectButton, &QAbstractButton::clicked, this, &SaveSlotDialog::onSelectButton);
 
     horizontalLayout = new QHBoxLayout;
     horizontalLayout->addWidget(contentsWidget);
