@@ -40,6 +40,8 @@ set(rook_SRCS
         src/clickableCard.cpp
         src/clickableCard.h
         src/common.h
+        src/commonWidgets.cpp
+        src/commonWidgets.h
         src/cpu.cpp
         src/cpu.h
         src/deck.cpp
