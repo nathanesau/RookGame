@@ -15,6 +15,7 @@
 #include <QEvent>
 #include <QFont>
 #include <QGraphicsEffect>
+#include <QGridLayout>
 #include <QGroupBox>
 #include <QHeaderView>
 #include <QHBoxLayout>
