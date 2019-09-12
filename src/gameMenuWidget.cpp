@@ -1,7 +1,3 @@
-#include <QString>
-#include <QPoint>
-#include <QSize>
-
 #include "gameMenuWidget.h"
 #include "mainWindow.h"
 
@@ -58,11 +54,11 @@ void GameMenuWidget::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto label : vector<ScaledQLabel *>{menuTitleLabel})
+    for (auto label : std::vector<ScaledQLabel *>{menuTitleLabel})
         label->rescale();
 
-    for (auto button : vector<ScaledQPushButton *>{newGameButton, newRoundButton, saveGameButton,
-                                                   loadGameButton, quitGameButton})
+    for (auto button : std::vector<ScaledQPushButton *>{newGameButton, newRoundButton, saveGameButton,
+                                                        loadGameButton, quitGameButton})
         button->rescale();
 }
 

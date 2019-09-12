@@ -1,12 +1,3 @@
-#include <QApplication>
-#include <QDebug>
-#include <QSqlDatabase>
-#include <QSqlDriver>
-#include <QSqlError>
-#include <QSqlQuery>
-
-using namespace std;
-
 #include "gameData.h"
 #include "gameDatabase.h"
 
@@ -55,15 +46,15 @@ void GameDatabase::DatabaseInit()
         qWarning() << "GameDatabase::DatabaseInit - ERROR: " << query.lastError().text();
     }
 
-    vector<string> availableTableNames; // array of all tables already created in the database
+    std::vector<std::string> availableTableNames; // array of all tables already created in the database
 
     while (query.next())
     {
         availableTableNames.push_back(query.value(0).toString().toStdString());
     }
 
-    for (auto tableName : vector<string>{"PlayerCards", "PlayerBids", "NestCards", "PastRoundScores", "RoundScores",
-                                         "OverallScores", "Teams", "TeamScores", "CurrentRoundInfo", "HandInfo"})
+    for (auto tableName : std::vector<std::string>{"PlayerCards", "PlayerBids", "NestCards", "PastRoundScores", "RoundScores",
+                                                   "OverallScores", "Teams", "TeamScores", "CurrentRoundInfo", "HandInfo"})
     {
         if (std::find(availableTableNames.begin(), availableTableNames.end(), tableName) != availableTableNames.end()) // table exists
         {
@@ -286,9 +277,9 @@ void GameDatabase::createTableHandInfo()
     }
 }
 
-void GameDatabase::populateTablePlayerCards(const array<Player, 4> &playerArr)
+void GameDatabase::populateTablePlayerCards(const std::array<Player, 4> &playerArr)
 {
-    vector<PlayerCardsTableRow> tableRows;
+    std::vector<PlayerCardsTableRow> tableRows;
 
     for (auto &player : playerArr)
     {
@@ -317,9 +308,9 @@ void GameDatabase::populateTablePlayerCards(const array<Player, 4> &playerArr)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTablePlayerBids(const array<Player, 4> &playerArr)
+void GameDatabase::populateTablePlayerBids(const std::array<Player, 4> &playerArr)
 {
-    vector<PlayerBidsTableRow> tableRows;
+    std::vector<PlayerBidsTableRow> tableRows;
 
     for (auto &player : playerArr)
     {
@@ -344,9 +335,9 @@ void GameDatabase::populateTablePlayerBids(const array<Player, 4> &playerArr)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableNestCards(const vector<Card> &cardArr)
+void GameDatabase::populateTableNestCards(const std::vector<Card> &cardArr)
 {
-    vector<NestCardsTableRow> tableRows;
+    std::vector<NestCardsTableRow> tableRows;
 
     for (auto &card : cardArr)
     {
@@ -371,18 +362,18 @@ void GameDatabase::populateTableNestCards(const vector<Card> &cardArr)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTablePastRoundScores(const map<int, map<int, int>> &pastRoundScores)
+void GameDatabase::populateTablePastRoundScores(const std::map<int, std::map<int, int>> &pastRoundScores)
 {
-    auto getScore = [](const map<int, int> &roundScores, int playerNum) {
+    auto getScore = [](const std::map<int, int> &roundScores, int playerNum) {
         auto it = roundScores.find(playerNum);
         return (it != roundScores.end()) ? it->second : 0;
     };
 
-    vector<PastRoundScoresTableRow> tableRows;
+    std::vector<PastRoundScoresTableRow> tableRows;
 
     for (auto &round : pastRoundScores)
     {
-        for (auto &playerNo : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+        for (auto &playerNo : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
         {
             tableRows.push_back({round.first, playerNo, getScore(round.second, playerNo)});
         }
@@ -407,16 +398,16 @@ void GameDatabase::populateTablePastRoundScores(const map<int, map<int, int>> &p
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableRoundScores(const map<int, int> &roundScores)
+void GameDatabase::populateTableRoundScores(const std::map<int, int> &roundScores)
 {
     auto getScore = [&roundScores](int playerNum) {
         auto it = roundScores.find(playerNum);
         return (it != roundScores.end()) ? it->second : 0;
     };
 
-    vector<RoundScoresTableRow> tableRows;
+    std::vector<RoundScoresTableRow> tableRows;
 
-    for (auto &playerNo : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto &playerNo : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         tableRows.push_back({playerNo, getScore(playerNo)});
     }
@@ -439,16 +430,16 @@ void GameDatabase::populateTableRoundScores(const map<int, int> &roundScores)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableOverallScores(const map<int, int> &playerScores)
+void GameDatabase::populateTableOverallScores(const std::map<int, int> &playerScores)
 {
     auto getScore = [&playerScores](int playerNum) {
         auto it = playerScores.find(playerNum);
         return (it != playerScores.end()) ? it->second : 0;
     };
 
-    vector<OverallScoresTableRow> tableRows;
+    std::vector<OverallScoresTableRow> tableRows;
 
-    for (auto playerNo : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNo : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         tableRows.push_back({playerNo, getScore(playerNo)});
     }
@@ -459,9 +450,9 @@ void GameDatabase::populateTableOverallScores(const map<int, int> &playerScores)
 
     for (auto &row : tableRows)
     {
-        string sql = "INSERT INTO OverallScores(Player, Score) VALUES(" +
-                     to_string(row.Player) + "," +
-                     to_string(row.Score) + ")";
+        std::string sql = "INSERT INTO OverallScores(Player, Score) VALUES(" +
+                          std::to_string(row.Player) + "," +
+                          std::to_string(row.Score) + ")";
 
         if (!query.exec(QString::fromStdString(sql)))
         {
@@ -472,11 +463,11 @@ void GameDatabase::populateTableOverallScores(const map<int, int> &playerScores)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableTeams(const array<Team, 2> &teams)
+void GameDatabase::populateTableTeams(const std::array<Team, 2> &teams)
 {
-    vector<TeamsTableRow> tableRows;
+    std::vector<TeamsTableRow> tableRows;
 
-    for (auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for (auto teamNum : std::vector<int>{TEAM_1, TEAM_2})
     {
         for (auto playerNum : teams[teamNum])
         {
@@ -502,16 +493,16 @@ void GameDatabase::populateTableTeams(const array<Team, 2> &teams)
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableTeamScores(const map<int, int> &teamScores)
+void GameDatabase::populateTableTeamScores(const std::map<int, int> &teamScores)
 {
     auto getScore = [&teamScores](int teamNum) {
         auto it = teamScores.find(teamNum);
         return (it != teamScores.end()) ? it->second : 0;
     };
 
-    vector<TeamScoresTableRow> tableRows;
+    std::vector<TeamScoresTableRow> tableRows;
 
-    for (auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for (auto teamNum : std::vector<int>{TEAM_1, TEAM_2})
     {
         tableRows.push_back({teamNum, getScore(teamNum)});
     }
@@ -536,7 +527,7 @@ void GameDatabase::populateTableTeamScores(const map<int, int> &teamScores)
 
 void GameDatabase::populateTableCurrentRoundInfo(int round, int bidPlayer, int bidAmount, const Card &partnerCard, int trump, int pointsMiddle)
 {
-    vector<CurrentRoundInfoTableRow> tableRows;
+    std::vector<CurrentRoundInfoTableRow> tableRows;
 
     tableRows.push_back({round, bidPlayer, bidAmount, partnerCard.suit, partnerCard.value, trump, pointsMiddle});
 
@@ -563,7 +554,7 @@ void GameDatabase::populateTableCurrentRoundInfo(int round, int bidPlayer, int b
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::populateTableHandInfo(int startingPlayerNum, const map<int, Card> &cardPlayed, int suit, int points)
+void GameDatabase::populateTableHandInfo(int startingPlayerNum, const std::map<int, Card> &cardPlayed, int suit, int points)
 {
     auto getCardPlayed = [&cardPlayed](int playerNum) {
         auto it = cardPlayed.find(playerNum);
@@ -575,7 +566,7 @@ void GameDatabase::populateTableHandInfo(int startingPlayerNum, const map<int, C
     auto player3CardPlayed = getCardPlayed(PLAYER_3);
     auto player4CardPlayed = getCardPlayed(PLAYER_4);
 
-    vector<HandInfoTableRow> tableRows;
+    std::vector<HandInfoTableRow> tableRows;
 
     tableRows.push_back({startingPlayerNum,
                          player1CardPlayed.suit, player1CardPlayed.value, player2CardPlayed.suit, player2CardPlayed.value,
@@ -612,7 +603,7 @@ void GameDatabase::populateTableHandInfo(int startingPlayerNum, const map<int, C
     QSqlDatabase::database().commit();
 }
 
-void GameDatabase::loadTablePlayerCards(array<Player, 4> &playerArr)
+void GameDatabase::loadTablePlayerCards(std::array<Player, 4> &playerArr)
 {
     for (auto &player : playerArr)
     {
@@ -635,7 +626,7 @@ void GameDatabase::loadTablePlayerCards(array<Player, 4> &playerArr)
     }
 }
 
-void GameDatabase::loadTablePlayerBids(array<Player, 4> &playerArr)
+void GameDatabase::loadTablePlayerBids(std::array<Player, 4> &playerArr)
 {
     for (auto &player : playerArr)
     {
@@ -657,7 +648,7 @@ void GameDatabase::loadTablePlayerBids(array<Player, 4> &playerArr)
     }
 }
 
-void GameDatabase::loadTableNestCards(vector<Card> &cardArr)
+void GameDatabase::loadTableNestCards(std::vector<Card> &cardArr)
 {
     cardArr.clear();
 
@@ -676,7 +667,7 @@ void GameDatabase::loadTableNestCards(vector<Card> &cardArr)
     }
 }
 
-void GameDatabase::loadTablePastRoundScores(map<int, map<int, int>> &pastRoundScores)
+void GameDatabase::loadTablePastRoundScores(std::map<int, std::map<int, int>> &pastRoundScores)
 {
     pastRoundScores.clear();
 
@@ -696,7 +687,7 @@ void GameDatabase::loadTablePastRoundScores(map<int, map<int, int>> &pastRoundSc
     }
 }
 
-void GameDatabase::loadTableRoundScores(map<int, int> &playerScores)
+void GameDatabase::loadTableRoundScores(std::map<int, int> &playerScores)
 {
     playerScores.clear();
 
@@ -715,7 +706,7 @@ void GameDatabase::loadTableRoundScores(map<int, int> &playerScores)
     }
 }
 
-void GameDatabase::loadTableOverallScores(map<int, int> &playerScores)
+void GameDatabase::loadTableOverallScores(std::map<int, int> &playerScores)
 {
     playerScores.clear();
 
@@ -734,7 +725,7 @@ void GameDatabase::loadTableOverallScores(map<int, int> &playerScores)
     }
 }
 
-void GameDatabase::loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playerArr)
+void GameDatabase::loadTableTeams(std::array<Team, 2> &teams, std::array<Player, 4> &playerArr)
 {
     for (auto &team : teams)
     {
@@ -756,7 +747,7 @@ void GameDatabase::loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playe
         teams[teamNo].insert(player);
     }
 
-    for (auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for (auto teamNum : std::vector<int>{TEAM_1, TEAM_2})
     {
         for (auto playerNum : teams[teamNum])
         {
@@ -765,7 +756,7 @@ void GameDatabase::loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playe
     }
 }
 
-void GameDatabase::loadTableTeamScores(map<int, int> &teamScores)
+void GameDatabase::loadTableTeamScores(std::map<int, int> &teamScores)
 {
     teamScores.clear();
 
@@ -813,7 +804,7 @@ void GameDatabase::loadTableCurrentRoundInfo(int &round, int &bidPlayer, int &bi
     }
 }
 
-void GameDatabase::loadTableHandInfo(int &startingPlayerNum, map<int, Card> &cardPlayed, int &suit, int &points)
+void GameDatabase::loadTableHandInfo(int &startingPlayerNum, std::map<int, Card> &cardPlayed, int &suit, int &points)
 {
     startingPlayerNum = PLAYER_UNDEFINED;
     cardPlayed.clear();
@@ -846,9 +837,9 @@ void GameDatabase::loadTableHandInfo(int &startingPlayerNum, map<int, Card> &car
     }
 }
 
-void GameDatabase::dropTable(const string &tableName)
+void GameDatabase::dropTable(const std::string &tableName)
 {
-    string sql = "DROP TABLE IF EXISTS " + tableName;
+    std::string sql = "DROP TABLE IF EXISTS " + tableName;
 
     QSqlQuery dropQuery(QString::fromStdString(sql));
 

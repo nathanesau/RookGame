@@ -1,17 +1,10 @@
 #ifndef NESTDIALOG_H
 #define NESTDIALOG_H
 
-#include <QLabel>
-#include <QMainWindow>
-#include <QPushButton>
-#include <string>
-
 #include "card.h"
 #include "clickableCard.h"
 #include "common.h"
 #include "scaledWidgets.h"
-
-using namespace std;
 
 // forward declarations
 struct GameData;
@@ -49,7 +42,7 @@ public:
     virtual void rescale();
     virtual void reject();
 
-    void setOriginalNestStyles(string style);
+    void setOriginalNestStyles(std::string style);
 
     virtual void onCardClicked(ClickableCard *clickableCard);
     virtual void onCardHoverEnter(ClickableCard *clickableCard);

@@ -1,7 +1,72 @@
-// similar to "stdafx.h"
+#ifndef COMMON_H
+#define COMMON_H
 
-// useful for testing cpu logic during development
+// widgets
+#include <QApplication>
+#include <QBrush>
+#include <QCheckBox>
+#include <QCloseEvent>
+#include <QComboBox>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QDesktopServices>
+#include <QDesktopWidget>
+#include <QDialog>
+#include <QEvent>
+#include <QFont>
+#include <QGraphicsEffect>
+#include <QGroupBox>
+#include <QHeaderView>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMainWindow>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMetaObject>
+#include <QMouseEvent>
+#include <QObject>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QPoint>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QRect>
+#include <QSettings>
+#include <QSize>
+#include <QSpinBox>
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QStackedWidget>
+#include <QString>
+#include <QTableWidget>
+#include <QThread>
+#include <QToolTip>
+#include <QTransform>
+#include <QVariant>
+#include <QVBoxLayout>
+#include <QWidget>
 
-#ifndef CPU_DEBUG
-/*#define CPU_DEBUG*/
+// std library
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <chrono>
+#include <math.h>
+#include <map>
+#include <memory>
+#include <numeric>
+#include <random>
+#include <set>
+#include <string>
+#include <stdlib.h>
+#include <vector>
+
 #endif

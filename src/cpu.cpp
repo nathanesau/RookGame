@@ -3,11 +3,6 @@
 #include "settings.h"
 #include "utils.h"
 
-#include <map>
-#include <set>
-
-using namespace std;
-
 void CpuPlayCardStrategyInputs::initializePartnerNum()
 {
     CardVector &cardArr = gamedata.playerArr[cpuPlayerNum].cardArr;
@@ -186,7 +181,7 @@ int Cpu::getBid() const
         }
     }();
 
-    map<double, int> bidMap;
+    std::map<double, int> bidMap;
 
     for (double P = 0.1; P <= 0.9; P += 0.1)
     {
@@ -314,7 +309,7 @@ PlayCardStrategy Cpu::getPlayCardStrategy(CpuPlayCardStrategyInputs &inputs) con
     {
         return STRATEGY_RANDOM;
     }
-    
+
     // deterministic strategy
     if (inputs.isPartner(inputs.winningPlayerNum))
     {
@@ -460,14 +455,14 @@ Card Cpu::getThrowAwayCardToPlay(CpuPlayCardStrategyInputs &inputs) const
         }
         else // prioritize clearing out colors
         {
-            map<int, int> suitfreq;
+            std::map<int, int> suitfreq;
             for (auto &card : throwAwayCards)
             {
                 suitfreq[card.suit]++;
             }
 
-            auto it = min_element(suitfreq.begin(), suitfreq.end(),
-                                  [](const pair<int, int> &left, const pair<int, int> &right) { return left.second < right.second; });
+            auto it = std::min_element(suitfreq.begin(), suitfreq.end(),
+                                       [](const std::pair<int, int> &left, const std::pair<int, int> &right) { return left.second < right.second; });
 
             int suitToPlay = it->first;
 

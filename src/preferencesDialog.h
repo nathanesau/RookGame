@@ -1,13 +1,6 @@
 #ifndef PREFERENCESDIALOG_H
 #define PREFERENCESDIALOG_H
 
-#include <QDialog>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QPushButton>
-#include <QStackedWidget>
-#include <QVBoxLayout>
-
 #include "appearancePage.h"
 #include "common.h"
 #include "gamePage.h"

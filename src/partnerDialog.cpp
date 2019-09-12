@@ -64,13 +64,13 @@ void PartnerDialog::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto label : vector<PartnerDialogLabel *>{blackLabel, greenLabel, redLabel, yellowLabel, wildLabel})
+    for (auto label : std::vector<PartnerDialogLabel *>{blackLabel, greenLabel, redLabel, yellowLabel, wildLabel})
         label->rescale();
 
-    for (auto button : vector<ScaledQPushButton *>{cancelButton})
+    for (auto button : std::vector<ScaledQPushButton *>{cancelButton})
         button->rescale();
 
-    for (auto clickableCardArray : vector<ClickableCardArray *>{partnerOptionsCards})
+    for (auto clickableCardArray : std::vector<ClickableCardArray *>{partnerOptionsCards})
         clickableCardArray->rescale();
 }
 
@@ -81,7 +81,7 @@ void PartnerDialog::reject()
 
 void PartnerDialog::onPartnerLabelClicked(PartnerDialogLabel *label)
 {
-    string text = label->text().toStdString();
+    std::string text = label->text().toStdString();
 
     if (text == "Black")
     {

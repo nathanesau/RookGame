@@ -1,15 +1,9 @@
 #ifndef ROUNDINFO_H
 #define ROUNDINFO_H
 
-#include <array>
-#include <map>
-#include <set>
-
 #include "card.h"
 #include "common.h"
 #include "player.h"
-
-using namespace std;
 
 // forward declarations
 struct GameData;
@@ -27,9 +21,9 @@ public:
     int pointsMiddle;
     Card partnerCard;
     int partnerPlayerNum;
-    array<Team, 2> teams;
-    map<int, int> playerScores;
-    map<int, int> teamScores;
+    std::array<Team, 2> teams;
+    std::map<int, int> playerScores;
+    std::map<int, int> teamScores;
 
 public:
     RoundInfo();
@@ -39,7 +33,7 @@ public:
     void updateScores(HandInfo &handInfo);
     void addPointsMiddleToScores(HandInfo &handInfo);
 
-    map<int, int> getRoundScores();
+    std::map<int, int> getRoundScores();
     int getTeamNumber(int playerNum);
 
 private:
@@ -52,7 +46,7 @@ class DetailedRoundInfo
 {
 public:
     // for db load, can be auto determined using player cards
-    array<CardVector, 4> suitCardsPlayed;
+    std::array<CardVector, 4> suitCardsPlayed;
 
 public:
     DetailedRoundInfo();

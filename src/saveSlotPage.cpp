@@ -17,8 +17,8 @@ SaveSlotPage::SaveSlotPage(QString dbName, QWidget *parent) : QWidget(parent)
     existsGroup->setLayout(existsLayout);
 
     auto setupScoreLabel = [this](QLabel *scoreLabel, int playerNum) {
-        string labelText = pageData.playerArr[playerNum].getPlayerName() + ": " +
-                           to_string(pageData.overallInfo.playerScores[playerNum]);
+        std::string labelText = pageData.playerArr[playerNum].getPlayerName() + ": " +
+                                std::to_string(pageData.overallInfo.playerScores[playerNum]);
 
         scoreLabel->setText(QString::fromStdString(labelText));
     };
@@ -47,14 +47,14 @@ SaveSlotPage::SaveSlotPage(QString dbName, QWidget *parent) : QWidget(parent)
 
     auto setupTrumpLabel = [this](QLabel *trumpLabel) {
         int trump = pageData.roundInfo.trump;
-        string trumpStr = (trump == SUIT_UNDEFINED) ? "???" : Card(trump, VALUE_UNDEFINED).getSuitAsString();
+        std::string trumpStr = (trump == SUIT_UNDEFINED) ? "???" : Card(trump, VALUE_UNDEFINED).getSuitAsString();
 
         if (!trumpStr.empty())
         {
             trumpStr[0] = toupper(trumpStr[0]);
         }
 
-        string labelText = "Trump: " + trumpStr;
+        std::string labelText = "Trump: " + trumpStr;
         QString labelTextQt = QString::fromStdString(labelText);
         trumpLabel->setText(labelTextQt);
     };
@@ -64,8 +64,8 @@ SaveSlotPage::SaveSlotPage(QString dbName, QWidget *parent) : QWidget(parent)
 
     auto setupBidLabel = [this](QLabel *bidLabel) {
         int bid = pageData.roundInfo.bidAmount;
-        string bidStr = (bid == 0) ? "???" : to_string(pageData.roundInfo.bidAmount);
-        string labelText = "Bid: " + bidStr;
+        std::string bidStr = (bid == 0) ? "???" : std::to_string(pageData.roundInfo.bidAmount);
+        std::string labelText = "Bid: " + bidStr;
         bidLabel->setText(QString::fromStdString(labelText));
     };
 
@@ -73,7 +73,7 @@ SaveSlotPage::SaveSlotPage(QString dbName, QWidget *parent) : QWidget(parent)
     setupBidLabel(bidLabel);
 
     auto setupPartnerLabel = [this](QLabel *partnerLabel) {
-        string labelText = "Partner: " + pageData.roundInfo.partnerCard.getCardAsString();
+        std::string labelText = "Partner: " + pageData.roundInfo.partnerCard.getCardAsString();
         QString labelTextQt = QString::fromStdString(labelText);
         partnerLabel->setText(labelTextQt);
     };
@@ -91,8 +91,8 @@ SaveSlotPage::SaveSlotPage(QString dbName, QWidget *parent) : QWidget(parent)
     roundGroup->setLayout(roundLayout);
 
     auto setupCardLabel = [this](QLabel *cardLabel, int playerNum) {
-        string labelText = pageData.playerArr[playerNum].getPlayerName() + ": " + 
-                           pageData.handInfo.cardPlayed[playerNum].getCardAsString();
+        std::string labelText = pageData.playerArr[playerNum].getPlayerName() + ": " +
+                                pageData.handInfo.cardPlayed[playerNum].getCardAsString();
         QString labelTextQt = QString::fromStdString(labelText);
         cardLabel->setText(labelTextQt);
     };

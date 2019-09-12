@@ -1,15 +1,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <memory>
-#include <string>
-#include <set>
-
 #include "card.h"
 #include "cpu.h"
 #include "common.h"
-
-using namespace std;
 
 // forward declarations
 struct GameData;
@@ -31,7 +25,7 @@ const int TEAM_2 = 1;
 
 struct Player
 {
-    unique_ptr<Cpu> cpu;
+    std::unique_ptr<Cpu> cpu;
 
     const int playerNum;
     int teamNum;
@@ -44,16 +38,16 @@ public:
     void clear();
  
     int getNextPlayerNum() const;
-    string getPlayerName() const;
+    std::string getPlayerName() const;
 };
 
 // do not delete objects through base class pointer
-struct Team : public set<int>
+struct Team : public std::set<int>
 {
-    using set<int>::set;
+    using std::set<int>::set;
 
 public:
-    string getTeamName() const;
+    std::string getTeamName() const;
 };
 
 #endif

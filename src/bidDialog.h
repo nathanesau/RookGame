@@ -1,10 +1,6 @@
 #ifndef BIDDIALOG_H
 #define BIDDIALOG_H
 
-#include <QDialog>
-#include <QCloseEvent>
-#include <QMainWindow>
-
 #include "common.h"
 #include "scaledWidgets.h"
 #include "ui_bidDialog.h" // uic -o ui_bidDialog.h bidDialog.ui

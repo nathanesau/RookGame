@@ -1,14 +1,8 @@
 #ifndef GAMEDATABASE_H
 #define GAMEDATABASE_H
 
-#include <array>
-#include <QProgressBar>
-#include <vector>
-
 #include "common.h"
 #include "player.h"
-
-using namespace std;
 
 // forward declarations
 struct GameData;
@@ -133,7 +127,7 @@ struct HandInfoTableRow
 // prefer "bind" to INSERT
 class GameDatabase
 {
-    void dropTable(const string &tableName);
+    void dropTable(const std::string &tableName);
 
     void createTablePlayerCards();
     void createTablePlayerBids();
@@ -147,28 +141,28 @@ class GameDatabase
     void createTableHandInfo();
 
     // write to db
-    void populateTablePlayerCards(const array<Player, 4> &playerArr);
-    void populateTablePlayerBids(const array<Player, 4> &playerArr);
-    void populateTableNestCards(const vector<Card> &cardArr);
-    void populateTablePastRoundScores(const map<int, map<int, int>> &pastRoundScores);
-    void populateTableRoundScores(const map<int, int> &roundScores);
-    void populateTableOverallScores(const map<int, int> &playerScores);
-    void populateTableTeams(const array<Team, 2> &teams);
-    void populateTableTeamScores(const map<int, int> &teamScores);
+    void populateTablePlayerCards(const std::array<Player, 4> &playerArr);
+    void populateTablePlayerBids(const std::array<Player, 4> &playerArr);
+    void populateTableNestCards(const std::vector<Card> &cardArr);
+    void populateTablePastRoundScores(const std::map<int, std::map<int, int>> &pastRoundScores);
+    void populateTableRoundScores(const std::map<int, int> &roundScores);
+    void populateTableOverallScores(const std::map<int, int> &playerScores);
+    void populateTableTeams(const std::array<Team, 2> &teams);
+    void populateTableTeamScores(const std::map<int, int> &teamScores);
     void populateTableCurrentRoundInfo(int round, int bidPlayer, int bidAmount, const Card &partnerCard, int trump, int pointsMiddle);
-    void populateTableHandInfo(int startingPlayerNum, const map<int, Card> &cardPlayed, int suit, int points);
+    void populateTableHandInfo(int startingPlayerNum, const std::map<int, Card> &cardPlayed, int suit, int points);
 
     // read from db
-    void loadTablePlayerCards(array<Player, 4> &playerArr);
-    void loadTablePlayerBids(array<Player, 4> &playerArr);
-    void loadTableNestCards(vector<Card> &cardArr);
-    void loadTablePastRoundScores(map<int, map<int, int>> &pastRoundScores);
-    void loadTableRoundScores(map<int, int> &playerScores);
-    void loadTableOverallScores(map<int, int> &playerScores);
-    void loadTableTeams(array<Team, 2> &teams, array<Player, 4> &playerArr); // we also modify playerArr here
-    void loadTableTeamScores(map<int, int> &teamScores);
+    void loadTablePlayerCards(std::array<Player, 4> &playerArr);
+    void loadTablePlayerBids(std::array<Player, 4> &playerArr);
+    void loadTableNestCards(std::vector<Card> &cardArr);
+    void loadTablePastRoundScores(std::map<int, std::map<int, int>> &pastRoundScores);
+    void loadTableRoundScores(std::map<int, int> &playerScores);
+    void loadTableOverallScores(std::map<int, int> &playerScores);
+    void loadTableTeams(std::array<Team, 2> &teams, std::array<Player, 4> &playerArr); // we also modify playerArr here
+    void loadTableTeamScores(std::map<int, int> &teamScores);
     void loadTableCurrentRoundInfo(int &round, int &bidPlayer, int &bidAmount, Card &partnerCard, int &trump, int &pointsMiddle);
-    void loadTableHandInfo(int &startingPlayerNum, map<int, Card> &cardPlayed, int &suit, int &points);
+    void loadTableHandInfo(int &startingPlayerNum, std::map<int, Card> &cardPlayed, int &suit, int &points);
 
 public:
     GameDatabase();

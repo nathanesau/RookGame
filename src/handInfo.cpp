@@ -1,9 +1,5 @@
-#include <vector>
-
 #include "handInfo.h"
 #include "roundInfo.h"
-
-using namespace std;
 
 HandInfo::HandInfo()
 {
@@ -28,7 +24,7 @@ PlayerCardPair HandInfo::getWinningPlayerCardPair(const RoundInfo &roundInfo) co
 
     PlayerCardPair winningPair(startingPlayerNum, getCardPlayed(startingPlayerNum));
 
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         Card currentCard = getCardPlayed(playerNum);
 

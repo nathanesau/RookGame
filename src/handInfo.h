@@ -1,13 +1,9 @@
 #ifndef HANDINFO_H
 #define HANDINFO_H
 
-#include <map>
-
 #include "card.h"
 #include "common.h"
 #include "player.h"
-
-using namespace std;
 
 // forward declarations
 class RoundInfo;
@@ -26,7 +22,7 @@ class HandInfo
 {
 public:
     int startingPlayerNum;
-    map<int, Card> cardPlayed;
+    std::map<int, Card> cardPlayed;
     int suit;
     int points;
 

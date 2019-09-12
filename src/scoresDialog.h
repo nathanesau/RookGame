@@ -1,14 +1,7 @@
 #ifndef SCORESDIALOG_H
 #define SCORESDIALOG_H
 
-#include <map>
-#include <QDialog>
-#include <QTableWidget>
-#include <QVBoxLayout>
-
 #include "common.h"
-
-using namespace std;
 
 // forward declarations
 struct GameData;
@@ -26,7 +19,7 @@ class ScoresDialog : public QDialog
 public:
     ScoresDialog(QWidget *parent = nullptr);
 
-    void setupTableWidget(const map<int, map<int, int>> &scoreHistory);
+    void setupTableWidget(const std::map<int, std::map<int, int>> &scoreHistory);
 };
 
 #endif

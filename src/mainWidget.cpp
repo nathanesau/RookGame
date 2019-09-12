@@ -1,9 +1,3 @@
-#include <QFont>
-#include <QPainter>
-#include <QThread>
-#include <set>
-#include <string>
-
 #include "cpu.h"
 #include "gameData.h"
 #include "mainWidget.h"
@@ -12,10 +6,6 @@
 #include "roundSummaryDialog.h"
 #include "settings.h"
 #include "utils.h"
-
-#include <QGraphicsEffect>
-
-using namespace std;
 
 PlayerNameLabel::PlayerNameLabel(const Qt::AlignmentFlag pAlign, QWidget *parent) : align(pAlign),
                                                                                         QWidget(parent)
@@ -84,11 +74,11 @@ QPoint PlayerNameLabel::getFontSubPos() const
     switch (align)
     {
     case Qt::AlignRight:
-        fontSubPos.setX(max(width() - textWidth - xPadAmt, xPadAmt));
+        fontSubPos.setX(std::max(width() - textWidth - xPadAmt, xPadAmt));
         fontSubPos.setY((int) 25 * globalScaleFactor);
         break;
     case Qt::AlignLeft:
-        fontSubPos.setX(min(width() - textWidth, xPadAmt));
+        fontSubPos.setX(std::min(width() - textWidth, xPadAmt));
         fontSubPos.setY((int) 25 * globalScaleFactor);
         break;
     case Qt::AlignTop:
@@ -174,7 +164,7 @@ void MainWidget::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto clickableCardArray : vector<ClickableCardArray *>{player1CardPlayed, player2CardPlayed,
+    for (auto clickableCardArray : std::vector<ClickableCardArray *>{player1CardPlayed, player2CardPlayed,
                                                                 player3CardPlayed, player4CardPlayed, player1Cards
 #ifdef CPU_DEBUG
                                                                 ,
@@ -183,14 +173,14 @@ void MainWidget::rescale()
          })
         clickableCardArray->rescale();
 
-    for (auto label : vector<PlayerNameLabel *>{player1NameLabel, player2NameLabel,
+    for (auto label : std::vector<PlayerNameLabel *>{player1NameLabel, player2NameLabel,
                                                 player3NameLabel, player4NameLabel})
         label->rescale();
 
-    for (auto widget : vector<GameInfoWidget *>{infoWidget})
+    for (auto widget : std::vector<GameInfoWidget *>{infoWidget})
         widget->rescale();
 
-    for (auto widget : vector<GameMenuWidget *>{menuWidget})
+    for (auto widget : std::vector<GameMenuWidget *>{menuWidget})
         widget->rescale();
 }
 
@@ -202,7 +192,7 @@ void MainWidget::finishExistingHand(Card player1Card)
 
     showCardPlayed(player1Card, PLAYER_1);
 
-    for (auto playerNum : vector<int>{PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_2, PLAYER_3, PLAYER_4})
     {
         if (gamedata.handInfo.cardPlayed[playerNum].isUndefined()) // cpu hasn't played yet
         {
@@ -232,7 +222,7 @@ void MainWidget::finishExistingHand(Card player1Card)
 
     showHandResult();
 
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         getCardPlayedWidget(playerNum)->hideCards();
     }
@@ -350,7 +340,7 @@ void MainWidget::onCardHoverLeave(ClickableCard *clickableCard)
 
 void MainWidget::refreshCardWidgets(GameData &pData)
 {
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         if (data.cardPlayed[playerNum] != pData.handInfo.cardPlayed[playerNum])
         {
@@ -425,7 +415,7 @@ void MainWidget::refreshNameTags(bool showNameTags)
 {
     auto playerNames = Settings::Appearance::readPlayerNames();
 
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         auto label = getPlayerNameLabel(playerNum);
         label->setText(QString::fromStdString(playerNames[playerNum]));
@@ -461,7 +451,7 @@ void MainWidget::showPartnerCardIfApplicable()
             // refresh partner card, teams
             infoWidget->refreshWidget(gamedata);
 
-            string msg = gamedata.playerArr[gamedata.roundInfo.partnerPlayerNum].getPlayerName() + " is the partner. Teams updated.";
+            std::string msg = gamedata.playerArr[gamedata.roundInfo.partnerPlayerNum].getPlayerName() + " is the partner. Teams updated.";
 
             MessageBox msgBox;
             msgBox.showCards({gamedata.roundInfo.partnerCard});
@@ -479,9 +469,9 @@ void MainWidget::showHandResult()
 {
     auto winningPair = gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo);
 
-    auto msg = [&winningPair]() -> string {
+    auto msg = [&winningPair]() -> std::string {
         return gamedata.playerArr[winningPair.playerNum].getPlayerName() +
-               " won the hand for " + to_string(gamedata.handInfo.points) + " points with the";
+               " won the hand for " + std::to_string(gamedata.handInfo.points) + " points with the";
     }();
 
     MessageBox msgBox;
@@ -497,8 +487,8 @@ void MainWidget::showNestResult()
 {
     auto winningPair = gamedata.handInfo.getWinningPlayerCardPair(gamedata.roundInfo);
 
-    string msg = gamedata.playerArr[winningPair.playerNum].getPlayerName() +
-                 " won the nest. Nest had " + to_string(gamedata.roundInfo.pointsMiddle) + " points.";
+    std::string msg = gamedata.playerArr[winningPair.playerNum].getPlayerName() +
+                 " won the nest. Nest had " + std::to_string(gamedata.roundInfo.pointsMiddle) + " points.";
 
     MessageBox msgBox;
     msgBox.changeCardArrayDrawPosition(DRAW_POSITION_MESSAGE_BOX_NEST);

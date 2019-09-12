@@ -1,12 +1,5 @@
-#include <algorithm>
-#include <array>
-#include <map>
-#include <numeric>
-
 #include "card.h"
 #include "handInfo.h"
-
-using namespace std;
 
 Card::Card(int pSuit, int pValue) : suit(pSuit), value(pValue)
 {
@@ -41,8 +34,10 @@ bool Card::operator<(const Card &p)
 
 bool Card::operator>=(const Card &p)
 {
-    if(*this == p) return true;
-    else return !(*this < p);
+    if (*this == p)
+        return true;
+    else
+        return !(*this < p);
 }
 
 int Card::getPointValue() const
@@ -61,7 +56,7 @@ int Card::getPointValue() const
     }
 }
 
-string Card::getSuitAsString() const
+std::string Card::getSuitAsString() const
 {
     if (value == VALUE_ROOK) // rook suit can change
     {
@@ -85,7 +80,7 @@ string Card::getSuitAsString() const
     }
 }
 
-string Card::getValueAsString() const
+std::string Card::getValueAsString() const
 {
     switch (value)
     {
@@ -124,7 +119,7 @@ string Card::getValueAsString() const
     }
 }
 
-string Card::getCardAsString() const
+std::string Card::getCardAsString() const
 {
     if (suit == SUIT_UNDEFINED || value == VALUE_UNDEFINED)
     {
@@ -132,17 +127,17 @@ string Card::getCardAsString() const
     }
 
     // capitalize first letter
-    auto toUpper = [](string &s) -> void {
+    auto toUpper = [](std::string &s) -> void {
         if (!s.empty())
         {
             s[0] = toupper(s[0]);
         }
     };
 
-    string suitStr = getSuitAsString();
+    std::string suitStr = getSuitAsString();
     toUpper(suitStr);
 
-    string valueStr = getValueAsString();
+    std::string valueStr = getValueAsString();
     toUpper(valueStr);
 
     return valueStr + (!valueStr.empty() ? " " : "") + suitStr;
@@ -256,7 +251,7 @@ CardVector CardVector::getCardQualityQueue() const
 
     Card rook(SUIT_SPECIAL, VALUE_ROOK);
 
-    if(cardQualityQueue.hasCard(rook))
+    if (cardQualityQueue.hasCard(rook))
     {
         cardQualityQueue.remove({rook});
         cardQualityQueue.insert(cardQualityQueue.begin(), rook);
@@ -265,10 +260,10 @@ CardVector CardVector::getCardQualityQueue() const
     return cardQualityQueue;
 }
 
-array<SuitInfo, 5> CardVector::getSuitInfoArray() const
+std::array<SuitInfo, 5> CardVector::getSuitInfoArray() const
 {
-    array<SuitInfo, 5> arr = {SuitInfo(SUIT_BLACK), SuitInfo(SUIT_GREEN), SuitInfo(SUIT_RED),
-                              SuitInfo(SUIT_YELLOW), SuitInfo(SUIT_SPECIAL)};
+    std::array<SuitInfo, 5> arr = {SuitInfo(SUIT_BLACK), SuitInfo(SUIT_GREEN), SuitInfo(SUIT_RED),
+                                   SuitInfo(SUIT_YELLOW), SuitInfo(SUIT_SPECIAL)};
 
     for (auto it = this->begin(); it != this->end(); it++)
     {

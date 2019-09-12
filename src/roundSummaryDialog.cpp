@@ -1,12 +1,6 @@
-#include <string>
-#include <QPoint>
-#include <QString>
-
 #include "gameData.h"
 #include "roundSummaryDialog.h"
 #include "player.h"
-
-using namespace std;
 
 RoundSummaryDialog::RoundSummaryDialog(QWidget *parent) : ScaledQDialog(true, parent)
 {
@@ -69,25 +63,25 @@ void RoundSummaryDialog::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto label : vector<ScaledQLabel *>{summaryLabel, player1ScoreLabel, player1Score, player2ScoreLabel,
+    for (auto label : std::vector<ScaledQLabel *>{summaryLabel, player1ScoreLabel, player1Score, player2ScoreLabel,
                                              player2Score, player3ScoreLabel, player3Score, player4ScoreLabel,
                                              player4Score})
         label->rescale();
 
-    for (auto button : vector<ScaledQPushButton *>{okButton})
+    for (auto button : std::vector<ScaledQPushButton *>{okButton})
         button->rescale();
 }
 
-void RoundSummaryDialog::updateScores(const map<int, int> &roundScores)
+void RoundSummaryDialog::updateScores(const std::map<int, int> &roundScores)
 {
     auto updateLabel = [this](ScaledQLabel *label, int score) {
-        string prefix = "";
+        std::string prefix = "";
         if (score > 0)
             prefix = "+";
         else if (score < 0)
             prefix = "";
 
-        string text = prefix + to_string(score);
+        std::string text = prefix + std::to_string(score);
         label->setText(QString::fromStdString(text));
     };
 

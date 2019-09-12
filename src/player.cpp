@@ -1,5 +1,3 @@
-#include <numeric>
-
 #include "cpu.h"
 #include "gameData.h"
 #include "player.h"
@@ -12,7 +10,7 @@ Player::Player(int pPlayerNum) : playerNum(pPlayerNum),
                                  passed(false)
 {
     // for PLAYER_1, cpu is used for "AUTO" decisions
-    cpu = make_unique<Cpu>(playerNum, teamNum, cardArr, bid, passed);
+    cpu = std::make_unique<Cpu>(playerNum, teamNum, cardArr, bid, passed);
 }
 
 void Player::clear()
@@ -42,18 +40,18 @@ int Player::getNextPlayerNum() const
     }
 }
 
-string Player::getPlayerName() const
+std::string Player::getPlayerName() const
 {
     return Settings::Appearance::readPlayerNames()[playerNum];
 }
 
-string Team::getTeamName() const
+std::string Team::getTeamName() const
 {
     if (empty())
         return "???";
 
     auto names = Settings::Appearance::readPlayerNames();
-    string teamName = names[*begin()];
+    std::string teamName = names[*begin()];
     std::for_each(++begin(), end(), [&](int playerNum) { teamName += " + " + names[playerNum]; });
     return teamName;
 }

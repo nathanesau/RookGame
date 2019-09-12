@@ -1,13 +1,8 @@
 #ifndef CPUPLAYER_H
 #define CPUPLAYER_H
 
-#include <set>
-#include <vector>
-
 #include "card.h"
 #include "common.h"
-
-using namespace std;
 
 // forward declarations
 struct GameData;
@@ -39,7 +34,7 @@ struct CpuPlayCardStrategyInputs
     const int cpuPlayerNum;
 
     CardVector playableCards;
-    vector<int> partnerNum;
+    std::vector<int> partnerNum;
 
     Card winningCard;
     int winningPlayerNum;

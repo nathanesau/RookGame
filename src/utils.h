@@ -1,13 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <QDialog>
-#include <QMainWindow>
-#include <QWidget>
-
 #include "common.h"
-
-using namespace std;
 
 // constants
 const int DIALOG_POSITION_CENTER = 0;

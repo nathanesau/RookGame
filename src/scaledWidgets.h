@@ -1,31 +1,7 @@
-#ifndef COMMON_H
-#define COMMON_H
-
-#include <map>
-#include <memory>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QDialog>
-#include <QEvent>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QLabel>
-#include <QMainWindow>
-#include <QMetaObject>
-#include <QObject>
-#include <QProgressBar>
-#include <QPushButton>
-#include <QSize>
-#include <QToolTip>
-#include <QTransform>
-#include <QVariant>
-#include <QWidget>
-#include <string>
-#include <vector>
+#ifndef SCALEDWIDGETS_H
+#define SCALEDWIDGETS_H
 
 #include "common.h"
-
-using namespace std;
 
 // forward declarations
 struct Card;
@@ -33,7 +9,7 @@ struct CardPixmapKey;
 struct CompareCardPixmapKey;
 
 // typedef declarations
-typedef map<CardPixmapKey, unique_ptr<QPixmap>, CompareCardPixmapKey> QPixmapCache;
+typedef std::map<CardPixmapKey, std::unique_ptr<QPixmap>, CompareCardPixmapKey> QPixmapCache;
 
 // global declarations
 extern QPixmapCache pixmapcache;

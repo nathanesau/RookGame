@@ -1,8 +1,3 @@
-#include <array>
-#include <QPushButton>
-#include <QObject>
-#include <string>
-
 #include "gameData.h"
 #include "mainWindow.h"
 #include "messageBox.h"
@@ -11,8 +6,6 @@
 #include "partnerDialog.h"
 #include "trumpDialog.h"
 #include "utils.h"
-
-using namespace std;
 
 MiddleDialog::MiddleDialog(MainWidget *pMainWidget, QMainWindow *pMainWindow, QWidget *parent) : mainWidget(pMainWidget),
                                                                                                  mainWindow(pMainWindow),
@@ -58,16 +51,16 @@ void MiddleDialog::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto clickableCardArray : vector<ClickableCardArray *>{nestCards, partnerCards})
+    for (auto clickableCardArray : std::vector<ClickableCardArray *>{nestCards, partnerCards})
         clickableCardArray->rescale();
 
-    for (auto label : vector<ScaledQLabel *>{ui.trumpCategoryLabel, ui.partnerCategoryLabel, ui.trumpLabel,
-                                             ui.nestCategoryLabel})
+    for (auto label : std::vector<ScaledQLabel *>{ui.trumpCategoryLabel, ui.partnerCategoryLabel, ui.trumpLabel,
+                                                  ui.nestCategoryLabel})
         label->rescale();
 
-    for (auto button : vector<ScaledQPushButton *>{ui.selectPartnerButton, ui.selectTrumpButton, ui.okButton,
-                                                   ui.autoSelectTrumpButton, ui.autoSelectPartnerButton,
-                                                   ui.autoSelectNestButton})
+    for (auto button : std::vector<ScaledQPushButton *>{ui.selectPartnerButton, ui.selectTrumpButton, ui.okButton,
+                                                        ui.autoSelectTrumpButton, ui.autoSelectPartnerButton,
+                                                        ui.autoSelectNestButton})
         button->rescale();
 }
 
@@ -111,7 +104,7 @@ void MiddleDialog::selectNestButtonPressed()
 void MiddleDialog::autoSelectNestButtonPressed()
 {
     gamedata.playerArr[PLAYER_1].cpu->selectNest();
-    
+
     nestCards->showCards(gamedata.nest);
 
     // refresh nest, player 1 cards

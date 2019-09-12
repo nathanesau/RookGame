@@ -1,27 +1,17 @@
 #ifndef GAMEINFOWIDGET_H
 #define GAMEINFOWIDGET_H
 
-#include <array>
-#include <map>
-#include <QLabel>
-#include <QMainWindow>
-#include <QWidget>
-#include <set>
-#include <string>
-
 #include "clickableCard.h"
 #include "common.h"
 #include "player.h"
 #include "scaledWidgets.h"
-
-using namespace std;
 
 // forward declarations
 struct GameData;
 
 struct ScoreCompare
 {
-    inline bool operator()(const pair<int, int> &score1, const pair<int, int> &score2)
+    inline bool operator()(const std::pair<int, int> &score1, const std::pair<int, int> &score2)
     {
         if (score1.second < score2.second)
         {
@@ -47,10 +37,10 @@ struct GameInfoWidgetData
     int trumpSuit;
     int pointsMiddle;
     bool pointsMiddleKnown;
-    array<Team, 2> teams;
-    map<int, int> playerScores;
-    map<int, int> teamScores;
-    map<int, int> overallPlayerScores;
+    std::array<Team, 2> teams;
+    std::map<int, int> playerScores;
+    std::map<int, int> teamScores;
+    std::map<int, int> overallPlayerScores;
 
     GameInfoWidgetData();
 };
@@ -112,10 +102,10 @@ private:
     void updatePartner(Card pPartnerCard, int pPartnerPlayerNum = PLAYER_UNDEFINED);
     void updateTrump(int pTrumpSuit);
     void updatePointsMiddle(int pPointsMiddle, bool pPointsMiddleKnown);
-    void updateTeams(array<Team, 2> &pTeams);
-    void updatePlayerPoints(const map<int, int> &pPlayerScores);
-    void updateTeamPoints(const map<int, int> &pTeamScores, const array<Team, 2> &pTeams);
-    void updateOverallScores(const map<int, int> &pOverallPlayerScores);
+    void updateTeams(std::array<Team, 2> &pTeams);
+    void updatePlayerPoints(const std::map<int, int> &pPlayerScores);
+    void updateTeamPoints(const std::map<int, int> &pTeamScores, const std::array<Team, 2> &pTeams);
+    void updateOverallScores(const std::map<int, int> &pOverallPlayerScores);
 
     QLabel *getTeamLabel(int teamNum);
     QLabel *getPointsWonPlayerLabel(int playerNum);

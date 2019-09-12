@@ -1,14 +1,9 @@
 #ifndef DECK_H
 #define DECK_H
 
-#include <array>
-#include <vector>
-
 #include "card.h"
 #include "common.h"
 #include "player.h"
-
-using namespace std;
 
 class Deck
 {
@@ -23,7 +18,7 @@ public:
 #endif
 
     void initialize();
-    void deal(array<Player, 4> &playerArr, CardVector &nest);
+    void deal(std::array<Player, 4> &playerArr, CardVector &nest);
 };
 
 #endif

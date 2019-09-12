@@ -1,16 +1,8 @@
-#include <QMessageBox>
-#include <QObject>
-#include <QPushButton>
-#include <string>
-#include <vector>
-
 #include "bidDialog.h"
 #include "cpu.h"
 #include "gameData.h"
 #include "messageBox.h"
 #include "utils.h"
-
-using namespace std;
 
 BidDialog::BidDialog(QMainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
                                                                   ScaledQDialog(true, parent)
@@ -43,15 +35,15 @@ void BidDialog::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto label : vector<ScaledQLabel *>{ui.player1Label, ui.player2Label, ui.player3Label, ui.player4Label,
-                                             ui.player1BidLabel, ui.player2BidLabel, ui.player3BidLabel, ui.player4BidLabel,
-                                             ui.bidAmountLabel})
+    for (auto label : std::vector<ScaledQLabel *>{ui.player1Label, ui.player2Label, ui.player3Label, ui.player4Label,
+                                                  ui.player1BidLabel, ui.player2BidLabel, ui.player3BidLabel, ui.player4BidLabel,
+                                                  ui.bidAmountLabel})
         label->rescale();
 
-    for (auto button : vector<ScaledQPushButton *>{ui.bidButton, ui.passButton})
+    for (auto button : std::vector<ScaledQPushButton *>{ui.bidButton, ui.passButton})
         button->rescale();
 
-    for (auto comboBox : vector<ScaledQComboBox *>{ui.bidAmountComboBox})
+    for (auto comboBox : std::vector<ScaledQComboBox *>{ui.bidAmountComboBox})
         comboBox->rescale();
 }
 
@@ -92,7 +84,7 @@ void BidDialog::onBidButtonPressed()
 void BidDialog::onPassButtonPressed()
 {
     gamedata.playerArr[PLAYER_1].passed = true;
-    gamedata.roundInfo.bidAmount = max(gamedata.roundInfo.bidAmount, 40); // bid cannot be less than 40
+    gamedata.roundInfo.bidAmount = std::max(gamedata.roundInfo.bidAmount, 40); // bid cannot be less than 40
 
     while (getNumPassed() != 3)
     {
@@ -124,8 +116,8 @@ void BidDialog::setupComboBox(int minBid, int maxBid, int incr)
 
 void BidDialog::showBidResultMsgBox()
 {
-    string bidResultMsg = gamedata.playerArr[gamedata.roundInfo.bidPlayer].getPlayerName() + " won the bid for " +
-                          to_string(gamedata.roundInfo.bidAmount) + ". " + "Bid updated.";
+    std::string bidResultMsg = gamedata.playerArr[gamedata.roundInfo.bidPlayer].getPlayerName() + " won the bid for " +
+                               std::to_string(gamedata.roundInfo.bidAmount) + ". " + "Bid updated.";
 
     MessageBox msgBox;
     msgBox.setText(QString::fromStdString(bidResultMsg));
@@ -136,7 +128,7 @@ void BidDialog::showBidResultMsgBox()
 
 void BidDialog::getCpuBids()
 {
-    for (auto playerNum : vector<int>{PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_2, PLAYER_3, PLAYER_4})
     {
         auto &player = gamedata.playerArr[playerNum];
 

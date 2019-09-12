@@ -46,7 +46,7 @@ void TrumpDialog::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for(auto label : vector<ScaledQLabel *>{blackLabel, greenLabel, redLabel, yellowLabel})
+    for(auto label : std::vector<ScaledQLabel *>{blackLabel, greenLabel, redLabel, yellowLabel})
         label->rescale();
 }
 
@@ -57,7 +57,7 @@ void TrumpDialog::reject()
 
 void TrumpDialog::onTrumpLabelClicked(TrumpDialogLabel *label)
 {
-    string text = label->text().toStdString();
+    std::string text = label->text().toStdString();
 
     if (text == "Black")
     {
