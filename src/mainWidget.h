@@ -1,20 +1,11 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
-#include <map>
-#include <QFont>
-#include <QPaintEvent>
-#include <QPainterPath>
-#include <QPainter>
-#include <QProgressBar>
-
 #include "clickableCard.h"
 #include "common.h"
 #include "gameInfoWidget.h"
 #include "gameMenuWidget.h"
 #include "scaledWidgets.h"
-
-using namespace std;
 
 // forward declarations
 class CpuDecisionMaker;
@@ -70,7 +61,7 @@ protected:
 
 struct MainWidgetData
 {
-    map<int, Card> cardPlayed;
+    std::map<int, Card> cardPlayed;
     CardVector player1Cards;
 
     #ifdef CPU_DEBUG

@@ -1,5 +1,3 @@
-#include <QToolTip>
-
 #include "card.h"
 #include "gameData.h"
 #include "gameInfoWidget.h"
@@ -120,16 +118,16 @@ void GameInfoWidget::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto label : vector<ScaledQLabel *>{bidCategoryLabel, bidPlayerLabel, bidAmountLabel, partnerCardCategoryLabel,
-                                             trumpCategoryLabel, trumpLabel, pointsMiddleCategoryLabel, pointsMiddleLabel,
-                                             teamsCategoryLabel, team1Label, team2Label, pointsWonPlayerCategoryLabel,
-                                             pointsWonPlayerLabel1, pointsWonPlayerLabel2, pointsWonPlayerLabel3,
-                                             pointsWonPlayerLabel4, pointsWonTeamCategoryLabel, pointsWonTeamLabel1,
-                                             pointsWonTeamLabel2, overallScoresCategoryLabel, player1OverallScoreLabel,
-                                             player2OverallScoreLabel, player3OverallScoreLabel, player4OverallScoreLabel})
+    for (auto label : std::vector<ScaledQLabel *>{bidCategoryLabel, bidPlayerLabel, bidAmountLabel, partnerCardCategoryLabel,
+                                                  trumpCategoryLabel, trumpLabel, pointsMiddleCategoryLabel, pointsMiddleLabel,
+                                                  teamsCategoryLabel, team1Label, team2Label, pointsWonPlayerCategoryLabel,
+                                                  pointsWonPlayerLabel1, pointsWonPlayerLabel2, pointsWonPlayerLabel3,
+                                                  pointsWonPlayerLabel4, pointsWonTeamCategoryLabel, pointsWonTeamLabel1,
+                                                  pointsWonTeamLabel2, overallScoresCategoryLabel, player1OverallScoreLabel,
+                                                  player2OverallScoreLabel, player3OverallScoreLabel, player4OverallScoreLabel})
         label->rescale();
 
-    for (auto clickableCardArray : vector<ClickableCardArray *>{partnerCards})
+    for (auto clickableCardArray : std::vector<ClickableCardArray *>{partnerCards})
         clickableCardArray->rescale();
 }
 
@@ -250,26 +248,26 @@ void GameInfoWidget::updatePointsMiddle(int pPointsMiddle, bool pPointsMiddleKno
         data.pointsMiddle = pPointsMiddle;
         data.pointsMiddleKnown = pPointsMiddleKnown;
 
-        string text = data.pointsMiddleKnown ? to_string(data.pointsMiddle) : "???";
+        std::string text = data.pointsMiddleKnown ? std::to_string(data.pointsMiddle) : "???";
         pointsMiddleLabel->setText(QString::fromStdString(text));
     }
 }
 
-void GameInfoWidget::updateTeams(array<Team, 2> &pTeams)
+void GameInfoWidget::updateTeams(std::array<Team, 2> &pTeams)
 {
     if (data.teams != pTeams)
     {
         data.teams = pTeams;
 
-        for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+        for (auto teamNum : std::vector<int>{TEAM_1, TEAM_2})
         {
-            string text = data.teams[teamNum].getTeamName();
+            std::string text = data.teams[teamNum].getTeamName();
             getTeamLabel(teamNum)->setText(QString::fromStdString(text));
         }
     }
 }
 
-void GameInfoWidget::updateOverallScores(const map<int, int> &pOverallPlayerScores)
+void GameInfoWidget::updateOverallScores(const std::map<int, int> &pOverallPlayerScores)
 {
     if (data.overallPlayerScores != pOverallPlayerScores)
     {
@@ -277,62 +275,62 @@ void GameInfoWidget::updateOverallScores(const map<int, int> &pOverallPlayerScor
 
         auto playerNames = Settings::Appearance::readPlayerNames();
 
-        for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+        for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
         {
-            string text = playerNames[playerNum] + ": " + to_string(data.overallPlayerScores[playerNum]);
+            std::string text = playerNames[playerNum] + ": " + std::to_string(data.overallPlayerScores[playerNum]);
             getPlayerOverallScoreLabel(playerNum)->setText(QString::fromStdString(text));
         }
     }
 }
 
-void GameInfoWidget::updatePlayerPoints(const map<int, int> &pPlayerScores)
+void GameInfoWidget::updatePlayerPoints(const std::map<int, int> &pPlayerScores)
 {
     if (data.playerScores != pPlayerScores)
     {
         data.playerScores = pPlayerScores;
 
-        vector<pair<int, int>> sortedPlayerScores;
+        std::vector<std::pair<int, int>> sortedPlayerScores;
 
-        for(auto it = data.playerScores.begin(); it != data.playerScores.end(); it++)
+        for (auto it = data.playerScores.begin(); it != data.playerScores.end(); it++)
         {
-            sortedPlayerScores.push_back(make_pair(it->first, it->second));
+            sortedPlayerScores.push_back(std::make_pair(it->first, it->second));
         }
 
-        sort(sortedPlayerScores.begin(), sortedPlayerScores.end(), ScoreCompare());
+        std::sort(sortedPlayerScores.begin(), sortedPlayerScores.end(), ScoreCompare());
 
         auto playerNames = Settings::Appearance::readPlayerNames();
 
-        for(auto it : sortedPlayerScores)
+        for (auto it : sortedPlayerScores)
         {
             int playerNum = it.first;
             int score = it.second;
-            string text = playerNames[playerNum] + ": " + to_string(score);
+            std::string text = playerNames[playerNum] + ": " + std::to_string(score);
             getPointsWonPlayerLabel(playerNum)->setText(QString::fromStdString(text));
         }
     }
 }
 
-void GameInfoWidget::updateTeamPoints(const map<int, int> &pTeamScores, const array<Team, 2> &pTeams)
+void GameInfoWidget::updateTeamPoints(const std::map<int, int> &pTeamScores, const std::array<Team, 2> &pTeams)
 {
     if (data.teamScores != pTeamScores) // team names are updated in "updateTeam1", "updateTeam2"
     {
         data.teamScores = pTeamScores;
 
-        vector<pair<int, int>> sortedTeamScores;
+        std::vector<std::pair<int, int>> sortedTeamScores;
 
-        for(auto it = data.teamScores.begin(); it != data.teamScores.end(); it++)
+        for (auto it = data.teamScores.begin(); it != data.teamScores.end(); it++)
         {
-            sortedTeamScores.push_back(make_pair(it->first, it->second));
+            sortedTeamScores.push_back(std::make_pair(it->first, it->second));
         }
 
-        sort(sortedTeamScores.begin(), sortedTeamScores.end(), ScoreCompare());
-        
-        for(auto it : sortedTeamScores)
+        std::sort(sortedTeamScores.begin(), sortedTeamScores.end(), ScoreCompare());
+
+        for (auto it : sortedTeamScores)
         {
             int teamNum = it.first;
             int score = it.second;
-            
-            string text = (pTeams[teamNum].empty()) ? "???" : pTeams[teamNum].getTeamName() + ": " + to_string(score);
+
+            std::string text = (pTeams[teamNum].empty()) ? "???" : pTeams[teamNum].getTeamName() + ": " + std::to_string(score);
             getPointsWonTeamLabel(teamNum)->setText(QString::fromStdString(text));
         }
     }
@@ -340,7 +338,7 @@ void GameInfoWidget::updateTeamPoints(const map<int, int> &pTeamScores, const ar
 
 QLabel *GameInfoWidget::getTeamLabel(int teamNum)
 {
-    switch(teamNum)
+    switch (teamNum)
     {
     case TEAM_1:
         return team1Label;
@@ -353,7 +351,7 @@ QLabel *GameInfoWidget::getTeamLabel(int teamNum)
 
 QLabel *GameInfoWidget::getPointsWonPlayerLabel(int playerNum)
 {
-    switch(playerNum)
+    switch (playerNum)
     {
     case PLAYER_1:
         return pointsWonPlayerLabel1;
@@ -370,7 +368,7 @@ QLabel *GameInfoWidget::getPointsWonPlayerLabel(int playerNum)
 
 QLabel *GameInfoWidget::getPlayerOverallScoreLabel(int playerNum)
 {
-    switch(playerNum)
+    switch (playerNum)
     {
     case PLAYER_1:
         return player1OverallScoreLabel;
@@ -387,7 +385,7 @@ QLabel *GameInfoWidget::getPlayerOverallScoreLabel(int playerNum)
 
 QLabel *GameInfoWidget::getPointsWonTeamLabel(int teamNum)
 {
-    switch(teamNum)
+    switch (teamNum)
     {
     case TEAM_1:
         return pointsWonTeamLabel1;

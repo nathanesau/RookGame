@@ -1,7 +1,3 @@
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QSettings>
-
 #include "player.h"
 #include "settings.h"
 
@@ -21,9 +17,9 @@ float readScaleFactor()
     return scaleFactor;
 }
 
-map<int, string> readPlayerNames()
+std::map<int, std::string> readPlayerNames()
 {
-    map<int, string> playerNames;
+    std::map<int, std::string> playerNames;
 
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
     settings.beginGroup("Appearance");
@@ -92,7 +88,7 @@ void writeScaleFactor(float scaleFactor)
     settings.endGroup();
 }
 
-void writePlayerNames(const map<int, string> &playerNames)
+void writePlayerNames(const std::map<int, std::string> &playerNames)
 {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
     settings.beginGroup("Appearance");
@@ -100,7 +96,7 @@ void writePlayerNames(const map<int, string> &playerNames)
     auto getPlayerName = [&playerNames](int playerNum)
     {
         auto it = playerNames.find(playerNum);
-        string playerName = (it != playerNames.end()) ? it->second : "";
+        std::string playerName = (it != playerNames.end()) ? it->second : "";
         return QString::fromStdString(playerName);
     };
 

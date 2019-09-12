@@ -1,9 +1,4 @@
-#include <QDesktopServices>
-#include <vector>
-
 #include "messageBox.h"
-
-using namespace std;
 
 MessageBox::MessageBox(QWidget *parent) : QDialogWithClickableCardArray(true, parent)
 {
@@ -35,13 +30,13 @@ void MessageBox::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for(auto label : vector<ScaledQLabel *>{msgLabel})
+    for(auto label : std::vector<ScaledQLabel *>{msgLabel})
         label->rescale();
     
-    for(auto button : vector<ScaledQPushButton *>{okButton})
+    for(auto button : std::vector<ScaledQPushButton *>{okButton})
         button->rescale();
 
-    for(auto clickableCardArray : vector<ClickableCardArray *>{messageBoxCards})
+    for(auto clickableCardArray : std::vector<ClickableCardArray *>{messageBoxCards})
         clickableCardArray->rescale();
 }
 

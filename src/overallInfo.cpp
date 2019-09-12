@@ -14,9 +14,9 @@ void OverallInfo::clear()
 
 void OverallInfo::updatePlayerScores(RoundInfo &roundInfo)
 {
-    map<int, int> roundScores = roundInfo.getRoundScores();
+    std::map<int, int> roundScores = roundInfo.getRoundScores();
 
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         playerScores[playerNum] += roundScores[playerNum];
     }

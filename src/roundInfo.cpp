@@ -1,6 +1,3 @@
-#include <algorithm>
-#include <numeric>
-
 #include "handInfo.h"
 #include "roundInfo.h"
 
@@ -19,19 +16,19 @@ void RoundInfo::clear()
     partnerPlayerNum = PLAYER_UNDEFINED;
     
     // DO NOT REMOVE
-    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for(auto teamNum : std::vector<int>{TEAM_1, TEAM_2})
     {
         teams[teamNum].clear();
     }
 
     // DO NOT REMOVE (iterate through map later)
-    for(auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for(auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         playerScores[playerNum] = 0;
     }
 
     // DO NOT REMOVE (iterate through map later)
-    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for(auto teamNum : std::vector<int>{TEAM_1, TEAM_2})
     {
         teamScores[teamNum] = 0;
     }
@@ -47,7 +44,7 @@ void RoundInfo::updateTeams()
     teams[TEAM_1].insert(bidPlayer);
     teams[TEAM_1].insert(partnerPlayerNum);
 
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         if (teams[TEAM_1].find(playerNum) == teams[TEAM_1].end())
         {
@@ -70,14 +67,14 @@ void RoundInfo::addPointsMiddleToScores(HandInfo &handInfo)
     teamScores[getTeamNumber(winningPlayerNum)] += pointsMiddle;
 }
 
-map<int, int> RoundInfo::getRoundScores()
+std::map<int, int> RoundInfo::getRoundScores()
 {
     int bidTeam = getTeamNumber(bidPlayer);
     bool bidTeamMadeBid = teamScores[bidTeam] >= bidAmount;
 
-    map<int, int> roundScores;
+    std::map<int, int> roundScores;
 
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         int teamNum = getTeamNumber(playerNum);
         int teamScore = teamScores[teamNum];
@@ -90,7 +87,7 @@ map<int, int> RoundInfo::getRoundScores()
 
 int RoundInfo::getTeamNumber(int playerNum)
 {
-    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for(auto teamNum : std::vector<int>{TEAM_1, TEAM_2})
     {
         auto &team = teams[teamNum];
         
@@ -117,10 +114,10 @@ void RoundInfo::updateTeamScores()
         return;
     }
 
-    for(auto teamNum : vector<int>{TEAM_1, TEAM_2})
+    for(auto teamNum : std::vector<int>{TEAM_1, TEAM_2})
     {
-        auto playerNumArr = vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4};
-        teamScores[teamNum] = accumulate(playerNumArr.begin(), playerNumArr.end(), 0, [&](int a, int &b) {
+        auto playerNumArr = std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4};
+        teamScores[teamNum] = std::accumulate(playerNumArr.begin(), playerNumArr.end(), 0, [&](int a, int &b) {
             return (getTeamNumber(b) == teamNum) ? a + playerScores[b] : a;
         });
     }

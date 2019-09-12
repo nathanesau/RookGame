@@ -1,12 +1,8 @@
 #ifndef TRUMPDIALOG_H
 #define TRUMPDIALOG_H
 
-#include <string>
-
 #include "common.h"
 #include "scaledWidgets.h"
-
-using namespace std;
 
 // forward declarations
 class TrumpDialog;

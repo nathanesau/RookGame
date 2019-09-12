@@ -1,15 +1,5 @@
-#include <cassert>
-#include <math.h>
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QSettings>
-#include <QScreen>
-#include <stdlib.h>
-
 #include "settings.h"
 #include "utils.h"
-
-using namespace std;
 
 namespace Utils
 {
@@ -29,7 +19,7 @@ void moveWindowToCenter(QWidget *widget, int verticalShift)
     float scaleFactor = Settings::Appearance::readScaleFactor();
     auto screenGeometry = Utils::Ui::getScreenGeometry();
     int x = (screenGeometry.width() - widget->width()) / 2;
-    int y = max(0, (screenGeometry.height() - widget->height()) / 2) + verticalShift * scaleFactor;
+    int y = std::max(0, (screenGeometry.height() - widget->height()) / 2) + verticalShift * scaleFactor;
     widget->move(QPoint(x, y));
 }
 
@@ -64,7 +54,7 @@ void moveParentlessDialog(QDialog *dialog, QMainWindow *mainWindow, int position
         }
     }();
 
-    dialog->move(QPoint({max(0, dPos.x()), max(0, dPos.y())}));
+    dialog->move(QPoint({std::max(0, dPos.x()), std::max(0, dPos.y())}));
 }
 } // namespace Ui
 
@@ -100,7 +90,7 @@ int randbetween(int a, int b)
 {
     // rand() % (b - a + 1):        random number between 0 and (b - a)
     // rand() & (b - a + 1) + a:    random number between a and b
-    return rand() % (b - a + 1) + a;
+    return std::rand() % (b - a + 1) + a;
 }
 } // namespace Random
 

@@ -1,13 +1,3 @@
-#include <algorithm>
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QProgressBar>
-#include <QRect>
-#include <QSize>
-#include <QThread>
-#include <string>
-#include <vector>
-
 #include "bidDialog.h"
 #include "card.h"
 #include "clickableCard.h"
@@ -23,8 +13,6 @@
 #include "scoresDialog.h"
 #include "settings.h"
 #include "utils.h"
-
-using namespace std;
 
 void MainWindow::setupActions()
 {
@@ -370,7 +358,7 @@ bool MainWindow::hasRoundStarted() const
 
 void MainWindow::setRookSuitToTrump()
 {
-    for (auto playerNum : vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
+    for (auto playerNum : std::vector<int>{PLAYER_1, PLAYER_2, PLAYER_3, PLAYER_4})
     {
         for (auto &card : gamedata.playerArr[playerNum].cardArr)
         {

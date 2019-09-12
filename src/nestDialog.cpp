@@ -70,16 +70,16 @@ void NestDialog::rescale()
     updateScaleFactor();
     setGeometry(geometry());
 
-    for (auto button : vector<ScaledQPushButton *>{autoChooseNestButton, resetNestButton, doneNestButton})
+    for (auto button : std::vector<ScaledQPushButton *>{autoChooseNestButton, resetNestButton, doneNestButton})
         button->rescale();
 
-    for (auto label : vector<ScaledQLabel *>{nestCardsLabel, player1CardsPreviewLabel})
+    for (auto label : std::vector<ScaledQLabel *>{nestCardsLabel, player1CardsPreviewLabel})
         label->rescale();
 
-    for (auto clickableCardArray : vector<ClickableCardArray *>{nestCards, player1CardsPreview})
+    for (auto clickableCardArray : std::vector<ClickableCardArray *>{nestCards, player1CardsPreview})
         clickableCardArray->rescale();
 
-    for (auto checkBox : vector<ScaledQCheckBox *>{highlightCardsCheckBox})
+    for (auto checkBox : std::vector<ScaledQCheckBox *>{highlightCardsCheckBox})
         checkBox->rescale();
 }
 
@@ -88,7 +88,7 @@ void NestDialog::reject()
     // do nothing
 }
 
-void NestDialog::setOriginalNestStyles(string style)
+void NestDialog::setOriginalNestStyles(std::string style)
 {
     for (auto card : originalNest)
     {
@@ -175,7 +175,7 @@ void NestDialog::doneNestButtonPressed()
 
         if (numMiddleCardsSelected > numMiddleCardsAllowed) // too many nest cards selected
         {
-            string msg = to_string(numMiddleCardsSelected) + " are selected but only " + to_string(numMiddleCardsAllowed) +
+            std::string msg = std::to_string(numMiddleCardsSelected) + " are selected but only " + std::to_string(numMiddleCardsAllowed) +
                          " are allowed to be selected.\n\nReview selected cards.\n\nTip: Use \"Highlight nest cards\" to see selected cards.";
 
             MessageBox msgBox;

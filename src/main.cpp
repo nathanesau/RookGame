@@ -1,12 +1,13 @@
-#include <QApplication>
-#include <QCoreApplication>
-
 #include "common.h"
 #include "gameData.h"
 #include "gameDatabase.h"
 #include "cpu.h"
 #include "mainWindow.h"
 #include "utils.h"
+
+//#ifndef CPU_DEBUG
+//#define CPU_DEBUG
+//#endif
 
 // globals
 GameData gamedata;

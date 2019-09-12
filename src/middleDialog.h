@@ -1,11 +1,6 @@
 #ifndef MIDDLEDIALOG_H
 #define MIDDLEDIALOG_H
 
-#include <QDialog>
-#include <QLabel>
-#include <QMainWindow>
-#include <QPushButton>
-
 #include "card.h"
 #include "clickableCard.h"
 #include "common.h"

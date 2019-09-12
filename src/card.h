@@ -1,13 +1,7 @@
 #ifndef CARD_H
 #define CARD_H
 
-#include <array>
-#include <string>
-#include <vector>
-
 #include "common.h"
-
-using namespace std;
 
 // DO NOT MODIFY
 const int SUIT_UNDEFINED = -1;
@@ -57,10 +51,10 @@ struct Card
     int getPointValue() const;
     int getSentimentalValue() const;
 
-    string getSuitAsString() const; // for filenames
-    string getValueAsString() const; // for filenames
+    std::string getSuitAsString() const; // for filenames
+    std::string getValueAsString() const; // for filenames
 
-    string getCardAsString() const; // for save slot display
+    std::string getCardAsString() const; // for save slot display
 };
 
 struct CardCompare
@@ -131,9 +125,9 @@ struct SuitInfoCompareTotalValue // ascending order
 
 // do not delete objects through base class pointer
 // https://stackoverflow.com/questions/56296536/how-to-derive-from-vector-class
-class CardVector : public vector<Card>
+class CardVector : public std::vector<Card>
 {
-    using vector<Card>::vector;
+    using std::vector<Card>::vector;
     using CardVectorRef = CardVector &;
 
 public:
@@ -154,7 +148,7 @@ public:
 
     CardVector getPlayableCards(const HandInfo &handInfo) const;
     CardVector getCardQualityQueue() const;
-    array<SuitInfo, 5> getSuitInfoArray() const;
+    std::array<SuitInfo, 5> getSuitInfoArray() const;
 
     Card getCardWithHighestPointValue() const;
     Card getCardWithLowestPointValue() const; 

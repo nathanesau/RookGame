@@ -1,5 +1,3 @@
-#include <QHeaderView>
-
 #include "gameData.h"
 #include "scoresDialog.h"
 
@@ -14,7 +12,7 @@ ScoresDialog::ScoresDialog(QWidget *parent) : QDialog(parent)
     resize(SCORES_DIALOG_SIZE);
 }
 
-void ScoresDialog::setupTableWidget(const map<int, map<int, int>> &scoreHistory)
+void ScoresDialog::setupTableWidget(const std::map<int, std::map<int, int>> &scoreHistory)
 {
     tableWidget->setStyleSheet("background-color: white;");
     tableWidget->setRowCount((int) scoreHistory.size() * 4);

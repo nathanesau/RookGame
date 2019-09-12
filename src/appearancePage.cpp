@@ -1,12 +1,7 @@
-#include <QSettings>
-#include <vector>
-
 #include "appearancePage.h"
 #include "mainWindow.h"
 #include "settings.h"
 #include "utils.h"
-
-using namespace std;
 
 // global functions
 float getMaxScaleFactor()
@@ -14,13 +9,13 @@ float getMaxScaleFactor()
     auto maxSize = Utils::Ui::getScreenGeometry();
     auto defaultSize = MAIN_WINDOW_SIZE;
 
-    float scaleFactor = min(maxSize.width() / (float) defaultSize.width(),
-                            maxSize.height() / (float) defaultSize.height());
+    float scaleFactor = std::min(maxSize.width() / (float)defaultSize.width(),
+                                 maxSize.height() / (float)defaultSize.height());
     scaleFactor = scaleFactor * MAX_PROPORTION_SCREEN;
-    
+
     // round to nearest increment
     float maxScaleFactor = MIN_SCALE_FACTOR;
-    while(maxScaleFactor < scaleFactor)
+    while (maxScaleFactor < scaleFactor)
     {
         maxScaleFactor += SCALE_FACTOR_INCR;
     }
@@ -28,17 +23,17 @@ float getMaxScaleFactor()
     return maxScaleFactor - SCALE_FACTOR_INCR;
 }
 
-string getSizeAsString(const QSize &size)
+std::string getSizeAsString(const QSize &size)
 {
-    return to_string(size.width()) + "x" + to_string(size.height());
+    return std::to_string(size.width()) + "x" + std::to_string(size.height());
 }
 
-string getScaleFactorAsString(float scaleFactor)
+std::string getScaleFactorAsString(float scaleFactor)
 {
     // two decimal places
     int decimalPart = (int)(scaleFactor * 100) % 100;
-    string decimalStr = (decimalPart < 10) ? (".0" + to_string(decimalPart)) : ("." + to_string(decimalPart));
-    return to_string((int)scaleFactor) + decimalStr + "x";
+    std::string decimalStr = (decimalPart < 10) ? (".0" + std::to_string(decimalPart)) : ("." + std::to_string(decimalPart));
+    return std::to_string((int)scaleFactor) + decimalStr + "x";
 }
 
 int getNumScaleFactorChoices(float minScaleFactor, float maxScaleFactor, float incr)
@@ -46,7 +41,7 @@ int getNumScaleFactorChoices(float minScaleFactor, float maxScaleFactor, float i
     float scaleFactor = minScaleFactor;
 
     int nChoices = 0;
-    while(scaleFactor <= maxScaleFactor)
+    while (scaleFactor <= maxScaleFactor)
     {
         scaleFactor += incr;
         nChoices++;
@@ -74,16 +69,16 @@ void AppearancePage::initializeResolutionGroup()
         auto resolution = QSize(MAIN_WINDOW_SIZE.width() * scaleFactor,
                                 MAIN_WINDOW_SIZE.height() * scaleFactor);
 
-        string choice = getSizeAsString(resolution) + " (" + getScaleFactorAsString(scaleFactor) + ")";
+        std::string choice = getSizeAsString(resolution) + " (" + getScaleFactorAsString(scaleFactor) + ")";
         resolutionComboBox->addItem(QString::fromStdString(choice));
     }
 
     float currentScaleFactor = Settings::Appearance::readScaleFactor();
     int currentIndex = 0;
 
-    for(auto &it : indexScaleFactorMap)
+    for (auto &it : indexScaleFactorMap)
     {
-        if(abs(it.second - currentScaleFactor) < 1e-06) // equal operator not reliable for float
+        if (abs(it.second - currentScaleFactor) < 1e-06) // equal operator not reliable for float
         {
             currentIndex = it.first;
             break;
@@ -229,7 +224,7 @@ void AppearancePage::applyResolution()
 
 void AppearancePage::applyPlayerNames()
 {
-    map<int, string> playerNames;
+    std::map<int, std::string> playerNames;
 
     playerNames[PLAYER_1] = player1NameEdit->text().toStdString();
     playerNames[PLAYER_2] = player2NameEdit->text().toStdString();

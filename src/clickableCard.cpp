@@ -1,6 +1,3 @@
-#include <QBrush>
-#include <QPainter>
-
 #include "clickableCard.h"
 #include "mainWindow.h"
 #include "messageBox.h"
@@ -26,7 +23,7 @@ ClickableCard &ClickableCard::operator=(const ClickableCard &pCard)
     return *this;
 }
 
-void ClickableCard::setData(const Card &pData, int drawPosition, QSize size, string style)
+void ClickableCard::setData(const Card &pData, int drawPosition, QSize size, std::string style)
 {
     if (data != pData || data.isUndefined())
     {
@@ -43,8 +40,8 @@ void ClickableCard::setData(const Card &pData, int drawPosition, QSize size, str
 
         if (!pixmap)
         {
-            string fname = ":" + pixmapKey.data.getValueAsString() + pixmapKey.data.getSuitAsString() + ".gif";
-            pixmap = make_unique<QPixmap>(QString::fromStdString(fname));
+            std::string fname = ":" + pixmapKey.data.getValueAsString() + pixmapKey.data.getSuitAsString() + ".gif";
+            pixmap = std::make_unique<QPixmap>(QString::fromStdString(fname));
 
             *pixmap = pixmap->scaled(QSize(pixmapKey.width, pixmapKey.height), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
@@ -208,7 +205,7 @@ void ClickableCardArray::showCards(const CardVector &cardArr, CardStyleMap *card
         clickableCards[i].setParent(parentWidget());
 
         Card card = cardArr[i];
-        string style = "";
+        std::string style = "";
 
         if (cardStyles)
         {

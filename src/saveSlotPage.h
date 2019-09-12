@@ -1,16 +1,6 @@
 #ifndef SAVESLOTPAGE_H
 #define SAVESLOTPAGE_H
 
-#include <QCheckBox>
-#include <QGroupBox>
-#include <QLabel>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QPushButton>
-#include <QString>
-#include <QVBoxLayout>
-#include <QWidget>
-
 #include "common.h"
 #include "gameData.h"
 

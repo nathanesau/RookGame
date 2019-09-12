@@ -1,19 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QMenu>
-#include <QTableWidget>
-#include <string>
-
 #include "common.h"
 #include "mainWidget.h"
 #include "scaledWidgets.h"
-
-#include <memory>
-
-using namespace std;
 
 // forward declarations
 struct GameData;

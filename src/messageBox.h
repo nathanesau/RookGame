@@ -1,12 +1,6 @@
 #ifndef MESSAGEBOX_H
 #define MESSAGEBOX_H
 
-#include <QDialog>
-#include <QLabel>
-#include <QPushButton>
-#include <QSize>
-#include <QString>
-
 #include "clickableCard.h"
 #include "common.h"
 #include "scaledWidgets.h"

@@ -1,23 +1,9 @@
 #ifndef CLICKABLECARD_H
 #define CLICKABLECARD_H
 
-#include <map>
-#include <QDialog>
-#include <QLabel>
-#include <QMouseEvent>
-#include <QPixmap>
-#include <QPoint>
-#include <QSize>
-#include <QTransform>
-#include <QWidget>
-#include <string>
-#include <vector>
-
 #include "card.h"
 #include "common.h"
 #include "scaledWidgets.h"
-
-using namespace std;
 
 // when adding a new draw position, review the following functions:
 //      ClickableCard::getRotation
@@ -62,8 +48,8 @@ struct CompareCardPixmapKey;
 class QDialogWithClickableCardArray;
 
 // typedef declarations
-typedef map<CardKey, string, CompareCardKey> CardStyleMap; 
-typedef map<CardPixmapKey, unique_ptr<QPixmap>, CompareCardPixmapKey> QPixmapCache;
+typedef std::map<CardKey, std::string, CompareCardKey> CardStyleMap; 
+typedef std::map<CardPixmapKey, std::unique_ptr<QPixmap>, CompareCardPixmapKey> QPixmapCache;
 
 // global declarations
 extern QPixmapCache pixmapcache;
@@ -81,7 +67,7 @@ public:
 
     // Only difference from QLabel class is setData method
     // and override mousePressEvent
-    void setData(const Card &pData, int drawPosition, QSize size, string style);
+    void setData(const Card &pData, int drawPosition, QSize size, std::string style);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -123,7 +109,7 @@ class ClickableCardArray : public QWidget
 {
     QDialogWithClickableCardArray *parent;
 
-    vector<ClickableCard> clickableCards;
+    std::vector<ClickableCard> clickableCards;
 
     int drawPosition;
     QSize size;

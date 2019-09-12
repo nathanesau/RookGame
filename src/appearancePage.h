@@ -1,22 +1,7 @@
 #ifndef APPEARANCEPAGE_H
 #define APPEARANCEPAGE_H
 
-#include <map>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QGroupBox>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QLineEdit>
-#include <QString>
-#include <QWidget>
-#include <vector>
-
 #include "common.h"
-
-using namespace std;
 
 const float MIN_SCALE_FACTOR = 0.6F;
 const float SCALE_FACTOR_INCR = 0.05F;
@@ -31,7 +16,7 @@ class AppearancePage : public QWidget
 {
     MainWindow *mainWindow; // non-owning
 
-    map<int, float> indexScaleFactorMap;
+    std::map<int, float> indexScaleFactorMap;
 
     QGroupBox *resolutionGroup;
     QHBoxLayout *resolutionLayout;

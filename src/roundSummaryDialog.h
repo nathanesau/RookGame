@@ -1,12 +1,8 @@
 #ifndef ROUNDSUMMARYDIALOG_H
 #define ROUNDSUMMARYDIALOG_H
 
-#include<map>
-
 #include "common.h"
 #include "scaledWidgets.h"
-
-using namespace std;
 
 // forward declarations
 struct GameData;
@@ -38,7 +34,7 @@ public:
     RoundSummaryDialog(QWidget *parent = nullptr);
     virtual void rescale();
 
-    void updateScores(const map<int, int> &roundScores);
+    void updateScores(const std::map<int, int> &roundScores);
 };
 
 #endif

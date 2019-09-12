@@ -1,15 +1,6 @@
 #ifndef SAVEGAMEDIALOG_H
 #define SAVEGAMEDIALOG_H
 
-#include <QDialog>
-#include <QLabel>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QPushButton>
-#include <QStackedWidget>
-#include <QWidget>
-#include <QVBoxLayout>
-
 #include "common.h"
 #include "saveSlotPage.h"
 
