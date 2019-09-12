@@ -5,7 +5,6 @@
 #include "clickableCard.h"
 #include "common.h"
 #include "scaledWidgets.h"
-#include "ui_middleDialog.h" // uic -o ui_middleDialog.h middleDialog.ui
 
 // forward declarations
 struct GameData;
@@ -23,7 +22,17 @@ class MiddleDialog : public QDialogWithClickableCardArray
     CardVector originalNest;
 
 private:
-    Ui::MiddleDialog ui;
+    ScaledQLabel *trumpCategoryLabel;
+    ScaledQPushButton *selectPartnerButton;
+    ScaledQLabel *partnerCategoryLabel;
+    ScaledQPushButton *selectTrumpButton;
+    ScaledQLabel *trumpLabel;
+    ScaledQPushButton *okButton;
+    ScaledQPushButton *autoSelectTrumpButton;
+    ScaledQPushButton *autoSelectPartnerButton;
+    ScaledQLabel *nestCategoryLabel;
+    ScaledQPushButton *selectNestButton;
+    ScaledQPushButton *autoSelectNestButton;
     
     ClickableCardArray *nestCards;
     ClickableCardArray *partnerCards;
@@ -34,6 +43,9 @@ signals:
     void showPartnerDialog();
     void showTrumpDialog();
     void refreshCardWidgets(GameData &pData);
+
+private:
+    void setupUi();
 
 public:
     MiddleDialog(QWidget *parent = nullptr);

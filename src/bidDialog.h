@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "scaledWidgets.h"
-#include "ui_bidDialog.h" // uic -o ui_bidDialog.h bidDialog.ui
 
 // forward declarations
 class CpuDecisionMaker;
@@ -17,9 +16,21 @@ const QSize BID_DIALOG_SIZE = {661, 302};
 
 class BidDialog : public ScaledQDialog
 {
-    Ui::BidDialog ui;
+    ScaledQLabel *player1Label;
+    ScaledQLabel *player2Label;
+    ScaledQLabel *player3Label;
+    ScaledQLabel *player4Label;
+    ScaledQLabel *player1BidLabel;
+    ScaledQLabel *player2BidLabel;
+    ScaledQLabel *player3BidLabel;
+    ScaledQLabel *player4BidLabel;
+    ScaledQPushButton *bidButton;
+    ScaledQPushButton *passButton;
+    ScaledQComboBox *bidAmountComboBox;
+    ScaledQLabel *bidAmountLabel;
 
     void setupComboBox(int minBid, int maxBid, int incr);
+    void setupUi();
 
 public:
     BidDialog(QWidget *parent = nullptr);
