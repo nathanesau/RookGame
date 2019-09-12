@@ -176,8 +176,7 @@ void AppearancePage::initializeScreenGroup()
     screenGroup->setLayout(screenLayout);
 }
 
-AppearancePage::AppearancePage(MainWindow *pMainWindow, QWidget *parent) : mainWindow(pMainWindow),
-                                                                           QWidget(parent)
+AppearancePage::AppearancePage(QWidget *parent) : QWidget(parent)
 {
     initializeResolutionGroup();
     initializeNamesGroup();
@@ -186,7 +185,7 @@ AppearancePage::AppearancePage(MainWindow *pMainWindow, QWidget *parent) : mainW
 
     applyButton = new QPushButton;
     applyButton->setText("Apply");
-    QObject::connect(applyButton, &QAbstractButton::clicked, this, &AppearancePage::onApply);
+    connect(applyButton, &QAbstractButton::clicked, this, &AppearancePage::onApply);
 
     mainLayout = new QVBoxLayout;
     mainLayout->addWidget(resolutionGroup);
@@ -219,7 +218,7 @@ void AppearancePage::applyResolution()
 
     Settings::Appearance::writeScaleFactor(scaleFactor);
 
-    mainWindow->rescale();
+    emit gameResolutionChanged();
 }
 
 void AppearancePage::applyPlayerNames()
@@ -240,7 +239,8 @@ void AppearancePage::applyHUD()
 
     Settings::Appearance::writeShowNameTags(showNameTags);
     Settings::Appearance::writeShowPartnerToolTip(showPartnerToolTip);
-    mainWindow->refreshNameTags(showNameTags);
+    
+    emit nameTagsChanged();
 }
 
 void AppearancePage::applyScreenDimensions()

@@ -4,14 +4,11 @@
 #include "common.h"
 #include "scaledWidgets.h"
 
-// forward declarations
-class MainWindow;
-
 const QSize GAME_MENU_WIDGET_SIZE = {400, 300};
 
 class GameMenuWidget : public ScaledQDialog
 {
-    MainWindow *mainWindow; // non-owning
+    Q_OBJECT
 
     ScaledQLabel *menuTitleLabel;
     ScaledQPushButton *newGameButton;
@@ -20,15 +17,16 @@ class GameMenuWidget : public ScaledQDialog
     ScaledQPushButton *loadGameButton;
     ScaledQPushButton *quitGameButton;
 
-public:
-    GameMenuWidget(MainWindow *pMainWindow, QWidget *parent = nullptr);
-    void rescale();
+signals:
+    void newGameButtonPressed();
+    void newRoundButtonPressed();
+    void saveGameButtonPressed();
+    void loadGameButtonPressed();
+    void quitGameButtonPressed();
 
-    void onNewGameButtonPressed();
-    void onNewRoundButtonPressed();
-    void onSaveGameButtonPressed();
-    void onLoadGameButtonPressed();
-    void onQuitGameButtonPressed();
+public:
+    GameMenuWidget(QWidget *parent = nullptr);
+    void rescale();
 };
 
 #endif

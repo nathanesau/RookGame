@@ -67,20 +67,6 @@ void ClickableCard::mousePressEvent(QMouseEvent *event)
     parentWidgetWithClickableCardArray->onCardClicked(this);
 }
 
-void ClickableCard::enterEvent(QEvent *event)
-{
-    auto parentWidgetWithClickableCardArray = dynamic_cast<QDialogWithClickableCardArray *>(parent());
-
-    parentWidgetWithClickableCardArray->onCardHoverEnter(this);
-}
-
-void ClickableCard::leaveEvent(QEvent *event)
-{
-    auto parentWidgetWithClickableCardArray = dynamic_cast<QDialogWithClickableCardArray *>(parent());
-
-    parentWidgetWithClickableCardArray->onCardHoverLeave(this);
-}
-
 int ClickableCard::getRotation(int drawPosition) const
 {
     switch (drawPosition)

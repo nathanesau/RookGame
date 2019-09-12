@@ -8,10 +8,14 @@
 #include "mainWindow.h"
 #include "messageBox.h"
 #include "middleDialog.h"
+#include "nestDialog.h"
+#include "partnerDialog.h"
 #include "preferencesDialog.h"
+#include "roundSummaryDialog.h"
 #include "saveSlotDialog.h"
 #include "scoresDialog.h"
 #include "settings.h"
+#include "trumpDialog.h"
 #include "utils.h"
 
 void MainWindow::setupActions()
@@ -19,39 +23,39 @@ void MainWindow::setupActions()
     newGameAction = new QAction(QMenu::tr("&New Game"), this);
     newGameAction->setShortcuts(QKeySequence::New);
     newGameAction->setStatusTip("Start a new game");
-    QObject::connect(newGameAction, &QAction::triggered, this, &MainWindow::onNewGameAction);
+    connect(newGameAction, &QAction::triggered, this, &MainWindow::onNewGameAction);
 
     saveGameAction = new QAction(QMenu::tr("&Save Game"), this);
     saveGameAction->setShortcuts(QKeySequence::Save);
     saveGameAction->setStatusTip("Save the current game");
-    QObject::connect(saveGameAction, &QAction::triggered, this, &MainWindow::onSaveGameAction);
+    connect(saveGameAction, &QAction::triggered, this, &MainWindow::onSaveGameAction);
 
     loadGameAction = new QAction(QMenu::tr("&Load Game"), this);
     loadGameAction->setShortcuts(QKeySequence::Open);
     loadGameAction->setStatusTip("Load an existing game");
-    QObject::connect(loadGameAction, &QAction::triggered, this, &MainWindow::onLoadGameAction);
+    connect(loadGameAction, &QAction::triggered, this, &MainWindow::onLoadGameAction);
 
     exitMainMenuAction = new QAction(QMenu::tr("Exit to Main Menu"), this);
     exitMainMenuAction->setStatusTip("Exit to the game menu");
-    QObject::connect(exitMainMenuAction, &QAction::triggered, this, &MainWindow::onExitMainMenuAction);
+    connect(exitMainMenuAction, &QAction::triggered, this, &MainWindow::onExitMainMenuAction);
 
     closeAction = new QAction(QMenu::tr("&Close Game"), this);
     closeAction->setShortcuts(QKeySequence::Quit);
     closeAction->setStatusTip("Close the application");
-    QObject::connect(closeAction, &QAction::triggered, this, &MainWindow::onCloseAction);
+    connect(closeAction, &QAction::triggered, this, &MainWindow::onCloseAction);
 
     preferencesAction = new QAction(QMenu::tr("&Preferences"), this);
     preferencesAction->setShortcuts(QKeySequence::Preferences);
     preferencesAction->setStatusTip("Edit the preferences");
-    QObject::connect(preferencesAction, &QAction::triggered, this, &MainWindow::onPreferencesAction);
+    connect(preferencesAction, &QAction::triggered, this, &MainWindow::onPreferencesAction);
 
     viewScoresAction = new QAction(QMenu::tr("View scores"), this);
     viewScoresAction->setStatusTip("View scores for current game");
-    QObject::connect(viewScoresAction, &QAction::triggered, this, &MainWindow::onViewScoresAction);
+    connect(viewScoresAction, &QAction::triggered, this, &MainWindow::onViewScoresAction);
 
     aboutAction = new QAction(QMenu::tr("About"), this);
     aboutAction->setStatusTip("Info about the game");
-    QObject::connect(aboutAction, &QAction::triggered, this, &MainWindow::onAboutAction);
+    connect(aboutAction, &QAction::triggered, this, &MainWindow::onAboutAction);
 }
 
 void MainWindow::setupMenus()
@@ -92,7 +96,18 @@ MainWindow::MainWindow(QWidget *parent) : ScaledQMainWindow(parent)
     widget->setParent(this);
     widget->refreshInfoWidget(gamedata);
 
-    refreshNameTags(Settings::Appearance::readShowNameTags());
+    connect(widget, &MainWidget::newGameButtonPressed, this, &MainWindow::onNewGameAction);
+    connect(widget, &MainWidget::newRoundButtonPressed, this, &MainWindow::startNewRound);
+    connect(widget, &MainWidget::saveGameButtonPressed, this, &MainWindow::onSaveGameAction);
+    connect(widget, &MainWidget::loadGameButtonPressed, this, &MainWindow::onLoadGameAction);
+    connect(widget, &MainWidget::loadGameButtonPressed, this, &MainWindow::close);
+    connect(widget, &MainWidget::invalidCardPlayed, this, &MainWindow::showInvalidCardPlayedMessage);
+    connect(widget, &MainWidget::roundSummary, this, &MainWindow::showRoundSummaryDialog);
+    connect(widget, &MainWidget::partnerMessage, this, &MainWindow::showPartnerMessage);
+    connect(widget, &MainWidget::handResultMessage, this, &MainWindow::showHandResultMessage);
+    connect(widget, &MainWidget::nestResultMessage, this, &MainWindow::showNestResultMessage);
+
+    refreshNameTags();
 
     progressBar = new ScaledQProgressBar;
     progressBar->setParent(this);
@@ -128,8 +143,9 @@ void MainWindow::rescale() // update resolution
     Utils::Ui::moveWindowToCenter(this, -36);
 }
 
-void MainWindow::refreshNameTags(bool showNameTags)
+void MainWindow::refreshNameTags()
 {
+    bool showNameTags = Settings::Appearance::readShowNameTags();
     widget->refreshNameTags(showNameTags);
 }
 
@@ -200,6 +216,9 @@ void MainWindow::onExitMainMenuAction()
 void MainWindow::onPreferencesAction()
 {
     PreferencesDialog preferencesDlg(this);
+    connect(&preferencesDlg, &PreferencesDialog::nameTagsChanged, this, &MainWindow::refreshNameTags);
+    connect(&preferencesDlg, &PreferencesDialog::gameResolutionChanged, this, &MainWindow::rescale);
+
     Utils::Ui::moveWindowToCenter(&preferencesDlg);
     auto result = preferencesDlg.exec();
 
@@ -225,6 +244,55 @@ void MainWindow::onAboutAction()
     showAboutMessage();
 }
 
+void MainWindow::showRoundSummaryDialog()
+{
+    RoundSummaryDialog summaryDlg;
+    summaryDlg.updateScores(gamedata.roundInfo.getRoundScores());
+    Utils::Ui::moveParentlessDialog(&summaryDlg, this, DIALOG_POSITION_CENTER);
+
+    if (!summaryDlg.exec())
+    {
+        qFatal("Problem executing round summary dialog");
+        return;
+    }
+}
+
+void MainWindow::showNestDialog(const CardVector &originalNest)
+{
+    NestDialog nestDlg(originalNest);
+    Utils::Ui::moveParentlessDialog(&nestDlg, this, DIALOG_POSITION_NEST_DLG);
+
+    if (!nestDlg.exec())
+    {
+        qFatal("Problem executing nest dialog");
+        return;
+    }
+}
+
+void MainWindow::showPartnerDialog()
+{
+    PartnerDialog partnerDlg(gamedata.roundInfo.partnerCard);
+    Utils::Ui::moveParentlessDialog(&partnerDlg, this, DIALOG_POSITION_PARTNER_DLG);
+
+    if (!partnerDlg.exec())
+    {
+        qFatal("Problem executing partner dialog");
+        return;
+    }
+}
+
+void MainWindow::showTrumpDialog()
+{
+    TrumpDialog trumpDlg(gamedata.roundInfo.trump);
+    Utils::Ui::moveParentlessDialog(&trumpDlg, this, DIALOG_POSITION_TRUMP_DLG);
+
+    if (!trumpDlg.exec())
+    {
+        qFatal("Problem executing trump dialog");
+        return;
+    }
+}
+
 // very sequential function - order matters
 void MainWindow::startNewRound()
 {
@@ -244,16 +312,25 @@ void MainWindow::startNewRound()
     // refresh player 1 cards
     widget->refreshCardWidgets(gamedata);
 
-    BidDialog bidDlg(this);
+    BidDialog bidDlg;
     Utils::Ui::moveParentlessDialog(&bidDlg, this, DIALOG_POSITION_CENTER);
     auto player1WonBid = bidDlg.exec();
+
+    showBidResultMessage();
 
     // refresh bid
     widget->refreshInfoWidget(gamedata);
 
     if (player1WonBid)
     {
-        MiddleDialog middleDlg(widget, this);
+        MiddleDialog middleDlg;
+
+        connect(&middleDlg, &MiddleDialog::showInvalidMiddleDialogMessage, this, &MainWindow::showInvalidMiddleDialogMessage);
+        connect(&middleDlg, &MiddleDialog::showNestDialog, this, &MainWindow::showNestDialog);
+        connect(&middleDlg, &MiddleDialog::showPartnerDialog, this, &MainWindow::showPartnerDialog);
+        connect(&middleDlg, &MiddleDialog::showTrumpDialog, this, &MainWindow::showTrumpDialog);
+        connect(&middleDlg, &MiddleDialog::refreshCardWidgets, widget, &MainWidget::refreshCardWidgets);
+
         Utils::Ui::moveParentlessDialog(&middleDlg, this, DIALOG_POSITION_MIDDLE_DLG);
 
         if (!middleDlg.exec())
@@ -285,6 +362,18 @@ void MainWindow::startNewRound()
     widget->startNewHand(gamedata.roundInfo.bidPlayer);
 }
 
+void MainWindow::showBidResultMessage()
+{
+    std::string bidResultMsg = gamedata.playerArr[gamedata.roundInfo.bidPlayer].getPlayerName() + " won the bid for " +
+                               std::to_string(gamedata.roundInfo.bidAmount) + ". " + "Bid updated.";
+
+    MessageBox msgBox;
+    msgBox.setText(QString::fromStdString(bidResultMsg));
+    msgBox.setWindowTitle("Bid Result");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
 void MainWindow::showNewGameMessage()
 {
     MessageBox msgBox;
@@ -299,6 +388,69 @@ void MainWindow::showSaveGameMessage()
     MessageBox msgBox;
     msgBox.setText("Saved Game");
     msgBox.setWindowTitle("Save Game");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showPartnerMessage()
+{
+    std::string msg = gamedata.playerArr[gamedata.roundInfo.partnerPlayerNum].getPlayerName() + " is the partner. Teams updated.";
+
+    MessageBox msgBox;
+    msgBox.showCards({gamedata.roundInfo.partnerCard});
+    msgBox.setText(QString::fromStdString(msg));
+    msgBox.setWindowTitle("Partner card");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showHandResultMessage(PlayerCardPair &winningPair)
+{
+    auto msg = [&winningPair]() -> std::string {
+        return gamedata.playerArr[winningPair.playerNum].getPlayerName() +
+               " won the hand for " + std::to_string(gamedata.handInfo.points) + " points with the";
+    }();
+
+    MessageBox msgBox;
+    msgBox.showCards({winningPair.card});
+    msgBox.setText(QString::fromStdString(msg));
+    msgBox.setWindowTitle("Hand result");
+    msgBox.move({340, 250});
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showNestResultMessage(PlayerCardPair &winningPair)
+{
+    std::string msg = gamedata.playerArr[winningPair.playerNum].getPlayerName() +
+                      " won the nest. Nest had " + std::to_string(gamedata.roundInfo.pointsMiddle) + " points.";
+
+    MessageBox msgBox;
+    msgBox.changeCardArrayDrawPosition(DRAW_POSITION_MESSAGE_BOX_NEST);
+    msgBox.showCards(gamedata.nest);
+    msgBox.setText(QString::fromStdString(msg));
+    msgBox.setWindowTitle("Last hand");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showWrongNumNestCardsMessage()
+{
+    MessageBox msgBox;
+    msgBox.setText("Nest must have exactly 5 cards");
+    msgBox.setWindowTitle("Nest problem");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showTooManyNestCardsMessage(int numMiddleCardsSelected, int numMiddleCardsAllowed)
+{
+    std::string msg = std::to_string(numMiddleCardsSelected) + " are selected but only " + std::to_string(numMiddleCardsAllowed) +
+                      " are allowed to be selected.\n\nReview selected cards.\n\nTip: Use \"Highlight nest cards\" to see selected cards.";
+
+    MessageBox msgBox;
+    msgBox.setText(QString::fromStdString(msg));
+    msgBox.setWindowTitle("Nest problem");
     Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
     msgBox.exec();
 }
@@ -339,6 +491,25 @@ void MainWindow::showGameStartingMessage()
     msgBox.exec();
 }
 
+void MainWindow::showInvalidCardPlayedMessage(ClickableCard *clickableCard)
+{
+    MessageBox msgBox;
+    msgBox.showCards({clickableCard->data});
+    msgBox.setText("Invalid card clicked. Must follow suit.");
+    msgBox.setWindowTitle("Invalid card");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
+void MainWindow::showInvalidMiddleDialogMessage()
+{
+    MessageBox msgBox;
+    msgBox.setText("Trump and partner card must be selected");
+    msgBox.setWindowTitle("Invalid selection");
+    Utils::Ui::moveParentlessDialog(&msgBox, this, DIALOG_POSITION_CENTER);
+    msgBox.exec();
+}
+
 void MainWindow::showAboutMessage()
 {
     MessageBox msgBox;
@@ -368,7 +539,7 @@ void MainWindow::setRookSuitToTrump()
                 return;
             }
         }
-    }    
+    }
 }
 
 QString MainWindow::getSlotDbName(int slotNumber) const
@@ -379,7 +550,6 @@ QString MainWindow::getSlotDbName(int slotNumber) const
         return "slot1.db";
     case SLOT_2:
         return "slot2.db";
-        break;
     default:
         return "slot3.db";
     }

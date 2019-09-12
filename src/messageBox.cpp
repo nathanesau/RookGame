@@ -12,7 +12,7 @@ MessageBox::MessageBox(QWidget *parent) : QDialogWithClickableCardArray(true, pa
     okButton->setFont(QFont("Times", 10));
     okButton->setText("OK");
 
-    QObject::connect(okButton, &QPushButton::pressed, this, &MessageBox::okButtonPressed);
+    connect(okButton, &QPushButton::pressed, this, &MessageBox::okButtonPressed);
 
     // by default, all message boxes use draw position DRAW_POSITION_MESSAGE_BOX
     // this can be overriden using method "setCardsDrawPosition"
@@ -63,7 +63,7 @@ void MessageBox::showCards(const CardVector &cardArr)
 void MessageBox::turnOnHyperLinks()
 {
     msgLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    QObject::connect(msgLabel, &QLabel::linkActivated, this, &MessageBox::hyperLinkClicked);
+    connect(msgLabel, &QLabel::linkActivated, this, &MessageBox::hyperLinkClicked);
 }
 
 void MessageBox::okButtonPressed()
@@ -77,16 +77,6 @@ void MessageBox::hyperLinkClicked(const QString &link)
 }
 
 void MessageBox::onCardClicked(ClickableCard *clickableCard)
-{
-    // do nothing
-}
-
-void MessageBox::onCardHoverEnter(ClickableCard *clickableCard)
-{
-    // do nothing
-}
-
-void MessageBox::onCardHoverLeave(ClickableCard *clickableCard)
 {
     // do nothing
 }

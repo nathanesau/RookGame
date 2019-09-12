@@ -52,7 +52,7 @@ PartnerDialog::PartnerDialog(Card &pCardSelected, QWidget *parent) : cardSelecte
     cancelButton->resize(50, 25);
     cancelButton->move({700, 250});
 
-    QObject::connect(cancelButton, &QPushButton::pressed, this, &QDialog::accept);
+    connect(cancelButton, &QPushButton::pressed, this, &QDialog::accept);
 
     setWindowTitle("Click partner card...");
     setWindowIcon(QIcon(":rookicon.gif"));
@@ -81,28 +81,15 @@ void PartnerDialog::reject()
 
 void PartnerDialog::onPartnerLabelClicked(PartnerDialogLabel *label)
 {
-    std::string text = label->text().toStdString();
+    using SuitMap = std::map<std::string, CardVector *>;
 
-    if (text == "Black")
-    {
-        partnerOptionsCards->showCards(blackCards);
-    }
-    else if (text == "Green")
-    {
-        partnerOptionsCards->showCards(greenCards);
-    }
-    else if (text == "Red")
-    {
-        partnerOptionsCards->showCards(redCards);
-    }
-    else if (text == "Yellow")
-    {
-        partnerOptionsCards->showCards(yellowCards);
-    }
-    else if (text == "Wild")
-    {
-        partnerOptionsCards->showCards(wildCards);
-    }
+    SuitMap suitMap = {{"Black", &blackCards},
+                       {"Green", &greenCards},
+                       {"Red", &redCards},
+                       {"Yellow", &yellowCards},
+                       {"Wild", &wildCards}};
+
+    partnerOptionsCards->showCards(*suitMap[label->text().toStdString()]);
 }
 
 void PartnerDialog::onCardClicked(ClickableCard *clickableCard)
@@ -111,16 +98,6 @@ void PartnerDialog::onCardClicked(ClickableCard *clickableCard)
     cardSelected.value = clickableCard->data.value;
 
     QDialog::accept();
-}
-
-void PartnerDialog::onCardHoverEnter(ClickableCard *clickableCard)
-{
-    // do nothing
-}
-
-void PartnerDialog::onCardHoverLeave(ClickableCard *clickableCard)
-{
-    // do nothing
 }
 
 void PartnerDialog::setupCardArrays()
@@ -132,7 +109,7 @@ void PartnerDialog::setupCardArrays()
         aggregateCardArr.append(gamedata.nest);
     }
 
-    if(Settings::Game::readPickSelfAsPartner ())
+    if (Settings::Game::readPickSelfAsPartner())
     {
         aggregateCardArr.append(gamedata.playerArr[PLAYER_1].cardArr);
     }

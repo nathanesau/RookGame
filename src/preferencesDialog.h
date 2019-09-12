@@ -7,7 +7,7 @@
 
 class PreferencesDialog : public QDialog
 {
-    MainWindow *mainWindow; // non-owning
+    Q_OBJECT
 
     QHBoxLayout *horizontalLayout;
 
@@ -27,8 +27,12 @@ class PreferencesDialog : public QDialog
     void setupContentsWidget();
     void setupPagesWidget();
 
+signals:
+    void nameTagsChanged(); // appearance page
+    void gameResolutionChanged(); // appearance page
+
 public:
-    PreferencesDialog(MainWindow *pMainWindow, QWidget *parent = nullptr);
+    PreferencesDialog(QWidget *parent = nullptr);
 
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
 

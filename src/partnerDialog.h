@@ -55,8 +55,6 @@ public:
     void onPartnerLabelClicked(PartnerDialogLabel *label);
 
     virtual void onCardClicked(ClickableCard *clickableCard);
-    virtual void onCardHoverEnter(ClickableCard *clickableCard);
-    virtual void onCardHoverLeave(ClickableCard *clickableCard);
 
     void setupCardArrays();
 };

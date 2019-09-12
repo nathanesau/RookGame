@@ -4,9 +4,7 @@
 #include "settings.h"
 #include "utils.h"
 
-NestDialog::NestDialog(CardVector pOriginalNest, QMainWindow *pMainWindow, QWidget *parent) : originalNest(pOriginalNest),
-                                                                                              mainWindow(pMainWindow),
-                                                                                              QDialogWithClickableCardArray(true, parent)
+NestDialog::NestDialog(CardVector pOriginalNest, QWidget *parent) : originalNest(pOriginalNest), QDialogWithClickableCardArray(true, parent)
 {
     setOriginalNestStyles("background-color: white; border: 2px solid");
 
@@ -46,9 +44,9 @@ NestDialog::NestDialog(CardVector pOriginalNest, QMainWindow *pMainWindow, QWidg
     doneNestButton = new ScaledQPushButton;
     setupPushButton(doneNestButton, "Done nest...", {125, 25}, {480, 450});
 
-    QObject::connect(autoChooseNestButton, &QPushButton::pressed, this, &NestDialog::autoChooseNestButtonPressed);
-    QObject::connect(resetNestButton, &QPushButton::pressed, this, &NestDialog::resetNestButtonPressed);
-    QObject::connect(doneNestButton, &QPushButton::pressed, this, &NestDialog::doneNestButtonPressed);
+    connect(autoChooseNestButton, &QPushButton::pressed, this, &NestDialog::autoChooseNestButtonPressed);
+    connect(resetNestButton, &QPushButton::pressed, this, &NestDialog::resetNestButtonPressed);
+    connect(doneNestButton, &QPushButton::pressed, this, &NestDialog::doneNestButtonPressed);
 
     highlightCardsCheckBox = new ScaledQCheckBox;
     highlightCardsCheckBox->setParent(this);
@@ -56,7 +54,7 @@ NestDialog::NestDialog(CardVector pOriginalNest, QMainWindow *pMainWindow, QWidg
     highlightCardsCheckBox->move({700, 450});
     highlightCardsCheckBox->setFont(QFont("Times", 10));
 
-    QObject::connect(highlightCardsCheckBox, &QCheckBox::pressed,
+    connect(highlightCardsCheckBox, &QCheckBox::pressed,
                      this, &NestDialog::highlightCardsCheckBoxPressed);
 
     resize(NEST_DIALOG_SIZE);
@@ -124,16 +122,6 @@ void NestDialog::onCardClicked(ClickableCard *clickableCard)
     player1CardsPreview->showCards(gamedata.playerArr[PLAYER_1].cardArr, &originalNestStyles);
 }
 
-void NestDialog::onCardHoverEnter(ClickableCard *clickableCard)
-{
-    // do nothing
-}
-
-void NestDialog::onCardHoverLeave(ClickableCard *clickableCard)
-{
-    // do nothing
-}
-
 void NestDialog::autoChooseNestButtonPressed()
 {
     gamedata.playerArr[PLAYER_1].cpu->selectNest();
@@ -159,11 +147,7 @@ void NestDialog::doneNestButtonPressed()
 {
     if (gamedata.nest.size() != 5)
     {
-        MessageBox msgBox;
-        msgBox.setText("Nest must have exactly 5 cards");
-        msgBox.setWindowTitle("Nest problem");
-        Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
-        msgBox.exec();
+        emit showWrongNumNestCardsMessage();
     }
     else // 5 cards left in nest
     {
@@ -175,14 +159,7 @@ void NestDialog::doneNestButtonPressed()
 
         if (numMiddleCardsSelected > numMiddleCardsAllowed) // too many nest cards selected
         {
-            std::string msg = std::to_string(numMiddleCardsSelected) + " are selected but only " + std::to_string(numMiddleCardsAllowed) +
-                         " are allowed to be selected.\n\nReview selected cards.\n\nTip: Use \"Highlight nest cards\" to see selected cards.";
-
-            MessageBox msgBox;
-            msgBox.setText(QString::fromStdString(msg));
-            msgBox.setWindowTitle("Nest problem");
-            Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
-            msgBox.exec();
+            emit showTooManyNestCardsMessage(numMiddleCardsAllowed, numMiddleCardsSelected);
         }
         else
         {

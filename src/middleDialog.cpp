@@ -1,5 +1,4 @@
 #include "gameData.h"
-#include "mainWindow.h"
 #include "messageBox.h"
 #include "middleDialog.h"
 #include "nestDialog.h"
@@ -7,10 +6,8 @@
 #include "trumpDialog.h"
 #include "utils.h"
 
-MiddleDialog::MiddleDialog(MainWidget *pMainWidget, QMainWindow *pMainWindow, QWidget *parent) : mainWidget(pMainWidget),
-                                                                                                 mainWindow(pMainWindow),
-                                                                                                 QDialogWithClickableCardArray(true, parent),
-                                                                                                 originalNest(gamedata.nest)
+MiddleDialog::MiddleDialog(QWidget *parent) : QDialogWithClickableCardArray(true, parent),
+                                              originalNest(gamedata.nest)
 {
     ui.setupUi(this);
 
@@ -20,26 +17,13 @@ MiddleDialog::MiddleDialog(MainWidget *pMainWidget, QMainWindow *pMainWindow, QW
     partnerCards = new ClickableCardArray(DRAW_POSITION_MIDDLE_DLG_PARTNER, SIZE_TINY, this);
     partnerCards->showCards({Card(SUIT_UNDEFINED, VALUE_UNDEFINED)});
 
-    QObject::connect(ui.selectNestButton, &QPushButton::pressed,
-                     this, &MiddleDialog::selectNestButtonPressed);
-
-    QObject::connect(ui.autoSelectNestButton, &QPushButton::pressed,
-                     this, &MiddleDialog::autoSelectNestButtonPressed);
-
-    QObject::connect(ui.selectTrumpButton, &QPushButton::pressed,
-                     this, &MiddleDialog::selectTrumpButtonPressed);
-
-    QObject::connect(ui.autoSelectTrumpButton, &QPushButton::pressed,
-                     this, &MiddleDialog::autoSelectTrumpButtonPressed);
-
-    QObject::connect(ui.selectPartnerButton, &QPushButton::pressed,
-                     this, &MiddleDialog::selectPartnerButtonPressed);
-
-    QObject::connect(ui.autoSelectPartnerButton, &QPushButton::pressed,
-                     this, &MiddleDialog::autoSelectPartnerButtonPressed);
-
-    QObject::connect(ui.okButton, &QPushButton::pressed,
-                     this, &MiddleDialog::okButtonPressed);
+    connect(ui.selectNestButton, &QPushButton::pressed, this, &MiddleDialog::onSelectNestButtonPressed);
+    connect(ui.autoSelectNestButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectNestButtonPressed);
+    connect(ui.selectTrumpButton, &QPushButton::pressed, this, &MiddleDialog::onSelectTrumpButtonPressed);
+    connect(ui.autoSelectTrumpButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectTrumpButtonPressed);
+    connect(ui.selectPartnerButton, &QPushButton::pressed, this, &MiddleDialog::onSelectPartnerButtonPressed);
+    connect(ui.autoSelectPartnerButton, &QPushButton::pressed, this, &MiddleDialog::onAutoSelectPartnerButtonPressed);
+    connect(ui.okButton, &QPushButton::pressed, this, &MiddleDialog::onOkButtonPressed);
 
     resize(MIDDLE_DIALOG_SIZE);
     setWindowIcon(QIcon(":rookicon.gif"));
@@ -74,94 +58,62 @@ void MiddleDialog::onCardClicked(ClickableCard *clickableCard)
     // do nothing
 }
 
-void MiddleDialog::onCardHoverEnter(ClickableCard *clickableCard)
+void MiddleDialog::onSelectNestButtonPressed()
 {
-    // do nothing
-}
-
-void MiddleDialog::onCardHoverLeave(ClickableCard *clickableCard)
-{
-    // do nothing
-}
-
-void MiddleDialog::selectNestButtonPressed()
-{
-    NestDialog nestDlg(originalNest, mainWindow);
-    Utils::Ui::moveParentlessDialog(&nestDlg, mainWindow, DIALOG_POSITION_NEST_DLG);
-
-    if (!nestDlg.exec())
-    {
-        qFatal("Problem executing nest dialog");
-        return;
-    }
+    // set gamedata.nest
+    emit showNestDialog(originalNest);
 
     nestCards->showCards(gamedata.nest);
 
     // refresh nest, player 1 cards
-    mainWidget->refreshCardWidgets(gamedata);
+    emit refreshCardWidgets(gamedata);
 }
 
-void MiddleDialog::autoSelectNestButtonPressed()
+void MiddleDialog::onAutoSelectNestButtonPressed()
 {
     gamedata.playerArr[PLAYER_1].cpu->selectNest();
 
     nestCards->showCards(gamedata.nest);
 
     // refresh nest, player 1 cards
-    mainWidget->refreshCardWidgets(gamedata);
+    emit refreshCardWidgets(gamedata);
 }
 
-void MiddleDialog::selectTrumpButtonPressed()
+void MiddleDialog::onSelectTrumpButtonPressed()
 {
-    TrumpDialog trumpDlg(gamedata.roundInfo.trump);
-    Utils::Ui::moveParentlessDialog(&trumpDlg, mainWindow, DIALOG_POSITION_TRUMP_DLG);
-
-    if (!trumpDlg.exec())
-    {
-        qFatal("Problem executing trump dialog");
-        return;
-    }
+    // set gamedata.roundInfo.trump
+    emit showTrumpDialog();
 
     setupTrumpLabel(gamedata.roundInfo.trump);
 }
 
-void MiddleDialog::autoSelectTrumpButtonPressed()
+void MiddleDialog::onAutoSelectTrumpButtonPressed()
 {
     gamedata.playerArr[PLAYER_1].cpu->selectTrump();
 
     setupTrumpLabel(gamedata.roundInfo.trump);
 }
 
-void MiddleDialog::selectPartnerButtonPressed()
+void MiddleDialog::onSelectPartnerButtonPressed()
 {
-    PartnerDialog partnerDlg(gamedata.roundInfo.partnerCard);
-    Utils::Ui::moveParentlessDialog(&partnerDlg, mainWindow, DIALOG_POSITION_PARTNER_DLG);
-
-    if (!partnerDlg.exec())
-    {
-        qFatal("Problem executing partner dialog");
-        return;
-    }
+    // set gamedata.roundInfo.partnerCard
+    emit showPartnerDialog();
 
     partnerCards->showCards({gamedata.roundInfo.partnerCard});
 }
 
-void MiddleDialog::autoSelectPartnerButtonPressed()
+void MiddleDialog::onAutoSelectPartnerButtonPressed()
 {
     gamedata.playerArr[PLAYER_1].cpu->selectPartner();
 
     partnerCards->showCards({gamedata.roundInfo.partnerCard});
 }
 
-void MiddleDialog::okButtonPressed()
+void MiddleDialog::onOkButtonPressed()
 {
     if (gamedata.roundInfo.trump == SUIT_UNDEFINED || gamedata.roundInfo.partnerCard.isUndefined())
     {
-        MessageBox msgBox;
-        msgBox.setText("Trump and partner card must be selected");
-        msgBox.setWindowTitle("Invalid selection");
-        Utils::Ui::moveParentlessDialog(&msgBox, mainWindow, DIALOG_POSITION_CENTER);
-        msgBox.exec();
+        emit showInvalidMiddleDialogMessage();
     }
     else
     {

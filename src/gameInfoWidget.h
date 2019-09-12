@@ -52,8 +52,6 @@ struct GameInfoWidget : public QDialogWithClickableCardArray
     GameInfoWidgetData data;
 
 private:
-    QMainWindow *mainWindow; // non-owning
-
     ScaledQLabel *bidCategoryLabel;
     ScaledQLabel *bidPlayerLabel;
     ScaledQLabel *bidAmountLabel;
@@ -88,12 +86,10 @@ private:
     ScaledQLabel *player4OverallScoreLabel;
 
 public:
-    GameInfoWidget(QMainWindow *pMainWindow, QWidget *parent = nullptr);
+    GameInfoWidget(QWidget *parent = nullptr);
     virtual void rescale();
 
     virtual void onCardClicked(ClickableCard *clickableCard);
-    virtual void onCardHoverEnter(ClickableCard *clickableCard);
-    virtual void onCardHoverLeave(ClickableCard *clickableCard);
 
     void refreshWidget(GameData &pData);
 
