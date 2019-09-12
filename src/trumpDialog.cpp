@@ -1,7 +1,7 @@
 #include "card.h"
 #include "trumpDialog.h"
 
-TrumpDialog::TrumpDialog(int &pSuitSelected, QWidget *parent) : suitSelected(pSuitSelected), ScaledQDialog(true, parent)
+TrumpDialog::TrumpDialog(int &pSuitSelected, QWidget *parent) : suitSelected(pSuitSelected), QDialog(parent)
 {
     QFont labelFont;
     labelFont.setPointSize(12);    
@@ -11,24 +11,28 @@ TrumpDialog::TrumpDialog(int &pSuitSelected, QWidget *parent) : suitSelected(pSu
     redLabel->setText("Red");
     redLabel->setAlignment(Qt::AlignCenter);
     redLabel->setFont(labelFont);
+    connect(redLabel, &ClickableLabel::clicked, this, &TrumpDialog::onTrumpLabelClicked);
 
     blackLabel = new ClickableLabel;
     blackLabel->setStyleSheet("background-color: black; color: white");
     blackLabel->setText("Black");
     blackLabel->setAlignment(Qt::AlignCenter);
     blackLabel->setFont(labelFont);
+    connect(blackLabel, &ClickableLabel::clicked, this, &TrumpDialog::onTrumpLabelClicked);
 
     greenLabel = new ClickableLabel;
     greenLabel->setStyleSheet("background-color: green");
     greenLabel->setText("Green");
     greenLabel->setAlignment(Qt::AlignCenter);
     greenLabel->setFont(labelFont);
+    connect(greenLabel, &ClickableLabel::clicked, this, &TrumpDialog::onTrumpLabelClicked);
 
     yellowLabel = new ClickableLabel;
     yellowLabel->setStyleSheet("background-color: yellow");
     yellowLabel->setText("Yellow");
     yellowLabel->setAlignment(Qt::AlignCenter);
     yellowLabel->setFont(labelFont);
+    connect(yellowLabel, &ClickableLabel::clicked, this, &TrumpDialog::onTrumpLabelClicked);
 
     mainLayout = new QVBoxLayout;
     mainLayout->addWidget(redLabel);
@@ -41,16 +45,6 @@ TrumpDialog::TrumpDialog(int &pSuitSelected, QWidget *parent) : suitSelected(pSu
     setWindowTitle("Choose Trump Suit...");
     setWindowIcon(QIcon(":rookicon.gif"));
     setStyleSheet("background-color: white");
-}
-
-void TrumpDialog::rescale()
-{
-    // do nothing
-}
-
-void TrumpDialog::reject()
-{
-    // do nothing
 }
 
 void TrumpDialog::onTrumpLabelClicked(ClickableLabel *label)

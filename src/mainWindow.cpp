@@ -285,12 +285,7 @@ void MainWindow::showTrumpDialog()
 {
     TrumpDialog trumpDlg(gamedata.roundInfo.trump);
     Utils::Ui::moveParentlessDialog(&trumpDlg, this, DIALOG_POSITION_TRUMP_DLG);
-
-    if (!trumpDlg.exec())
-    {
-        qFatal("Problem executing trump dialog");
-        return;
-    }
+    trumpDlg.exec();
 }
 
 // very sequential function - order matters

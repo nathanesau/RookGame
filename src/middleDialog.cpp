@@ -44,7 +44,7 @@ void MiddleDialog::setupUi()
     selectTrumpButton->setFont(buttonFont);
     
     trumpLabel = new ScaledQLabel;
-    trumpLabel->setText("Trump");
+    trumpLabel->setText("No Trump Selected");
     trumpLabel->setParent(this);
     trumpLabel->setGeometry(QRect(510, 150, 121, 51));
     trumpLabel->setAlignment(Qt::AlignCenter);
