@@ -15,7 +15,7 @@ extern GameData gamedata;
 const QSize NEST_DIALOG_SIZE = {911, 506};
 
 // for selecting cards from nest
-class NestDialog : public ScaledQDialog
+class NestDialog : public QDialog
 {
     Q_OBJECT
 
@@ -25,26 +25,33 @@ class NestDialog : public ScaledQDialog
     CardStyleMap originalNestStyles;
 
 private:
-    ScaledQPushButton *autoChooseNestButton;
-    ScaledQPushButton *resetNestButton;
-    ScaledQPushButton *doneNestButton;
+    QVBoxLayout *middleCardsLayout;
+    QLabel *nestCardsLabel;
+    LayoutClickableCardArray *nestCards;
 
-    ScaledQLabel *nestCardsLabel;
-    ClickableCardArray *nestCards;
+    QVBoxLayout *newHandLayout;
+    QLabel *player1CardsPreviewLabel;
+    LayoutClickableCardArray *player1CardsPreview;
 
-    ScaledQLabel *player1CardsPreviewLabel;
-    ClickableCardArray *player1CardsPreview;
+    QHBoxLayout *buttonsCheckBoxLayout;
+    QPushButton *autoChooseNestButton;
+    QPushButton *resetNestButton;
+    QPushButton *doneNestButton;
+    QCheckBox *highlightCardsCheckBox;
 
-    ScaledQCheckBox *highlightCardsCheckBox;
+    QVBoxLayout *mainLayout;
 
 signals:
     void showWrongNumNestCardsMessage();
     void showTooManyNestCardsMessage(int numMiddleCardsSelected, int numMiddleCardsAllowed);
 
+private:
+    void initializeMiddleCardsLayout();
+    void initializeNewHandLayout();
+    void initializeButtonsCheckBoxLayout();
+
 public:
     NestDialog(CardVector pOriginalNest, QWidget *parent = nullptr);
-    virtual void rescale();
-    virtual void reject();
 
     void setOriginalNestStyles(std::string style);
 

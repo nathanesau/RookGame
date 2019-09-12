@@ -109,6 +109,7 @@ class ClickableCardArray : public QWidget
 {
     Q_OBJECT
 
+protected:
     std::vector<ClickableCard> clickableCards;
 
     int drawPosition;
@@ -126,7 +127,7 @@ public:
     void showCards(const CardVector &cardArr, CardStyleMap *cardStyleMap = nullptr);
     void hideCards();
 
-private:
+protected:
     QPoint getCardPosition(int i, int n) const;
 
     bool useDynamicPositioning() const;
@@ -136,6 +137,15 @@ private:
     int getVerticalShift() const;
     int getHorizontalShift() const;
     int getCardGap() const;
+};
+
+class LayoutClickableCardArray : public ClickableCardArray
+{
+public:
+    void showCards(const CardVector &cardArr, CardStyleMap *cardStyleMap = nullptr);
+
+public:
+    using ClickableCardArray::ClickableCardArray;
 };
 
 #endif

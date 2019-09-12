@@ -397,3 +397,37 @@ int ClickableCardArray::getCardGap() const
         return 0; // only one card shown for this draw position
     }
 }
+
+void LayoutClickableCardArray::showCards(const CardVector &cardArr, CardStyleMap *cardStyles)
+{
+    int n = (int)cardArr.size();
+
+    clickableCards.clear();
+    clickableCards.resize(n);
+
+    for (auto i = 0; i < n; i++)
+    {
+        clickableCards[i].setParent(this);
+        connect(&clickableCards[i], &ClickableCard::clicked, this, &ClickableCardArray::clicked);
+
+        Card card = cardArr[i];
+        std::string style = "";
+
+        if (cardStyles)
+        {
+            style = (*cardStyles)[card];
+        }
+
+        if (style.empty())
+        {
+            style = "background-color: white; border: 2px solid"; // default style
+        }
+
+        clickableCards[i].setData(card, drawPosition, size, style);
+        
+        auto cardPos = getCardPosition(i, n);
+        cardPos.setY(0);
+        clickableCards[i].move(cardPos);
+        clickableCards[i].showNormal();
+    }
+}
