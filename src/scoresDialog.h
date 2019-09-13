@@ -14,6 +14,7 @@ const QSize SCORES_DIALOG_SIZE = {320, 200};
 // extend QDialog not ScaledQDialog
 class ScoresDialog : public QDialog
 {
+    QVBoxLayout *mainLayout;
     QTableWidget *tableWidget;
 
 public:
