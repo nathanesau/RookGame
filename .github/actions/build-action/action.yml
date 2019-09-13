@@ -1,5 +1,0 @@
-name: 'C/C++ Build (CMake)'
-description: 'Build the project'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
