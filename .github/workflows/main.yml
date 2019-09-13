@@ -10,3 +10,4 @@ jobs:
       uses: actions/checkout@v1
     - name: C/C++ Build (CMake)
       uses: nathanesau/build-action@1 # github marketplace
+      run: cmake CMakeLists.txt && make
