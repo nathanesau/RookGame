@@ -12,23 +12,29 @@ extern GameData gamedata;
 
 const QSize ROUND_SUMMARY_DIALOG_SIZE = {500, 250};
 
-class RoundSummaryDialog : public ScaledQDialog
+class RoundSummaryDialog : public QDialog
 {
-    ScaledQLabel *summaryLabel;
+    QVBoxLayout *titleLayout;
+    QLabel *summaryLabel;
 
-    ScaledQLabel *player1ScoreLabel;
-    ScaledQLabel *player1Score;
+    QVBoxLayout *namesLayout;
+    QLabel *player1ScoreLabel;
+    QLabel *player2ScoreLabel;
+    QLabel *player3ScoreLabel;
+    QLabel *player4ScoreLabel;
 
-    ScaledQLabel *player2ScoreLabel;
-    ScaledQLabel *player2Score;
+    QVBoxLayout *scoresLayout;
+    QLabel *player1Score;
+    QLabel *player2Score;
+    QLabel *player3Score;
+    QLabel *player4Score;
+    
+    QHBoxLayout *namesScoresLayout;
 
-    ScaledQLabel *player3ScoreLabel;
-    ScaledQLabel *player3Score;
-
-    ScaledQLabel *player4ScoreLabel;
-    ScaledQLabel *player4Score;
-
-    ScaledQPushButton *okButton;
+    QHBoxLayout *buttonLayout;
+    QPushButton *okButton;
+    
+    QVBoxLayout *mainLayout; // titleLayout, namesScoresLayout, buttonLayout
 
 public:
     RoundSummaryDialog(QWidget *parent = nullptr);
