@@ -4,12 +4,14 @@
 ScoresDialog::ScoresDialog(QWidget *parent) : QDialog(parent)
 {
     tableWidget = new QTableWidget;
-    tableWidget->setParent(this);
-    tableWidget->move(0, 0);
     
+    mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(tableWidget);
+    
+    resize(SCORES_DIALOG_SIZE);
+    setLayout(mainLayout);
     setWindowIcon(QIcon(":rookicon.gif"));
     setWindowTitle("Past Round Scores");
-    resize(SCORES_DIALOG_SIZE);
 }
 
 void ScoresDialog::setupTableWidget(const std::map<int, std::map<int, int>> &scoreHistory)
