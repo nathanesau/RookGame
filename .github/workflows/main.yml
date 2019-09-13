@@ -8,6 +8,5 @@ jobs:
     - name: checkout step
       id: checkout
       uses: actions/checkout@v1
-    - name: build step
-      id: build
-      uses: actions/build-action@v1 # github marketplace
+    - name: C/C++ Build (CMake)
+      uses: nathanesau/build-action@1 # github marketplace
