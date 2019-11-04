@@ -1,5 +1,5 @@
 # RookGame
-Rook card game implemented in C++ with Qt.
+Rook card game implemented in C++ with Qt. See the Wiki for screenshots.
 
 ## Why Qt?
 
