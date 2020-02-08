@@ -1,8 +1,0 @@
-name: 'C/C++ Build (CMake)'
-steps:
-  - name: Checkout
-    uses: actions/checkout@v2
-  - name: Build
-    runs:
-      using: 'docker'
-      image: 'Dockerfile'
