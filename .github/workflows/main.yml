@@ -1,14 +1,15 @@
-name: C/C++ CI
+name: Example Workflow
 
 on: [push]
-
 jobs:
   build:
-  
-    runs-on: ubuntu-16.04
-    
+    runs-on: ubuntu-latest
     steps:
-    - name: checkout
+    - name: Checkout
       uses: actions/checkout@v1
-    - name: build
-      uses: ./.github/actions/buid-action
+    - name: install qt
+      uses: actions/install-qt-action@v0.1.1
+      with:
+        packages: 'qt.qt5.5124.gcc_64, qt.qt5.5124.android_arm64_v8a'
+    - name: Test qmake
+      run: cmake CMakeLists.txt && make
