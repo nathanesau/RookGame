@@ -1,3 +1,4 @@
+#include "common.h"
 #include "gameData.h"
 
 GameData::GameData() : playerArr{Player(PLAYER_1), Player(PLAYER_2), Player(PLAYER_3), Player(PLAYER_4)}
@@ -16,7 +17,7 @@ void GameData::clearRoundSpecificInfo()
     detailRoundInfo.clear();
     handInfo.clear();
     nest.clear();
-    for_each(playerArr.begin(), playerArr.end(), [](Player &player) { player.clear(); });
+    std::for_each(playerArr.begin(), playerArr.end(), [](Player &player) { player.clear(); });
 }
 
 void GameData::clearOverallInfo()
