@@ -1,4 +1,5 @@
 #include "bidDialog.h"
+#include "common.h"
 #include "cpu.h"
 #include "gameData.h"
 #include "utils.h"
@@ -212,5 +213,5 @@ void BidDialog::getCpuBids()
 int BidDialog::getNumPassed()
 {
     // get number of players who passed bid
-    return accumulate(gamedata.playerArr.begin(), gamedata.playerArr.end(), 0, [&](int a, Player &b) { return a + (b.passed); });
+    return std::accumulate(gamedata.playerArr.begin(), gamedata.playerArr.end(), 0, [&](int a, Player &b) { return a + (b.passed); });
 }
